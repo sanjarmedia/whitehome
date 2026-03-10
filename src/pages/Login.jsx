@@ -63,6 +63,8 @@ const Login = () => {
         };
     }, []); // Empty dependency array so it strictly runs once on mount
 
+    const [isSuccess, setIsSuccess] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -72,11 +74,18 @@ const Login = () => {
             const response = await api.post('/auth/login', { username, password });
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
-            // Slight delay for smooth UI transition
-            setTimeout(() => navigate('/'), 500);
-        } catch (err) {
-            setError('Foydalanuvchi nomi yoki parol noto\'g\'ri');
+            
+            setIsSuccess(true);
             setIsLoading(false);
+            
+            // Success message then navigate
+            setTimeout(() => {
+                navigate('/');
+            }, 1000);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Foydalanuvchi nomi yoki parol noto\'g\'ri');
+            setIsLoading(false);
+            setIsSuccess(false);
         }
     };
 
@@ -96,6 +105,12 @@ const Login = () => {
                 {error && (
                     <div className="bg-rose-500/20 backdrop-blur-md border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
                         {error}
+                    </div>
+                )}
+
+                {isSuccess && (
+                    <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
+                        Muvaffaqiyatli! Yuklanmoqda...
                     </div>
                 )}
 

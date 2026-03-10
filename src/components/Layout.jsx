@@ -92,6 +92,7 @@ const Layout = () => {
                             : 'bg-white text-slate-600 hover:text-blue-600 border border-slate-200'
                             }`}
                     >
+                        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
                 </div>
             </div>

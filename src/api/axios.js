@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://72.62.38.240:5000/api',
+    baseURL: 'https://api.wh-warehouse.cloud/api',
 });
 
 api.interceptors.request.use((config) => {

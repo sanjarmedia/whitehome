@@ -15,25 +15,6 @@ const Dashboard = () => {
         setLoading(true);
         try {
             const res = await api.get('/dashboard');
-            // Fake data for demo if backend returns empty arrays
-            if (res.data.monthlyStats && res.data.monthlyStats.every(m => m.revenue === 0)) {
-                res.data.monthlyStats = [
-                    { name: 'Jan', revenue: 4000, customers: 24 },
-                    { name: 'Feb', revenue: 3000, customers: 18 },
-                    { name: 'Mar', revenue: 2000, customers: 35 },
-                    { name: 'Apr', revenue: 2780, customers: 40 },
-                    { name: 'May', revenue: 1890, customers: 28 },
-                    { name: 'Jun', revenue: 5390, customers: 55 },
-                ];
-                if (res.data.topSelling.length === 0) {
-                    res.data.topSelling = [
-                        { name: "Camera A1", value: 30 },
-                        { name: "Monitor 24", value: 45 },
-                        { name: "Cable 100m", value: 60 },
-                        { name: "DVR 8ch", value: 20 },
-                    ];
-                }
-            }
             setStats(res.data);
         } catch (err) {
             console.error(err);
@@ -351,10 +332,10 @@ const Dashboard = () => {
                         {/* Header row */}
                         <div className="overflow-x-auto w-full -mx-4 px-4 sm:mx-0 sm:px-0">
                             <div className="min-w-[500px]">
-                                <div className={`grid grid-cols-4 gap-4 px-4 py-2 border-b text-xs uppercase tracking-wider font-semibold ${darkMode ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
+                                <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 px-4 py-2 border-b text-xs uppercase tracking-wider font-semibold ${darkMode ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
                                     <div>Mijoz Ismi</div>
-                                    <div className="text-right">Jami Xarid ($)</div>
-                                    <div className="text-right">To'landi ($)</div>
+                                    <div className="hidden md:block text-right">Jami Xarid ($)</div>
+                                    <div className="hidden md:block text-right">To'landi ($)</div>
                                     <div className="text-right">Qarz Qoldig'i ($)</div>
                                 </div>
 
@@ -369,18 +350,18 @@ const Dashboard = () => {
                                     <div
                                         key={c.id || i}
                                         onClick={() => setSelectedCustomer(c)}
-                                        className={`grid grid-cols-4 gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-150 ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-emerald-50'}`}
+                                        className={`grid grid-cols-2 md:grid-cols-4 gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-150 ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-emerald-50'}`}
                                     >
-                                        <div className={`flex items-center gap-3 font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                                        <div className={`flex items-center gap-3 font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'} truncate`}>
                                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-amber-100 text-amber-700 shrink-0">
                                                 {c.name?.[0] || 'U'}
                                             </div>
-                                            <span className="truncate">{c.name}</span>
+                                            <span className="truncate" title={c.name}>{c.name}</span>
                                         </div>
-                                        <div className={`text-right font-medium self-center ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                                        <div className={`hidden md:block text-right font-medium self-center ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                                             ${(c.totalPurchases || 0).toLocaleString()}
                                         </div>
-                                        <div className="text-right font-semibold text-emerald-500 self-center">
+                                        <div className="hidden md:block text-right font-semibold text-emerald-500 self-center">
                                             ${(c.totalPaid || 0).toLocaleString()}
                                         </div>
                                         <div className="text-right font-bold text-rose-500 self-center">

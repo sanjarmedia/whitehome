@@ -366,27 +366,27 @@ const OrdersList = () => {
                                     <h3 className={`font-medium truncate ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                                         {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? 'Bosh Omborxona' : 'Noma\'lum')}
                                     </h3>
-                                    <div className={`mt-0.5 flex flex-wrap gap-x-4 gap-y-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                    <div className={`mt-0.5 flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                                         <p className="text-sm">
                                             {order.items?.length || 0} ta mahsulot
                                         </p>
-                                        <p className="text-sm border-l pl-4 border-slate-300 dark:border-slate-600">
+                                        <p className="text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
                                             Jami: <span className={`font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>${(order.totalAmount || 0).toLocaleString()}</span>
                                         </p>
                                         {(order.paidAmount > 0 || order.status === 'NEW') && (
-                                            <p className="text-sm border-l pl-4 border-slate-300 dark:border-slate-600">
+                                            <p className="hidden xs:block text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
                                                 To'landi: <span className="font-semibold text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</span>
                                             </p>
                                         )}
                                         {((order.totalAmount || 0) > (order.status === 'NEW' ? 0 : (order.paidAmount || 0))) && (
-                                            <p className="text-sm border-l pl-4 border-slate-300 dark:border-slate-600">
+                                            <p className="hidden md:block text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
                                                 Qarz: <span className={`font-semibold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${((order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</span>
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
+                                <div className="flex items-center gap-1.5 sm:gap-2 w-full md:w-auto flex-wrap justify-end">
                                     {/* Korxona buyurtmasi tugmalari */}
                                     {order.status === 'NEW' && order.orderSource === 'COMPANY' && (
                                         <button onClick={() => setActiveModal({ order, mode: 'view' })}

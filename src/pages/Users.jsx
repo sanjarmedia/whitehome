@@ -144,8 +144,18 @@ const Users = () => {
             {error && <div className="p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredUsers.map(user => (
+                {filteredUsers.map(user => {
+                    const isOnline = user.lastActive && Date.now() - new Date(user.lastActive).getTime() < 5 * 60 * 1000;
+                    
+                    return (
                     <div key={user.id} className={`group rounded-2xl overflow-hidden shadow-sm border transition-all hover:shadow-xl relative ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5" title={user.lastActive ? `Ohirgi faollik: ${new Date(user.lastActive).toLocaleString('uz-UZ')}` : 'Tizimga kirmagan'}>
+                            <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-slate-400'}`}></div>
+                            <span className={`text-[10px] uppercase tracking-wider font-bold ${isOnline ? 'text-emerald-500' : 'text-slate-400'}`}>
+                                {isOnline ? 'Online' : 'Offline'}
+                            </span>
+                        </div>
+
                         <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button
                                 onClick={() => { setEditingUser(user); setIsModalOpen(true); }}
@@ -183,7 +193,7 @@ const Users = () => {
                             </span>
                         </div>
                     </div>
-                ))}
+                )})}
             </div>
 
             <UserModal

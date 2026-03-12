@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Moon, Sun, Menu } from 'lucide-react';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Layout = () => {
     // Initialize from localStorage or default
@@ -36,6 +38,28 @@ const Layout = () => {
         if (fontSize === 'xl') return 'text-xl';
         return 'text-base';
     };
+
+    useEffect(() => {
+        const pingServer = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            try {
+                await fetch(`${API_URL}/api/auth/ping`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (err) {
+                console.error("Ping error:", err);
+            }
+        };
+
+        // Darxol chaqirib olish
+        pingServer();
+        
+        // Har 1 daqiqada faollik haqida hisobot
+        const interval = setInterval(pingServer, 60000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className={`flex min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900 relative transition-colors duration-500 ${darkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-800'

@@ -22,6 +22,8 @@ const ACTION_CONFIG = {
     CREATE_USER: { label: 'Foydalanuvchi yaratildi', color: 'emerald', entity: 'user' },
     UPDATE_USER: { label: 'Foydalanuvchi tahrirlandi', color: 'amber', entity: 'user' },
     DELETE_USER: { label: 'Foydalanuvchi o\'chirildi', color: 'rose', entity: 'user' },
+    LOGIN: { label: 'Tizimga Kirdi', color: 'emerald', entity: 'user' },
+    LOGOUT: { label: 'Tizimdan Chiqdi', color: 'slate', entity: 'user' },
 };
 
 const COLOR_CLASSES = {
@@ -30,6 +32,7 @@ const COLOR_CLASSES = {
     blue: { bg: 'bg-blue-500/10 border-blue-500/20', text: 'text-blue-400', dot: 'bg-blue-400' },
     rose: { bg: 'bg-rose-500/10 border-rose-500/20', text: 'text-rose-400', dot: 'bg-rose-400' },
     purple: { bg: 'bg-purple-500/10 border-purple-500/20', text: 'text-purple-400', dot: 'bg-purple-400' },
+    slate: { bg: 'bg-slate-500/10 border-slate-500/20', text: 'text-slate-400', dot: 'bg-slate-400' },
 };
 
 const ENTITY_ICONS = {
@@ -221,12 +224,12 @@ const AuditLog = () => {
                         <table className="min-w-full text-sm whitespace-nowrap">
                             <thead>
                                 <tr className={`border-b text-xs uppercase ${darkMode ? 'bg-slate-800/80 border-slate-700 text-slate-400' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
-                                    <th className="px-4 py-3 text-left">Sana</th>
-                                    <th className="px-4 py-3 text-left">Foydalanuvchi</th>
-                                    <th className="px-4 py-3 text-left">Amal</th>
-                                    <th className="px-4 py-3 text-left">Ob'yekt</th>
-                                    <th className="px-4 py-3 text-left">ID</th>
-                                    <th className="px-4 py-3 text-left">Tafsilot</th>
+                                    <th className={`px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sana</th>
+                                    <th className={`px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Foydalanuvchi</th>
+                                    <th className={`px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Amal</th>
+                                    <th className={`hidden sm:table-cell px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Ob'yekt</th>
+                                    <th className={`hidden md:table-cell px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ID</th>
+                                    <th className={`hidden lg:table-cell px-4 xl:px-6 py-3 text-left ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Tafsilot</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
@@ -270,7 +273,7 @@ const AuditLog = () => {
                                             </td>
 
                                             {/* Entity */}
-                                            <td className="px-4 py-3">
+                                            <td className="hidden sm:table-cell px-4 xl:px-6 py-3">
                                                 <div className={`flex items-center gap-1.5 text-xs ${sec}`}>
                                                     <EntityIcon size={13} />
                                                     {log.entity}
@@ -278,7 +281,7 @@ const AuditLog = () => {
                                             </td>
 
                                             {/* EntityId */}
-                                            <td className="px-4 py-3">
+                                            <td className="hidden md:table-cell px-4 xl:px-6 py-3">
                                                 {log.entityId ? (
                                                     <span className={`text-xs font-mono px-2 py-0.5 rounded ${darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
                                                         #{log.entityId}
@@ -287,7 +290,7 @@ const AuditLog = () => {
                                             </td>
 
                                             {/* Detail */}
-                                            <td className="px-4 py-3 max-w-[200px]">
+                                            <td className="hidden lg:table-cell px-4 xl:px-6 py-3 max-w-[200px]">
                                                 <p className={`text-xs ${sec} truncate`} title={log.detail}>
                                                     {Object.entries(detail).map(([k, v]) => `${k}: ${v}`).join(' • ') || '—'}
                                                 </p>

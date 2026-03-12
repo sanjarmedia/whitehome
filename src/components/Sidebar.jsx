@@ -1,11 +1,30 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, ShoppingCart, Package, FileText, LogOut, Home, Tag, X, Shield, ShieldCheck } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const isAdmin = user.role === 'admin';
+
+    const handleLogout = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                await fetch(`${API_URL}/api/auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (err) {
+                console.error("Logout error:", err);
+            }
+        }
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    };
 
     const links = [
         { to: '/', label: 'Boshqaruv', icon: LayoutDashboard },
@@ -69,10 +88,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             {/* User Profile / Logout */}
             <div className="p-4 border-t border-slate-800/50">
                 <button
-                    onClick={() => {
-                        localStorage.removeItem('token');
-                        window.location.href = '/login';
-                    }}
+                    onClick={handleLogout}
                     className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-rose-500/10 hover:text-rose-400 transition-all duration-200 group text-sm font-medium"
                 >
                     <LogOut size={18} className="text-slate-500 group-hover:text-rose-400" />

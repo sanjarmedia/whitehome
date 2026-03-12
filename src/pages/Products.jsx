@@ -191,10 +191,10 @@ const Products = () => {
                         </p>
                     </div>
                     {isAdmin && (
-                        <div className="flex flex-wrap gap-2 justify-end">
+                        <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto justify-end">
                             <button
                                 onClick={handleDownloadTemplate}
-                                className={`px-4 py-2.5 rounded-xl flex items-center gap-2 border transition-all ${darkMode ? 'border-blue-800/50 hover:bg-blue-900/40 text-blue-400' : 'border-blue-200 hover:bg-blue-50 text-blue-600'}`}
+                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-blue-800/50 hover:bg-blue-900/40 text-blue-400' : 'border-blue-200 hover:bg-blue-50 text-blue-600'}`}
                             >
                                 <Download size={20} /> Shablon
                             </button>
@@ -210,7 +210,7 @@ const Products = () => {
                             <button
                                 onClick={() => imageInputRef.current?.click()}
                                 disabled={uploadingImages}
-                                className={`px-4 py-2.5 rounded-xl flex items-center gap-2 border transition-all ${darkMode ? 'border-purple-800/50 hover:bg-purple-900/40 text-purple-400' : 'border-purple-200 hover:bg-purple-50 text-purple-600'}`}
+                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-purple-800/50 hover:bg-purple-900/40 text-purple-400' : 'border-purple-200 hover:bg-purple-50 text-purple-600'}`}
                             >
                                 <ImageIcon size={20} /> {uploadingImages ? 'Yuklanmoqda...' : 'Rasmlarni Yulash'}
                             </button>
@@ -224,13 +224,13 @@ const Products = () => {
                             />
                             <button
                                 onClick={handleImportClick}
-                                className={`px-4 py-2.5 rounded-xl flex items-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
+                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
                             >
                                 <Upload size={20} /> Import Excel
                             </button>
                             <button
                                 onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-                                className="bg-blue-600 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95"
+                                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95"
                             >
                                 <Plus size={20} /> Yangi Qo'shish
                             </button>

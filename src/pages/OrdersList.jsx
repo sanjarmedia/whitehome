@@ -227,9 +227,9 @@ const OrdersList = () => {
             {/* Kam qolgan mahsulotlar ogohlantirish */}
             {lowStockProducts.length > 0 && (
                 <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-2xl border ${darkMode ? 'bg-amber-900/20 border-amber-700/50' : 'bg-amber-50 border-amber-200'}`}>
-                    <div className="flex items-start gap-3 flex-1">
+                    <div className="flex items-start gap-3 flex-1 w-full">
                         <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-500" />
-                        <div>
+                        <div className="w-full">
                             <p className={`font-semibold text-sm ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>
                                 {lowStockProducts.length} ta mahsulot kam qoldi!
                             </p>
@@ -241,7 +241,7 @@ const OrdersList = () => {
                     </div>
                     <button
                         onClick={handleBulkOrder}
-                        className={`shrink-0 flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl shadow-sm transition-all hover:-translate-y-0.5 ${darkMode ? 'bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/40' : 'bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/30'}`}
+                        className={`shrink-0 w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl shadow-sm transition-all hover:-translate-y-0.5 ${darkMode ? 'bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/40' : 'bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/30'}`}
                     >
                         <Building2 size={16} /> Barchasini buyurtma qilish
                     </button>
@@ -249,7 +249,7 @@ const OrdersList = () => {
             )}
 
             {/* ── MANBA FILTER (Korxona / Mijozga Berilgan) ── */}
-            <div className={`flex items-center gap-2 p-1.5 rounded-2xl ${darkMode ? 'bg-slate-800/80' : 'bg-slate-100'}`}>
+            <div className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-1.5 rounded-2xl ${darkMode ? 'bg-slate-800/80' : 'bg-slate-100'}`}>
                 {sourceOptions.map(opt => {
                     const Icon = opt.icon;
                     const isActive = sourceFilter === opt.id;

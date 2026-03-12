@@ -135,7 +135,7 @@ const Reports = () => {
 
             {/* Filter Section */}
             <div className={`p-6 rounded-2xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                <div className="flex flex-col md:flex-row gap-4 items-end">
+                <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
                     <div className="w-full md:w-auto">
                         <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Boshlanish Sanasi</label>
                         <DatePicker
@@ -156,17 +156,19 @@ const Reports = () => {
                     </div>
                     <button
                         onClick={handleFilter}
-                        className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 font-medium flex items-center gap-2 transition-colors h-[42px]"
+                        className="w-full md:w-auto cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 font-medium flex items-center justify-center gap-2 transition-colors h-[42px]"
                     >
                         <Filter size={18} /> Filtrlash
                     </button>
-                    <div className="flex-1"></div>
+                    <div className="flex-1 hidden md:block"></div>
 
-                    <ExportMenu
-                        onExportExcel={handleExportExcel}
-                        onExportPDF={handleExportPDF}
-                        darkMode={darkMode}
-                    />
+                    <div className="w-full md:w-auto mt-2 md:mt-0 flex justify-end">
+                        <ExportMenu
+                            onExportExcel={handleExportExcel}
+                            onExportPDF={handleExportPDF}
+                            darkMode={darkMode}
+                        />
+                    </div>
                 </div>
             </div>
 

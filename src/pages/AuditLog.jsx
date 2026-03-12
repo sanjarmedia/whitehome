@@ -113,19 +113,19 @@ const AuditLog = () => {
                     <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Audit Log</h1>
                     <p className={`text-sm mt-0.5 ${sec}`}>Tizimda amalga oshirilgan barcha harakatlar tarixi</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row w-full md:w-auto gap-2">
                     {currentUser.role === 'admin' && (
                         <button
                             onClick={handleClearLogs}
                             disabled={clearing}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-colors ${
+                            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm transition-colors ${
                                 darkMode ? 'bg-rose-900/40 hover:bg-rose-900/60 text-rose-400 border border-rose-800' : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200'
                             }`}
                         >
                             {clearing ? 'Tozalanmoqda...' : 'Tarixni Tozalash'}
                         </button>
                     )}
-                    <button onClick={fetchLogs} className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors ${darkMode ? 'border-slate-700 hover:bg-slate-700 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
+                    <button onClick={fetchLogs} className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors ${darkMode ? 'border-slate-700 hover:bg-slate-700 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
                         <RefreshCw size={15} /> Yangilash
                     </button>
                 </div>
@@ -146,9 +146,9 @@ const AuditLog = () => {
                 </div>
 
                 {/* Row 2: Selects + Date pickers + Clear */}
-                <div className="flex flex-wrap gap-2 items-center">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center">
                     {/* Action filter */}
-                    <select value={filterAction} onChange={e => setFilterAction(e.target.value)} className={`${inputCls} w-56 pr-8`}>
+                    <select value={filterAction} onChange={e => setFilterAction(e.target.value)} className={`${inputCls} w-full sm:w-56 pr-8`}>
                         <option value="">Barcha amallar</option>
                         {Object.entries(ACTION_CONFIG).map(([key, cfg]) => (
                             <option key={key} value={key}>{cfg.label}</option>
@@ -156,7 +156,7 @@ const AuditLog = () => {
                     </select>
 
                     {/* Entity filter */}
-                    <select value={filterEntity} onChange={e => setFilterEntity(e.target.value)} className={`${inputCls} w-48 pr-8`}>
+                    <select value={filterEntity} onChange={e => setFilterEntity(e.target.value)} className={`${inputCls} w-full sm:w-48 pr-8`}>
                         <option value="">Barcha ob'yektlar</option>
                         <option value="order">Buyurtma</option>
                         <option value="product">Mahsulot</option>
@@ -165,7 +165,7 @@ const AuditLog = () => {
                     </select>
 
                     {/* Date range */}
-                    <div className="w-44">
+                    <div className="w-full sm:w-44">
                         <CustomDatePicker
                             selected={filterFrom}
                             onChange={date => setFilterFrom(date)}
@@ -173,7 +173,7 @@ const AuditLog = () => {
                             darkMode={darkMode}
                         />
                     </div>
-                    <div className="w-44">
+                    <div className="w-full sm:w-44">
                         <CustomDatePicker
                             selected={filterTo}
                             onChange={date => setFilterTo(date)}

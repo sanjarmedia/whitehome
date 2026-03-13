@@ -339,106 +339,121 @@ const OrdersList = () => {
                                             : 'bg-white border-slate-100 hover:border-blue-200'
                                     }`}
                             >
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                        <span className={`text-base font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>#{order.id}</span>
-                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
-                                            {STATUS_LABELS[order.status] || order.status}
+                                <div className="flex-1 w-full min-w-0">
+                                    <div className="flex items-center justify-between md:justify-start gap-2 mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-lg font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>#{order.id}</span>
+                                            <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border tracking-tight ${getStatusColor(order.status)}`}>
+                                                {STATUS_LABELS[order.status] || order.status}
+                                            </span>
+                                        </div>
+                                        <span className={`text-[10px] font-bold md:hidden ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            {new Date(order.createdAt).toLocaleDateString()}
                                         </span>
+                                    </div>
 
-                                        {/* Manba tegi — ko'zga tashlanadigan */}
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                        {/* Manba tegi */}
                                         {isCustomerIssue ? (
-                                            <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${darkMode ? 'bg-emerald-900/40 text-emerald-400 border-emerald-700/50' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
-                                                <Users size={11} />
-                                                Mijozga Berilgan
+                                            <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-emerald-900/40 text-emerald-400 border-emerald-700/50' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
+                                                <Users size={12} className="text-emerald-500" />
+                                                Mijoz issue
                                             </span>
                                         ) : (
-                                            <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${darkMode ? 'bg-slate-700 text-slate-400 border-slate-600' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
-                                                <Building2 size={11} />
+                                            <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-slate-700 text-slate-300 border-slate-600' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                                                <Building2 size={12} className="text-blue-500" />
                                                 Korxona
                                             </span>
                                         )}
-
-                                        <span className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        <span className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-slate-900/40 text-slate-500 border-slate-700' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
                                             {new Date(order.createdAt).toLocaleDateString('uz-UZ')}
                                         </span>
                                     </div>
-                                    <h3 className={`font-medium truncate ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                                    <h3 className={`text-base font-black truncate mb-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                         {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? 'Bosh Omborxona' : 'Noma\'lum')}
                                     </h3>
-                                    <div className={`mt-0.5 flex flex-wrap gap-x-3 sm:gap-x-4 gap-y-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                        <p className="text-sm">
-                                            {order.items?.length || 0} ta mahsulot
-                                        </p>
-                                        <p className="text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
-                                            Jami: <span className={`font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>${(order.totalAmount || 0).toLocaleString()}</span>
-                                        </p>
+
+                                    <div className={`grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4`}>
+                                        <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                            <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Mahsulotlar</p>
+                                            <p className={`text-sm font-black ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{order.items?.length || 0} ta</p>
+                                        </div>
+                                        <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                            <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Jami Summa</p>
+                                            <p className={`text-sm font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${(order.totalAmount || 0).toLocaleString()}</p>
+                                        </div>
                                         {(order.paidAmount > 0 || order.status === 'NEW') && (
-                                            <p className="hidden xs:block text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
-                                                To'landi: <span className="font-semibold text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</span>
-                                            </p>
+                                            <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>To'langan</p>
+                                                <p className="text-sm font-black text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</p>
+                                            </div>
                                         )}
                                         {((order.totalAmount || 0) > (order.status === 'NEW' ? 0 : (order.paidAmount || 0))) && (
-                                            <p className="hidden md:block text-sm border-l pl-3 sm:pl-4 border-slate-300 dark:border-slate-600">
-                                                Qarz: <span className={`font-semibold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${((order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</span>
-                                            </p>
+                                            <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Qarz</p>
+                                                <p className={`text-sm font-black ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${((order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-1.5 sm:gap-2 w-full md:w-auto flex-wrap justify-end">
-                                    {/* Korxona buyurtmasi tugmalari */}
-                                    {order.status === 'NEW' && order.orderSource === 'COMPANY' && (
-                                        <button onClick={() => setActiveModal({ order, mode: 'view' })}
-                                            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors ${darkMode ? 'bg-blue-900/30 text-blue-400 hover:bg-blue-900/50' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
-                                            <Upload size={16} /> Tasdiqlash
-                                        </button>
-                                    )}
-                                    {['EXPECTED', 'PAID_WAITING'].includes(order.status) && order.orderSource === 'COMPANY' && (
-                                        <button onClick={() => setActiveModal({ order, mode: 'view' })}
-                                            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors ${darkMode ? 'bg-indigo-900/30 text-indigo-400 hover:bg-indigo-900/50' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}>
-                                            <CheckCircle size={16} /> Qabul Qilish
-                                        </button>
-                                    )}
-                                    {order.status === 'CHECKED' && order.orderSource === 'COMPANY' && (
-                                        <button onClick={() => setActiveModal({ order, mode: 'view' })}
-                                            className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors ${darkMode ? 'bg-green-900/30 text-green-400 hover:bg-green-900/50' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}>
-                                            <Truck size={16} /> Taqsimlash
-                                        </button>
-                                    )}
-
-                                    {/* PENDING_APPROVAL — admin tasdiq/rad */}
-                                    {order.status === 'PENDING_APPROVAL' && (
-                                        <>
-                                            <button onClick={() => handleApprove(order.id)} disabled={approving === order.id + '_approve'}
-                                                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${darkMode ? 'bg-green-900/30 text-green-400 hover:bg-green-900/50' : 'bg-green-50 text-green-700 hover:bg-green-100'} disabled:opacity-60`}>
-                                                {approving === order.id + '_approve'
-                                                    ? <div className="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin" />
-                                                    : <ThumbsUp size={15} />
-                                                }
-                                                Tasdiqlash
+                                <div className="flex items-center gap-2 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-slate-700/10 dark:border-slate-700/50 mt-1 md:mt-0">
+                                    <div className="grid grid-cols-2 md:flex items-center gap-2 w-full">
+                                        {/* Korxona buyurtmasi tugmalari */}
+                                        {order.status === 'NEW' && order.orderSource === 'COMPANY' && (
+                                            <button onClick={() => setActiveModal({ order, mode: 'view' })}
+                                                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-500/20'}`}>
+                                                <Upload size={14} /> Tasdiq
                                             </button>
-                                            <button onClick={() => handleReject(order.id)} disabled={approving === order.id + '_reject'}
-                                                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${darkMode ? 'bg-rose-900/30 text-rose-400 hover:bg-rose-900/50' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'} disabled:opacity-60`}>
-                                                {approving === order.id + '_reject'
-                                                    ? <div className="w-3.5 h-3.5 border border-current border-t-transparent rounded-full animate-spin" />
-                                                    : <ThumbsDown size={15} />
-                                                }
-                                                Rad etish
+                                        )}
+                                        {['EXPECTED', 'PAID_WAITING'].includes(order.status) && order.orderSource === 'COMPANY' && (
+                                            <button onClick={() => setActiveModal({ order, mode: 'view' })}
+                                                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20'}`}>
+                                                <CheckCircle size={14} /> Qabul
                                             </button>
-                                        </>
-                                    )}
+                                        )}
+                                        {order.status === 'CHECKED' && order.orderSource === 'COMPANY' && (
+                                            <button onClick={() => setActiveModal({ order, mode: 'view' })}
+                                                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-500/20'}`}>
+                                                <Truck size={14} /> Taqsim
+                                            </button>
+                                        )}
 
-                                    <button onClick={() => setActiveModal({ order, mode: 'edit' })}
-                                        className={`p-2 rounded-lg transition-colors border border-transparent ${darkMode ? 'text-slate-400 hover:text-yellow-400 hover:bg-slate-700' : 'text-slate-400 hover:text-yellow-600 hover:bg-yellow-50 hover:border-yellow-200'}`}
-                                        title="Tahrirlash">
-                                        <Pencil size={16} />
-                                    </button>
-                                    <button onClick={() => setActiveModal({ order, mode: 'view' })}
-                                        className={`p-2 rounded-lg transition-colors border border-transparent ${darkMode ? 'text-slate-400 hover:text-blue-400 hover:bg-slate-700' : 'text-slate-400 hover:text-blue-600 hover:bg-slate-50 hover:border-slate-200'}`}
-                                        title="Ko'rish">
-                                        <Eye size={18} />
-                                    </button>
+                                        {/* PENDING_APPROVAL — admin tasdiq/rad */}
+                                        {order.status === 'PENDING_APPROVAL' && (
+                                            <>
+                                                <button onClick={() => handleApprove(order.id)} disabled={approving === order.id + '_approve'}
+                                                    className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-500/20'} disabled:opacity-60`}>
+                                                    {approving === order.id + '_approve'
+                                                        ? <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                                        : <ThumbsUp size={14} />
+                                                    }
+                                                    Ok
+                                                </button>
+                                                <button onClick={() => handleReject(order.id)} disabled={approving === order.id + '_reject'}
+                                                    className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-rose-600 text-white hover:bg-rose-500' : 'bg-rose-600 text-white hover:bg-rose-700 shadow-md shadow-rose-500/20'} disabled:opacity-60`}>
+                                                    {approving === order.id + '_reject'
+                                                        ? <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                                        : <ThumbsDown size={14} />
+                                                    }
+                                                    Rad
+                                                </button>
+                                            </>
+                                        )}
+
+                                        <div className="flex gap-2 col-span-2 md:col-span-1 justify-end">
+                                            <button onClick={() => setActiveModal({ order, mode: 'edit' })}
+                                                className={`p-2.5 rounded-xl flex-1 md:flex-none flex items-center justify-center transition-all active:scale-95 border ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}`}
+                                                title="Tahrirlash">
+                                                <Pencil size={16} />
+                                            </button>
+                                            <button onClick={() => setActiveModal({ order, mode: 'view' })}
+                                                className={`p-2.5 rounded-xl flex-1 md:flex-none flex items-center justify-center transition-all active:scale-95 border ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200'}`}
+                                                title="Ko'rish">
+                                                <Eye size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         );

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import BottomNav from './BottomNav';
 import { Moon, Sun, Menu } from 'lucide-react';
+import api from '../api/axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const Layout = () => {
-    // Initialize from localStorage or default
     const [darkMode, setDarkMode] = useState(() => {
         const saved = localStorage.getItem('darkMode');
         return saved === 'true';
@@ -49,11 +50,7 @@ const Layout = () => {
                 console.error("Ping error:", err);
             }
         };
-
-        // Darxol chaqirib olish
         pingServer();
-        
-        // Har 1 daqiqada faollik haqida hisobot
         const interval = setInterval(pingServer, 60000);
         return () => clearInterval(interval);
     }, []);
@@ -76,21 +73,11 @@ const Layout = () => {
                 />
             )}
 
-            <div className="flex-1 md:ml-72 p-3 md:p-8 lg:p-12 overflow-y-auto transition-all duration-300 relative z-10 w-full flex flex-col">
+            <div className={`flex-1 md:ml-72 p-3 md:p-8 lg:p-12 overflow-y-auto transition-all duration-300 relative z-10 w-full flex flex-col ${isMobileMenuOpen ? 'overflow-hidden h-screen' : ''} pb-24 md:pb-8`}>
                 {/* Header Controls */}
                 <div className="max-w-7xl mx-auto w-full flex justify-end md:mb-6">
                     <div className="absolute top-3 right-3 md:static z-30 flex gap-2 md:gap-3">
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        className={`md:hidden p-3 rounded-full shadow-lg transition-all duration-300 w-12 h-12 flex items-center justify-center ${darkMode
-                            ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700'
-                            : 'bg-white text-slate-600 hover:text-blue-600 border border-slate-200'
-                            }`}
-                    >
-                        <Menu size={20} />
-                    </button>
-
+                    
                     {/* Font Size Toggle */}
                     <button
                         onClick={cycleFontSize}
@@ -105,7 +92,7 @@ const Layout = () => {
                         {fontSize === 'xl' && <span className="text-lg">A++</span>}
                     </button>
 
-                    {/* Theme Toggle */}
+                    {/* Theme Toggle - On mobile it's top right, on desktop it's in header */}
                     <button
                         onClick={toggleTheme}
                         className={`p-3 rounded-full shadow-lg transition-all duration-300 w-12 h-12 flex items-center justify-center ${darkMode
@@ -122,6 +109,12 @@ const Layout = () => {
                     <Outlet context={{ darkMode }} />
                 </div>
             </div>
+
+            {/* Shared Bottom Navigation for mobile */}
+            <BottomNav 
+                darkMode={darkMode} 
+                onOpenMenu={() => setIsMobileMenuOpen(true)} 
+            />
         </div>
     );
 };

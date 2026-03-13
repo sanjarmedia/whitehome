@@ -45,14 +45,14 @@ const Dashboard = () => {
     return (
         <>
 
-            <header className="flex justify-between items-end animate-slide-in relative z-10">
+            <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 animate-slide-in relative z-10">
                 <div>
-                    <h1 className={`text-4xl font-thin tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Boshqaruv Paneli</h1>
-                    <p className={`mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Bugungi holat va statistika</p>
+                    <h1 className={`text-3xl sm:text-4xl font-thin tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Boshqaruv Paneli</h1>
+                    <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Bugungi holat va statistika</p>
                 </div>
                 <button
                     onClick={fetchStats}
-                    className={`p-3 rounded-2xl shadow-sm border transition-all active:scale-95 group ${darkMode
+                    className={`p-3 rounded-2xl shadow-sm border transition-all active:scale-95 group self-end sm:self-auto ${darkMode
                         ? 'bg-slate-800 text-slate-400 hover:text-blue-400 border-slate-700'
                         : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:bg-blue-50'
                         }`}

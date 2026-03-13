@@ -108,7 +108,8 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                             {/* Merge and sort Orders and Payments */}
                             {(() => {
                                 const orders = (customerInfo.orders || []).map(o => ({ ...o, type: 'ORDER', date: new Date(o.createdAt).getTime() }));
-                                const payments = (customerInfo.payments || []).map(p => ({ ...p, type: 'PAYMENT', date: new Date(p.createdAt).getTime() }));
+                                // Collect all payments from all orders
+                                const payments = (customerInfo.orders || []).flatMap(o => (o.payments || []).map(p => ({ ...p, type: 'PAYMENT', date: new Date(p.createdAt).getTime() })));
                                 const history = [...orders, ...payments].sort((a, b) => b.date - a.date);
 
                                 if (history.length === 0) {

@@ -289,7 +289,7 @@ const OrdersList = () => {
             </div>
 
             {/* ── STATUS TABS ── */}
-            <div className={`flex space-x-1 overflow-x-auto pb-2 border-b no-scrollbar ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+            <div className={`grid grid-cols-2 sm:grid-cols-3 lg:flex lg:space-x-1 gap-1.5 pb-2 border-b no-scrollbar ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
                 {tabs.map(tab => {
                     const Icon = tab.icon;
                     const count = getTabOrders(tab.id, sourceFiltered).length;
@@ -298,16 +298,18 @@ const OrdersList = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-5 py-3 rounded-t-xl transition-all whitespace-nowrap text-sm ${activeTab === tab.id
-                                ? `border-b-2 font-medium shadow-sm ${isPending ? 'border-amber-500 text-amber-600' : 'border-blue-600 text-blue-600'} ${darkMode ? 'bg-slate-800' : 'bg-white'}`
-                                : `text-slate-500 hover:text-slate-700 ${darkMode ? 'hover:bg-slate-800/50 hover:text-slate-300' : 'hover:bg-slate-50'}`
+                            className={`flex items-center justify-center lg:justify-start gap-2 px-3 lg:px-5 py-2.5 lg:py-3 rounded-xl lg:rounded-t-xl transition-all text-[11px] lg:text-sm border-2 ${activeTab === tab.id
+                                ? `font-black shadow-sm ${isPending ? 'border-amber-500 text-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border-blue-600 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'} ${darkMode ? 'bg-slate-800' : 'bg-white'}`
+                                : `font-bold text-slate-500 border-transparent hover:text-slate-700 ${darkMode ? 'hover:bg-slate-800/50 hover:text-slate-300' : 'hover:bg-slate-50'}`
                                 }`}
                         >
-                            <Icon size={16} className={isPending && count > 0 ? 'text-amber-500 animate-pulse' : ''} />
-                            {tab.label}
-                            <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-medium ${count > 0 && isPending
-                                ? 'bg-amber-100 text-amber-700'
-                                : darkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'
+                            <Icon size={14} className={`${isPending && count > 0 ? 'text-amber-500 animate-pulse' : ''} shrink-0`} />
+                            <span className="truncate">{tab.label}</span>
+                            <span className={`px-1.5 py-0.5 rounded-lg text-[10px] font-black ${count > 0 && isPending
+                                ? 'bg-amber-500 text-white shadow-sm'
+                                : activeTab === tab.id 
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : darkMode ? 'bg-slate-700 text-slate-500' : 'bg-slate-100 text-slate-400'
                                 }`}>
                                 {count}
                             </span>

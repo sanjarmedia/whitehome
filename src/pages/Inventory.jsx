@@ -115,24 +115,26 @@ const Inventory = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex border-b border-slate-200 dark:border-slate-700 gap-1.5">
                 <button
                     onClick={() => setActiveTab('stock')}
-                    className={`px-6 py-3 font-medium transition-all flex items-center gap-2 border-b-2 ${activeTab === 'stock'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                    className={`px-4 lg:px-6 py-3 font-bold transition-all flex items-center justify-center lg:justify-start gap-2 border-b-2 text-xs lg:text-sm ${activeTab === 'stock'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                         }`}
                 >
-                    <Package size={18} /> Skladda: {products.length} xil, jami {products.reduce((acc, curr) => acc + curr.quantity, 0)} ta
+                    <Package size={18} className="shrink-0" /> 
+                    <span className="truncate">Skladda: {products.length} xil / {products.reduce((acc, curr) => acc + curr.quantity, 0)} dona</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('issued')}
-                    className={`px-6 py-3 font-medium transition-all flex items-center gap-2 border-b-2 ${activeTab === 'issued'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-700'
+                    className={`px-4 lg:px-6 py-3 font-bold transition-all flex items-center justify-center lg:justify-start gap-2 border-b-2 text-xs lg:text-sm ${activeTab === 'issued'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                         }`}
                 >
-                    <History size={18} /> Mijozlarga Berilgan ({issuedItems.length})
+                    <History size={18} className="shrink-0" />
+                    <span className="truncate">Mijozlarga Berilgan ({issuedItems.length})</span>
                 </button>
             </div>
 

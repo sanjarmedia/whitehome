@@ -138,174 +138,288 @@ const Inventory = () => {
 
             <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                 {activeTab === 'stock' ? (
-                    <table className="min-w-full">
-                        <thead>
-                            <tr className={darkMode ? 'bg-slate-900/50' : 'bg-slate-50'}>
-                                <th className="px-4 py-4 text-left w-12">
-                                    <div className="flex items-center">
-                                        <input
-                                            type="checkbox"
-                                            id="select-all"
-                                            className="hidden"
-                                            checked={selectedIds.length > 0 && selectedIds.length === filteredProducts.length}
-                                            onChange={toggleSelectAll}
-                                        />
-                                        <label
-                                            htmlFor="select-all"
-                                            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.length > 0 && selectedIds.length === filteredProducts.length
-                                                ? 'bg-blue-600 border-blue-600'
-                                                : darkMode ? 'border-slate-600 hover:border-slate-500' : 'border-slate-300 hover:border-slate-400'}`}
-                                        >
-                                            {(selectedIds.length > 0 && selectedIds.length === filteredProducts.length) && (
-                                                <div className="w-2.5 h-2.5 bg-white rounded-sm shadow-sm"></div>
-                                            )}
-                                        </label>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulot</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Soni</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Narxi</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Holat</th>
-                                <th className={`px-6 py-4 text-right text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Harakat</th>
-                            </tr>
-                        </thead>
-                        <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
-                            {filteredProducts.map(product => (
-                                <tr key={product.id} className={`transition-colors ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'} ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
-                                    <td className="px-4 py-4">
-                                        <div className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                id={`select-${product.id}`}
-                                                className="hidden"
-                                                checked={selectedIds.includes(product.id)}
-                                                onChange={() => toggleSelectProduct(product.id)}
-                                            />
-                                            <label
-                                                htmlFor={`select-${product.id}`}
-                                                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.includes(product.id)
-                                                    ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-500/20'
-                                                    : darkMode ? 'border-slate-700 hover:border-slate-600' : 'border-slate-200 hover:border-slate-300'}`}
-                                            >
-                                                {selectedIds.includes(product.id) && (
-                                                    <div className="w-2.5 h-2.5 bg-white rounded-sm shadow-sm transition-transform scale-110"></div>
+                    <>
+                        {/* Desktop Table */}
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="min-w-full">
+                                <thead>
+                                    <tr className={darkMode ? 'bg-slate-900/50' : 'bg-slate-50'}>
+                                        <th className="px-4 py-4 text-left w-12 text-center">
+                                            <div className="flex justify-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="select-all"
+                                                    className="hidden"
+                                                    checked={selectedIds.length > 0 && selectedIds.length === filteredProducts.length}
+                                                    onChange={toggleSelectAll}
+                                                />
+                                                <label
+                                                    htmlFor="select-all"
+                                                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.length > 0 && selectedIds.length === filteredProducts.length
+                                                        ? 'bg-blue-600 border-blue-600'
+                                                        : darkMode ? 'border-slate-600 hover:border-slate-500' : 'border-slate-300 hover:border-slate-400'}`}
+                                                >
+                                                    {(selectedIds.length > 0 && selectedIds.length === filteredProducts.length) && (
+                                                        <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>
+                                                    )}
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulot</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Soni</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Narxi</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Holat</th>
+                                        <th className={`px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Harakat</th>
+                                    </tr>
+                                </thead>
+                                <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
+                                    {filteredProducts.map(product => (
+                                        <tr key={product.id} className={`transition-colors ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'} ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
+                                            <td className="px-4 py-4 text-center">
+                                                <div className="flex justify-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`select-${product.id}`}
+                                                        className="hidden"
+                                                        checked={selectedIds.includes(product.id)}
+                                                        onChange={() => toggleSelectProduct(product.id)}
+                                                    />
+                                                    <label
+                                                        htmlFor={`select-${product.id}`}
+                                                        className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.includes(product.id)
+                                                            ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-500/20'
+                                                            : darkMode ? 'border-slate-700 hover:border-slate-600' : 'border-slate-200 hover:border-slate-300'}`}
+                                                    >
+                                                        {selectedIds.includes(product.id) && (
+                                                            <div className="w-2.5 h-2.5 bg-white rounded-sm transition-transform scale-110"></div>
+                                                        )}
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className={`font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{product.name}</div>
+                                                <div className="text-xs text-slate-500 font-mono uppercase truncate max-w-[150px]">{product.sku || "SKU yo'q"}</div>
+                                            </td>
+                                            <td className={`px-6 py-4 font-black ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{product.quantity}</td>
+                                            <td className={`px-6 py-4 font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${product.price}</td>
+                                            <td className="px-6 py-4">
+                                                {product.quantity < 10 ? (
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border flex items-center w-fit gap-1 ${darkMode ? 'bg-rose-900/20 border-rose-900/50 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600'}`}>
+                                                        <AlertCircle size={12} /> Kam qolgan
+                                                    </span>
+                                                ) : (
+                                                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border flex items-center w-fit gap-1 ${darkMode ? 'bg-emerald-900/20 border-emerald-900/50 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                                        Yetarli
+                                                    </span>
                                                 )}
-                                            </label>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <button
+                                                    onClick={() => handleIssueToggle(product)}
+                                                    disabled={product.quantity === 0}
+                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-black uppercase flex items-center gap-1 ml-auto shadow-sm transition-all active:scale-95 ${product.quantity === 0
+                                                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed border'
+                                                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20'
+                                                        }`}
+                                                >
+                                                    <ShoppingCart size={14} /> Berish
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile List View */}
+                        <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
+                            {filteredProducts.map(product => (
+                                <div key={product.id} className={`p-4 flex flex-col space-y-3 ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start gap-3">
+                                            <div className="flex items-center pt-1">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`m-select-${product.id}`}
+                                                    className="hidden"
+                                                    checked={selectedIds.includes(product.id)}
+                                                    onChange={() => toggleSelectProduct(product.id)}
+                                                />
+                                                <label
+                                                    htmlFor={`m-select-${product.id}`}
+                                                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.includes(product.id)
+                                                        ? 'bg-blue-600 border-blue-600'
+                                                        : darkMode ? 'border-slate-700' : 'border-slate-200'}`}
+                                                >
+                                                    {selectedIds.includes(product.id) && (
+                                                        <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>
+                                                    )}
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <h3 className={`font-bold leading-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{product.name}</h3>
+                                                <p className="text-[10px] text-slate-500 font-mono mt-1">{product.sku || 'N/A'}</p>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className={`font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{product.name}</div>
-                                        <div className="text-xs text-slate-500">{product.sku || "SKU yo'q"}</div>
-                                    </td>
-                                    <td className={`px-6 py-4 font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{product.quantity}</td>
-                                    <td className={`px-6 py-4 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>${product.price}</td>
-                                    <td className="px-6 py-4">
-                                        {product.quantity < 10 ? (
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center w-fit gap-1 ${darkMode ? 'bg-rose-900/20 border-rose-900/50 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600'}`}>
-                                                <AlertCircle size={14} /> Kam qolgan
-                                            </span>
-                                        ) : (
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold border flex items-center w-fit gap-1 ${darkMode ? 'bg-emerald-900/20 border-emerald-900/50 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                                                Yetarli
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
+                                        <div className={`text-lg font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${product.price}</div>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between pt-2">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-black uppercase text-slate-500">Zaxirada</span>
+                                                <span className={`text-xl font-black ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{product.quantity} ta</span>
+                                            </div>
+                                            <div className="flex items-center">
+                                                {product.quantity < 10 ? (
+                                                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border flex items-center gap-1 ${darkMode ? 'bg-rose-900/20 border-rose-900/50 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600'}`}>
+                                                        <AlertCircle size={10} /> Kam
+                                                    </span>
+                                                ) : (
+                                                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border flex items-center gap-1 ${darkMode ? 'bg-emerald-900/20 border-emerald-900/50 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                                        OK
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
                                         <button
                                             onClick={() => handleIssueToggle(product)}
                                             disabled={product.quantity === 0}
-                                            className={`px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1 ml-auto shadow-sm transition-all active:scale-95 ${product.quantity === 0
+                                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase flex items-center gap-2 shadow-sm transition-all active:scale-95 ${product.quantity === 0
                                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed border'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20'
+                                                : 'bg-blue-600 text-white shadow-blue-500/20'
                                                 }`}
                                         >
-                                            <ShoppingCart size={16} /> Berish
+                                            <ShoppingCart size={14} /> Berish
                                         </button>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                    </>
                 ) : (
-                    <table className="min-w-full">
-                        <thead>
-                            <tr className={darkMode ? 'bg-slate-900/50' : 'bg-slate-50'}>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sana</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mijoz</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulot</th>
-                                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Soni</th>
-                                <th className={`px-6 py-4 text-right text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Holat</th>
-                            </tr>
-                        </thead>
-                        <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
-                            {filteredIssued.map((order) => {
+                    <>
+                        {/* Desktop Table */}
+                        <div className="hidden md:block">
+                            <table className="min-w-full">
+                                <thead>
+                                    <tr className={darkMode ? 'bg-slate-900/50' : 'bg-slate-50'}>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sana</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mijoz</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Status</th>
+                                        <th className={`px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Summa</th>
+                                    </tr>
+                                </thead>
+                                <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
+                                    {filteredIssued.map((order) => {
+                                        const isExpanded = expandedOrderIds.includes(order.id);
+                                        return (
+                                            <tr key={order.id} className={`group transition-all ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'}`}>
+                                                <td colSpan="4" className="p-0">
+                                                    <div
+                                                        onClick={() => toggleExpandOrder(order.id)}
+                                                        className="px-6 py-4 flex items-center justify-between cursor-pointer"
+                                                    >
+                                                        <div className="flex items-center gap-4 flex-1">
+                                                            <div className={`p-2 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                                                                {isExpanded ? <ChevronDown size={18} className="text-blue-500" /> : <ChevronRight size={18} className="text-slate-400" />}
+                                                            </div>
+                                                            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-10">
+                                                                <div className={`text-[10px] font-bold ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{new Date(order.date).toLocaleDateString()}</div>
+                                                                <div className={`font-black tracking-tight text-lg ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{order.customerName}</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-8">
+                                                            <div className="text-right hidden sm:block">
+                                                                <div className={`text-xs font-black uppercase tracking-tighter ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{order.items.length} turdagi mahsulot</div>
+                                                                <div className="text-[10px] font-bold opacity-60">${order.totalAmount.toFixed(2)}</div>
+                                                            </div>
+                                                            <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400 border border-blue-900/50' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
+                                                                Mijozda
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {isExpanded && (
+                                                        <div className={`px-16 pb-6 animate-fade-in`}>
+                                                            <div className={`rounded-2xl border p-5 space-y-4 ${darkMode ? 'bg-slate-900/50 border-slate-700 shadow-inner' : 'bg-slate-50 border-slate-200'}`}>
+                                                                <div className="grid grid-cols-12 text-[10px] font-black uppercase tracking-widest text-slate-500 pb-2 border-b border-slate-700/10">
+                                                                    <div className="col-span-1 border-r text-center">#</div>
+                                                                    <div className="col-span-6 px-3">Mahsulot nomi</div>
+                                                                    <div className="col-span-2 text-center">Soni</div>
+                                                                    <div className="col-span-3 text-right">Summa</div>
+                                                                </div>
+                                                                {order.items.map((item, i) => (
+                                                                    <div key={i} className="grid grid-cols-12 items-center">
+                                                                        <div className="col-span-1 text-center text-xs opacity-40">{i+1}</div>
+                                                                        <div className="col-span-6 px-3 flex flex-col">
+                                                                            <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
+                                                                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-tighter">{item.category}</span>
+                                                                        </div>
+                                                                        <div className={`col-span-2 text-center font-black text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{item.quantity}</div>
+                                                                        <div className={`col-span-3 text-right font-black text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Mobile List View (Issued) */}
+                        <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
+                             {filteredIssued.map((order) => {
                                 const isExpanded = expandedOrderIds.includes(order.id);
                                 return (
-                                    <tr key={order.id} className={`group transition-all ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'}`}>
-                                        <td colSpan="5" className="p-0">
-                                            <div
-                                                onClick={() => toggleExpandOrder(order.id)}
-                                                className="px-6 py-4 flex items-center justify-between cursor-pointer"
-                                            >
-                                                <div className="flex items-center gap-4 flex-1">
-                                                    <div className={`p-2 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
-                                                        {isExpanded ? <ChevronDown size={18} className="text-blue-500" /> : <ChevronRight size={18} className="text-slate-400" />}
-                                                    </div>
-                                                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-10">
-                                                        <div className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{new Date(order.date).toLocaleDateString()}</div>
-                                                        <div className={`font-bold text-lg ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{order.customerName}</div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-8">
-                                                    <div className="text-right hidden sm:block">
-                                                        <div className={`text-sm font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{order.items.length} turdagi mahsulot</div>
-                                                        <div className="text-xs opacity-60">${order.totalAmount.toFixed(2)}</div>
-                                                    </div>
-                                                    <span className={`px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${darkMode ? 'bg-blue-900/30 text-blue-400 border border-blue-900/50' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
-                                                        Mijozda
-                                                    </span>
+                                    <div key={order.id} className="flex flex-col">
+                                        <div 
+                                            onClick={() => toggleExpandOrder(order.id)}
+                                            className="p-4 flex flex-col space-y-2 active:bg-slate-50 dark:active:bg-slate-700/30 transition-colors"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(order.date).toLocaleDateString()}</span>
+                                                <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                                                    Mijozda
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <h3 className={`font-black text-lg tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{order.customerName}</h3>
+                                                <div className={isExpanded ? 'text-blue-500' : 'text-slate-400'}>
+                                                    {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
                                                 </div>
                                             </div>
+                                            <div className="flex justify-between items-end">
+                                                <div className="text-xs font-bold opacity-60">{order.items.length} turdagi tovar</div>
+                                                <div className={`text-lg font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${order.totalAmount.toFixed(2)}</div>
+                                            </div>
+                                        </div>
 
-                                            {isExpanded && (
-                                                <div className={`px-16 pb-6 animate-fade-in`}>
-                                                    <div className={`rounded-xl border p-4 space-y-3 ${darkMode ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                                                        <div className="grid grid-cols-12 text-[10px] font-black uppercase tracking-widest text-slate-500 px-2 pb-2 border-b border-slate-700/20">
-                                                            <div className="col-span-6">Mahsulot nomi</div>
-                                                            <div className="col-span-3 text-center">Soni</div>
-                                                            <div className="col-span-3 text-right">Summa</div>
-                                                        </div>
-                                                        {order.items.map((item, i) => (
-                                                            <div key={i} className="grid grid-cols-12 items-center px-2 py-1">
-                                                                <div className="col-span-6 flex flex-col">
-                                                                    <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
-                                                                    <span className="text-[10px] text-slate-500 uppercase">{item.category}</span>
-                                                                </div>
-                                                                <div className={`col-span-3 text-center font-bold text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{item.quantity} ta</div>
-                                                                <div className={`col-span-3 text-right font-bold text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
+                                        {isExpanded && (
+                                            <div className={`px-4 pb-4 animate-fade-in ${darkMode ? 'bg-slate-900/20' : 'bg-slate-50/50'}`}>
+                                                <div className="space-y-3 pt-3 border-t border-slate-700/10">
+                                                    {order.items.map((item, i) => (
+                                                        <div key={i} className="flex justify-between items-center">
+                                                            <div className="flex flex-col">
+                                                                <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
+                                                                <span className="text-[10px] text-slate-500 font-bold uppercase">{item.quantity} ta × ${item.price}</span>
                                                             </div>
-                                                        ))}
-                                                        <div className="pt-2 border-t border-slate-700/20 flex justify-between items-center px-2">
-                                                            <span className="text-[10px] font-black uppercase text-slate-500">Jami Soni: {order.totalQuantity} ta</span>
-                                                            <span className="font-black text-blue-500">TOTAL: ${order.totalAmount.toFixed(2)}</span>
+                                                            <div className={`font-black text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
                                                         </div>
-                                                    </div>
+                                                    ))}
                                                 </div>
-                                            )}
-                                        </td>
-                                    </tr>
+                                            </div>
+                                        )}
+                                    </div>
                                 );
-                            })}
-                            {filteredIssued.length === 0 && (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-10 text-center text-slate-500">
-                                        Hozircha rasmiylashtirilgan tovarlar yo'q
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                             })}
+                        </div>
+                    </>
                 )}
             </div>
 

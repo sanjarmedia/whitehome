@@ -13,6 +13,11 @@ const Customers = () => {
     const [search, setSearch] = useState('');
     const [filterType, setFilterType] = useState('ALL');
 
+    const [editingCustomer, setEditingCustomer] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [historyCustomerId, setHistoryCustomerId] = useState(null);
+    const [historyModalOpen, setHistoryModalOpen] = useState(false);
+
     useEffect(() => {
         fetchCustomers();
     }, []);

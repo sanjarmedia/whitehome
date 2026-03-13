@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, Image as ImageIcon } from 'lucide-react';
+import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon } from 'lucide-react';
 import ProductModal from '../components/ProductModal';
 import ProductDetailModal from '../components/ProductDetailModal';
 import * as XLSX from 'xlsx';

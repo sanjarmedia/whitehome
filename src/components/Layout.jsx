@@ -44,10 +44,7 @@ const Layout = () => {
             const token = localStorage.getItem('token');
             if (!token) return;
             try {
-                await fetch(`${API_URL}/api/auth/ping`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                await api.post('/auth/ping');
             } catch (err) {
                 console.error("Ping error:", err);
             }

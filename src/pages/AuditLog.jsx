@@ -342,8 +342,6 @@ const AuditLog = () => {
                 </div>
             )}
         </div>
-
-        </div>
     );
 };
 

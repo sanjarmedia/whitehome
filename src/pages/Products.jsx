@@ -133,6 +133,22 @@ const Products = () => {
         }
     };
 
+    const handleExportProducts = async () => {
+        try {
+            const res = await api.get('/products/export', { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'BarchaMahsulotlar.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error(error);
+            alert("Eksport qilishda xatolik");
+        }
+    };
+
     const handleImagesUpload = async (e) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
@@ -226,7 +242,13 @@ const Products = () => {
                                 onClick={handleImportClick}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
                             >
-                                <Upload size={20} /> Import Excel
+                                <Upload size={20} /> Import
+                            </button>
+                            <button
+                                onClick={handleExportProducts}
+                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-amber-800/50 hover:bg-amber-900/40 text-amber-500' : 'border-amber-200 hover:bg-amber-50 text-amber-600'}`}
+                            >
+                                <FileText size={20} /> Eksport
                             </button>
                             <button
                                 onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}

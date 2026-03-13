@@ -115,27 +115,45 @@ const Inventory = () => {
             </div>
 
             {/* Tabs */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex border-b border-slate-200 dark:border-slate-700 gap-1.5">
-                <button
-                    onClick={() => setActiveTab('stock')}
-                    className={`px-4 lg:px-6 py-3 font-bold transition-all flex items-center justify-center lg:justify-start gap-2 border-b-2 text-xs lg:text-sm ${activeTab === 'stock'
-                        ? 'border-blue-500 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'
-                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+            <div className="pb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row gap-2">
+                    <button
+                        onClick={() => setActiveTab('stock')}
+                        className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-4 rounded-2xl transition-all border-2 text-center lg:text-left ${
+                            activeTab === 'stock'
+                                ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30 font-black'
+                                : darkMode
+                                    ? 'bg-slate-800/50 border-slate-700 hover:border-slate-600 text-slate-400 font-bold'
+                                    : 'bg-white border-slate-200 hover:border-blue-300 text-slate-600 shadow-sm font-bold'
                         }`}
-                >
-                    <Package size={18} className="shrink-0" /> 
-                    <span className="truncate">Skladda: {products.length} xil / {products.reduce((acc, curr) => acc + curr.quantity, 0)} dona</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('issued')}
-                    className={`px-4 lg:px-6 py-3 font-bold transition-all flex items-center justify-center lg:justify-start gap-2 border-b-2 text-xs lg:text-sm ${activeTab === 'issued'
-                        ? 'border-blue-500 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'
-                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    >
+                        <Package size={20} className="shrink-0" /> 
+                        <div className="flex flex-col">
+                            <span className="text-[11px] lg:text-sm uppercase tracking-tight">Skladda</span>
+                            <span className={`text-[10px] w-fit mx-auto lg:mx-0 px-2 py-0.5 rounded-lg ${activeTab === 'stock' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
+                                {products.length} xil / {products.reduce((acc, curr) => acc + curr.quantity, 0)} dona
+                            </span>
+                        </div>
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('issued')}
+                        className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-4 rounded-2xl transition-all border-2 text-center lg:text-left ${
+                            activeTab === 'issued'
+                                ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/30 font-black'
+                                : darkMode
+                                    ? 'bg-slate-800/50 border-slate-700 hover:border-slate-600 text-slate-400 font-bold'
+                                    : 'bg-white border-slate-200 hover:border-indigo-300 text-slate-600 shadow-sm font-bold'
                         }`}
-                >
-                    <History size={18} className="shrink-0" />
-                    <span className="truncate">Mijozlarga Berilgan ({issuedItems.length})</span>
-                </button>
+                    >
+                        <History size={20} className="shrink-0" />
+                        <div className="flex flex-col">
+                            <span className="text-[11px] lg:text-sm uppercase tracking-tight">Mijozlarga Berilgan</span>
+                            <span className={`text-[10px] w-fit mx-auto lg:mx-0 px-2 py-0.5 rounded-lg ${activeTab === 'issued' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
+                                {issuedItems.length} ta buyurtma
+                            </span>
+                        </div>
+                    </button>
+                </div>
             </div>
 
             <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>

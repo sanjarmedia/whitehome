@@ -289,33 +289,45 @@ const OrdersList = () => {
             </div>
 
             {/* ── STATUS TABS ── */}
-            <div className={`grid grid-cols-2 sm:grid-cols-3 lg:flex lg:space-x-1 gap-1.5 pb-2 border-b no-scrollbar ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
-                {tabs.map(tab => {
-                    const Icon = tab.icon;
-                    const count = getTabOrders(tab.id, sourceFiltered).length;
-                    const isPending = tab.special;
-                    return (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center justify-center lg:justify-start gap-2 px-3 lg:px-5 py-2.5 lg:py-3 rounded-xl lg:rounded-t-xl transition-all text-[11px] lg:text-sm border-2 ${activeTab === tab.id
-                                ? `font-black shadow-sm ${isPending ? 'border-amber-500 text-amber-600 bg-amber-50/50 dark:bg-amber-900/10' : 'border-blue-600 text-blue-600 bg-blue-50/50 dark:bg-blue-900/10'} ${darkMode ? 'bg-slate-800' : 'bg-white'}`
-                                : `font-bold text-slate-500 border-transparent hover:text-slate-700 ${darkMode ? 'hover:bg-slate-800/50 hover:text-slate-300' : 'hover:bg-slate-50'}`
+            <div className="pb-4">
+                <div className={`grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-2 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                    {tabs.map(tab => {
+                        const Icon = tab.icon;
+                        const count = getTabOrders(tab.id, sourceFiltered).length;
+                        const isActive = activeTab === tab.id;
+                        const isPending = tab.special;
+                        
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-3 rounded-2xl transition-all border-2 text-center lg:text-left ${
+                                    isActive
+                                        ? isPending 
+                                            ? 'bg-amber-500 border-amber-500 text-white shadow-lg shadow-amber-500/30' 
+                                            : 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30'
+                                        : darkMode
+                                            ? 'bg-slate-800/50 border-slate-700 hover:border-slate-600 text-slate-400'
+                                            : 'bg-white border-slate-200 hover:border-blue-300 text-slate-600 shadow-sm'
                                 }`}
-                        >
-                            <Icon size={14} className={`${isPending && count > 0 ? 'text-amber-500 animate-pulse' : ''} shrink-0`} />
-                            <span className="truncate">{tab.label}</span>
-                            <span className={`px-1.5 py-0.5 rounded-lg text-[10px] font-black ${count > 0 && isPending
-                                ? 'bg-amber-500 text-white shadow-sm'
-                                : activeTab === tab.id 
-                                    ? 'bg-blue-600 text-white shadow-sm'
-                                    : darkMode ? 'bg-slate-700 text-slate-500' : 'bg-slate-100 text-slate-400'
-                                }`}>
-                                {count}
-                            </span>
-                        </button>
-                    );
-                })}
+                            >
+                                <Icon size={isActive ? 18 : 16} className={isPending && count > 0 && !isActive ? 'text-amber-500 animate-pulse' : ''} />
+                                <div className="flex flex-col lg:flex-row lg:items-center gap-1">
+                                    <span className={`text-[11px] lg:text-sm font-black uppercase tracking-tight ${isActive ? 'text-white' : ''}`}>
+                                        {tab.label}
+                                    </span>
+                                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black w-fit mx-auto lg:mx-0 ${
+                                        isActive 
+                                            ? 'bg-white/20 text-white' 
+                                            : isPending && count > 0 ? 'bg-amber-100 text-amber-700' : darkMode ? 'bg-slate-700 text-slate-500' : 'bg-slate-100 text-slate-400'
+                                    }`}>
+                                        {count}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* ── BUYURTMALAR RO'YXATI ── */}

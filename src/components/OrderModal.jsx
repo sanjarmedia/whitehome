@@ -122,13 +122,13 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
             }
             await api.put(`/orders/${order.id}/status`, { status: 'EXPECTED', paymentReceipt: receiptPath, notes: viewNotes });
             onSaved ? onSaved() : onClose();
-        } catch { alert(t.noData.includes('yuklanmadi') ? "Xatolik bo'ldi" : "Произошла ошибка"); }
+        } catch { alert(t.errorOccurred); }
         finally { setLoading(false); }
     };
 
     const handleStatusAction = async (newStatus) => {
         if (newStatus === 'CHECKED' && !isFullyReceived && !viewNotes.trim())
-            return alert(t.noData.includes('yuklanmadi') ? "Buyurtma to'liq emas — izoh yozing." : "Заказ не полон — напишите примечание.");
+            return alert(t.orderIncompleteNote);
         setLoading(true);
         try {
             const finalStatus = newStatus === 'DISTRIBUTE'
@@ -136,7 +136,7 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
                 : newStatus;
             await api.put(`/orders/${order.id}/status`, { status: finalStatus, notes: viewNotes.trim() });
             onSaved ? onSaved() : onClose();
-        } catch (err) { alert('Xatolik: ' + (err.response?.data?.error || err.message)); }
+        } catch (err) { alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message)); }
         finally { setLoading(false); }
     };
 
@@ -144,11 +144,12 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
     const handlePrint = () => {
         const receiptUrl = getFileUrl(order.paymentReceipt);
         const isPdf = receiptUrl && receiptUrl.toLowerCase().endsWith('.pdf');
+        const langCode = t.report.includes('Hisobot') ? 'uz' : 'ru';
         const html = `
-<!DOCTYPE html><html lang="uz">
+<!DOCTYPE html><html lang="${langCode}">
 <head>
 <meta charset="UTF-8">
-<title>Buyurtma #${order.id} Hisobot</title>
+<title>${t.order} #${order.id} ${t.report}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; color: #1e293b; padding: 32px; max-width: 720px; margin: auto; }
@@ -177,19 +178,19 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
 <body>
 <div class="header">
   <div>
-    <div class="logo">📦 ${t.auditLog.includes('Audit') ? 'Inventar Tizimi' : 'Система инвентаризации'}</div>
-    <div class="order-id">${t.orders.slice(0, -1)} #${order.id} • ${new Date(order.createdAt).toLocaleDateString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}</div>
+    <div class="logo">📦 WhiteHome Inventory</div>
+    <div class="order-id">${t.order} #${order.id} • ${new Date(order.createdAt).toLocaleDateString(langCode === 'uz' ? 'uz-UZ' : 'ru-RU')}</div>
   </div>
   <span class="status-badge">${t[order.status.toLowerCase()] || order.status}</span>
 </div>
 
 <div class="section">
-  <h3>${t.auditLog.includes('Audit') ? 'Buyurtma ma\'lumotlari' : 'Информация о заказе'}</h3>
+  <h3>${t.orderDetails}</h3>
   <div class="info-grid">
-    <div class="info-item"><label>${t.customers.slice(0, -1)}</label><span>${order.customer?.name || '—'}</span></div>
+    <div class="info-item"><label>${t.customerLabel}</label><span>${order.customer?.name || '—'}</span></div>
     <div class="info-item"><label>${t.phone}</label><span>${order.customer?.phone || '—'}</span></div>
-    <div class="info-item"><label>${t.address}</label><span>${order.customer?.address || '—'}</span></div>
-    <div class="info-item"><label>${t.auditLog.includes('Audit') ? 'Tur' : 'Тип'}</label><span>${order.orderSource === 'CUSTOMER_ISSUE' ? t.customerIssue : t.company}</span></div>
+    <div class="info-item"><label>${t.addressLabel}</label><span>${order.customer?.address || '—'}</span></div>
+    <div class="info-item"><label>${t.type}</label><span>${order.orderSource === 'CUSTOMER_ISSUE' ? t.customerIssue : t.company}</span></div>
   </div>
 </div>
 
@@ -198,7 +199,7 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
   <table>
     <thead><tr><th>#</th><th>${t.name}</th><th>${t.quantity}</th><th>${t.price}</th><th>${t.total}</th></tr></thead>
     <tbody>
-      ${(order.items || []).map((item, i) => `<tr><td>${i + 1}</td><td>${item.productName}</td><td>${item.quantity} ${t.auditLog.includes('Audit') ? 'ta' : 'шт'}</td><td>$${Number(item.price).toFixed(2)}</td><td>$${(item.quantity * item.price).toFixed(2)}</td></tr>`).join('')}
+      ${(order.items || []).map((item, i) => `<tr><td>${i + 1}</td><td>${item.productName}</td><td>${item.quantity} ${langCode === 'uz' ? 'ta' : 'шт'}</td><td>$${Number(item.price).toFixed(2)}</td><td>$${(item.quantity * item.price).toFixed(2)}</td></tr>`).join('')}
       <tr class="total-row"><td colspan="4" style="text-align:right;padding-right:16px">${t.total.toUpperCase()}:</td><td class="total-amount">$${Number(order.totalAmount).toFixed(2)}</td></tr>
     </tbody>
   </table>
@@ -206,15 +207,15 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
 
 ${order.notes ? `<div className="section"><h3>${t.notes}</h3><p style="font-size:13px;color:#475569">${order.notes}</p></div>` : ''}
 
-${receiptUrl ? `<div class="receipt-section"><h3>💳 ${t.auditLog.includes('Audit') ? 'To\'lov Cheki' : 'Чек оплаты'}</h3>${isPdf ? `<a href="${receiptUrl}" target="_blank" style="color:#16a34a;font-weight:600">${t.auditLog.includes('Audit') ? 'PDF chekni ko\'rish →' : 'Смотреть PDF чек →'}</a>` : `<img class="receipt-img" src="${receiptUrl}" alt="${t.auditLog.includes('Audit') ? 'To\'lov cheki' : 'Чек оплаты'}" />`}</div>` : ''}
+${receiptUrl ? `<div class="receipt-section"><h3>💳 ${t.paymentReceipt}</h3>${isPdf ? `<a href="${receiptUrl}" target="_blank" style="color:#16a34a;font-weight:600">${t.viewPdfCheque}</a>` : `<img class="receipt-img" src="${receiptUrl}" alt="${t.paymentReceipt}" />`}</div>` : ''}
 
 ${(order.payments && order.payments.length > 0) ? `
 <div class="section" style="margin-top:24px">
   <h3 style="color:#10b981; border-bottom:1px solid #d1fae5; padding-bottom:8px; margin-bottom:12px">💳 ${t.transactions}</h3>
   <table>
-    <thead><tr><th>${t.auditLog.includes('Audit') ? 'Sana' : 'Дата'}</th><th>${t.notes}</th><th style="text-align:right">${t.sum}</th></tr></thead>
+    <thead><tr><th>${t.date}</th><th>${t.notes}</th><th style="text-align:right">${t.sum}</th></tr></thead>
     <tbody>
-      ${order.payments.map(p => `<tr><td>${new Date(p.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td><td>${p.note || '—'}</td><td style="text-align:right; font-weight:600; color:#10b981">$${Number(p.amount).toLocaleString()}</td></tr>`).join('')}
+      ${order.payments.map(p => `<tr><td>${new Date(p.createdAt).toLocaleString(langCode === 'uz' ? 'uz-UZ' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td><td>${p.note || '—'}</td><td style="text-align:right; font-weight:600; color:#10b981">$${Number(p.amount).toLocaleString()}</td></tr>`).join('')}
     </tbody>
   </table>
   <div style="text-align:right; margin-top:8px; font-size:14px; font-weight:bold; color:#059669">
@@ -223,7 +224,7 @@ ${(order.payments && order.payments.length > 0) ? `
 </div>
 ` : ''}
 
-<div class="footer">${t.report} ${new Date().toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')} ${t.auditLog.includes('Audit') ? 'da shakllantirildi' : 'сформирован'}</div>
+<div class="footer">${t.reportGeneratedAt} ${new Date().toLocaleString(langCode === 'uz' ? 'uz-UZ' : 'ru-RU')}</div>
 </body></html>`;
         const w = window.open('', '_blank');
         w.document.write(html);
@@ -248,9 +249,7 @@ ${(order.payments && order.payments.length > 0) ? `
 
     const handleSaveEdit = async () => {
         if (['COMPLETED', 'CANCELLED'].includes(order.status)) {
-            const confirmed = window.confirm(
-                "DIQQAT! Bu buyurtma yakunlangan yoki bekor qilingan.\nUni tahrirlash tarixni va qoldiq hisobotlarni o'zgartirib yuborishi mumkin.\nRostdan ham davom etishni xohlaysizmi?"
-            );
+            const confirmed = window.confirm(t.editCompletedOrderWarning);
             if (!confirmed) return;
         }
 
@@ -271,12 +270,12 @@ ${(order.payments && order.payments.length > 0) ? `
                 await api.put(`/orders/${order.id}/status`, { status: editStatus });
             }
             onSaved ? onSaved() : onClose();
-        } catch (err) { alert('Xatolik: ' + (err.response?.data?.error || err.message)); }
+        } catch (err) { alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message)); }
         finally { setSaving(false); }
     };
 
     const handleAddPayment = async () => {
-        if (!newPaymentAmount || Number(newPaymentAmount) <= 0) return alert(t.noData.includes('yuklanmadi') ? "To'lov summasi kiritilmadi." : "Сумма оплаты не введена.");
+        if (!newPaymentAmount || Number(newPaymentAmount) <= 0) return alert(t.required);
         setIsAddingPayment(true);
         try {
             let receiptUrl = null;
@@ -298,9 +297,9 @@ ${(order.payments && order.payments.length > 0) ? `
             setNewPaymentNote('');
             setNewPaymentFile(null);
             if (onSaved) onSaved();
-            alert(t.noData.includes('yuklanmadi') ? "To'lov muvaffaqiyatli saqlandi!" : "Оплата успешно сохранена!");
+            alert(t.paymentSuccess);
         } catch (err) {
-            alert("Xatolik: " + (err.response?.data?.error || err.message));
+            alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message));
         } finally {
             setIsAddingPayment(false);
         }
@@ -312,7 +311,7 @@ ${(order.payments && order.payments.length > 0) ? `
         try {
             await api.delete(`/orders/${order.id}`);
             onSaved ? onSaved() : onClose();
-        } catch (err) { alert('Xatolik: ' + (err.response?.data?.error || err.message)); }
+        } catch (err) { alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message)); }
         finally { setDeleting(false); }
     };
 

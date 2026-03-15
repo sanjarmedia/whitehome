@@ -119,9 +119,7 @@ const OrdersList = () => {
 
     const handleBulkOrder = async () => {
         if (!lowStockProducts || lowStockProducts.length === 0) return;
-        const confirmMsg = t.noData.includes('yuklanmadi') 
-            ? `Haqiqatdan ham yetishmayotgan barcha ${lowStockProducts.length} turdagi mahsulotlarni korxona buyurtmasi qilib yubormoqchimisiz?` 
-            : `Вы действительно хотите заказать все ${lowStockProducts.length} видов недостающих товаров?`;
+        const confirmMsg = typeof t.confirmBulkOrder === 'function' ? t.confirmBulkOrder(lowStockProducts.length) : `Order all ${lowStockProducts.length} low stock items?`;
         if (!window.confirm(confirmMsg)) return;
 
         setLoading(true);
@@ -138,16 +136,16 @@ const OrdersList = () => {
                 orderSource: 'COMPANY',
                 destinationType: 'WAREHOUSE',
                 status: 'NEW',
-                notes: t.auditLog.includes('Audit') ? 'Avtomatik ravishda yetishmayotgan mahsulotlar asosida tuzildi.' : 'Создано автоматически на основе недостающих товаров.',
+                notes: t.bulkOrderAutoNote,
                 items: items
             });
 
-            alert(t.noData.includes('yuklanmadi') ? 'Buyurtma muvaffaqiyatli shakllantirildi!' : 'Заказ успешно сформирован!');
+            alert(t.orderCreatedSuccess);
             setSourceFilter('COMPANY');
             setActiveTab('ALL');
             fetchOrders();
         } catch (err) {
-            alert('Xatolik: ' + (err.response?.data?.error || err.message));
+            alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
         }
@@ -198,7 +196,7 @@ const OrdersList = () => {
                                 <Building2 size={16} className="text-blue-500" />
                                 <div>
                                     <div className="font-medium">{t.company} {t.orders.slice(0, -1)}</div>
-                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.auditLog.includes('Audit') ? 'Sklad uchun import' : 'Импорт для склада'}</div>
+                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.companyOrderHint}</div>
                                 </div>
                             </button>
                             <div className={`border-t ${darkMode ? 'border-slate-700' : 'border-slate-100'}`} />
@@ -209,7 +207,7 @@ const OrdersList = () => {
                                 <Users size={16} className="text-emerald-500" />
                                 <div>
                                     <div className="font-medium">{t.issue}</div>
-                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.auditLog.includes('Audit') ? 'Sklad ichidan berish' : 'Выдача со склада'}</div>
+                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.issuedForCustomerDesc}</div>
                                 </div>
                             </button>
                         </div>
@@ -228,7 +226,7 @@ const OrdersList = () => {
                             </p>
                             <p className={`text-xs mt-0.5 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
                                 {lowStockProducts.slice(0, 4).map(p => `${p.name} (${p.quantity} ta)`).join(', ')}
-                                {lowStockProducts.length > 4 && ` va yana ${lowStockProducts.length - 4} ta...`}
+                                {lowStockProducts.length > 4 && ` ${typeof t.andMore === 'function' ? t.andMore(lowStockProducts.length - 4) : `and ${lowStockProducts.length - 4} more...`}`}
                             </p>
                         </div>
                     </div>

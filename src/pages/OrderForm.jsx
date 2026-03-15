@@ -8,7 +8,7 @@ import { Plus, Trash2, Save, Tag, Building2 } from 'lucide-react';
 
 const OrderForm = () => {
     const navigate = useNavigate();
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [products, setProducts] = useState([]);
 
     const [items, setItems] = useState([
@@ -88,7 +88,7 @@ const OrderForm = () => {
             navigate('/orders');
         } catch (err) {
             console.error(err);
-            alert("Xatolik: " + (err.response?.data?.error || err.message));
+            alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message));
         }
     };
 
@@ -100,14 +100,14 @@ const OrderForm = () => {
     return (
         <div className="max-w-6xl mx-auto space-y-6 pb-20">
             <header className="mb-8">
-                <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Korxona Buyurtmasi</h1>
-                <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Yetkazib beruvchidan sklad uchun tovar buyurtma qilish</p>
+                <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.companyOrder}</h1>
+                <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.companyOrderDesc}</p>
             </header>
 
             {/* Korxona belgisi */}
             <div className={`flex items-center gap-3 px-5 py-3 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'}`}>
                 <Building2 size={18} className="text-blue-500" />
-                <span className="text-sm">Bu buyurtma <strong>korxona</strong> sklad uchun — yetkazib beruvchidan tovar olish</span>
+                <span className="text-sm">{t.companyOrderHint}</span>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -116,7 +116,7 @@ const OrderForm = () => {
                 <section className={`p-6 rounded-2xl shadow-sm border animate-slide-in ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                     <h2 className={`text-lg font-medium mb-4 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                         <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>1</span>
-                        Mahsulotlar Ro'yxati
+                        {t.productsList}
                     </h2>
 
                     <div className="space-y-3">
@@ -126,7 +126,7 @@ const OrderForm = () => {
 
                                 {/* 0. Item Category */}
                                 <div className="w-full lg:w-48">
-                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Tur / Kategoriya</label>
+                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.typeCategory}</label>
                                     <div className="relative">
                                         <Tag className={`absolute left-3 top-3.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={16} />
                                         <select
@@ -145,18 +145,19 @@ const OrderForm = () => {
 
                                 {/* 1. Product Name (Search/Input) with Custom Combobox */}
                                 <div className="flex-1 w-full relative group">
-                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulot Nomi</label>
+                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.productName}</label>
                                     <ProductCombobox
                                         value={item.productName}
                                         onChange={(val) => handleItemChange(index, 'productName', val)}
                                         products={products}
                                         darkMode={darkMode}
+                                        placeholder={t.productNamePlaceholder}
                                     />
                                 </div>
 
                                 {/* Quantity, Price, Total - Same as before */}
                                 <div className="w-full lg:w-24">
-                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Soni</label>
+                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.quantityShort}</label>
                                     <input
                                         type="number"
                                         className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-center font-medium ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
@@ -169,7 +170,7 @@ const OrderForm = () => {
                                 </div>
 
                                 <div className="w-full lg:w-32">
-                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Narxi ($)</label>
+                                    <label className={`block text-xs font-medium mb-1 ml-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.price} ($)</label>
                                     <input
                                         type="number"
                                         className={`w-full px-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none font-medium ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
@@ -182,7 +183,7 @@ const OrderForm = () => {
                                 </div>
 
                                 <div className="w-full lg:w-28 pt-2 lg:pt-0">
-                                    <label className="block text-xs font-medium text-slate-400 mb-1 text-right">Jami</label>
+                                    <label className="block text-xs font-medium text-slate-400 mb-1 text-right">{t.total}</label>
                                     <div className={`text-right font-bold text-lg py-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                         ${(item.quantity * item.price).toLocaleString()}
                                     </div>
@@ -198,18 +199,18 @@ const OrderForm = () => {
 
                     <div className="mt-4 flex justify-between items-center">
                         <div className={`text-lg font-medium ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                            Jami Summa: <span className="text-2xl font-bold text-blue-600 ml-2">${calculateTotal().toLocaleString()}</span>
+                            {t.totalSum}: <span className="text-2xl font-bold text-blue-600 ml-2">${calculateTotal().toLocaleString()}</span>
                         </div>
                         <button type="button" onClick={addItem} className={`flex items-center gap-2 px-5 py-2.5 rounded-xl transition-colors font-medium border ${darkMode ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'
                             }`}>
-                            <Plus size={18} /> <span>Mahsulot Qo'shish</span>
+                            <Plus size={18} /> <span>{t.addProduct}</span>
                         </button>
                     </div>
                 </section >
 
                 <div className="sticky bottom-6 z-10 flex justify-end">
                     <button type="submit" className="bg-blue-600 text-white px-8 py-4 rounded-2xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 flex items-center gap-3 transition-transform hover:-translate-y-1">
-                        <Save size={20} /> Buyurtmani Tasdiqlash
+                        <Save size={20} /> {t.confirmOrder}
                     </button>
                 </div>
             </form >

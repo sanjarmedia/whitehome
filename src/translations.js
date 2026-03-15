@@ -288,7 +288,14 @@ export const translations = {
         confirmIssue: "Shakllantirishni Tasdiqlash",
         andMore: (count) => `va yana ${count} ta...`,
         confirmClearAudit: "Barcha audit tarixini O'CHIRMOQCHIMISIZ? Bu amolni orqaga qaytarib bo'lmaydi!",
-        clearAuditError: "Tozalashda xatolik yuz berdi"
+        clearAuditError: "Tozalashda xatolik yuz berdi",
+        inventoryDesc: "Mahsulotlar harakati va zaxira boshqaruvi",
+        atCustomer: "Mijozda",
+        date: "Sana",
+        totalProductsCount: (count) => `Jami ${count} xil mahsulotlar`,
+        images: "Rasmlar",
+        import: "Import",
+        inStockCount: (count) => `${count} ta mavjud`
     },
     ru: {
         dashboard: "Панель управления",
@@ -579,6 +586,13 @@ export const translations = {
         confirmIssue: "Подтвердить оформление",
         andMore: (count) => `и еще ${count} шт...`,
         confirmClearAudit: "Вы действительно хотите УДАЛИТЬ всю историю аудита? Это действие нельзя отменить!",
-        clearAuditError: "Произошла ошибка при очистке"
+        clearAuditError: "Произошла ошибка при очистке",
+        inventoryDesc: "Движение товаров и управление запасами",
+        atCustomer: "У клиента",
+        date: "Дата",
+        totalProductsCount: (count) => `Всего ${count} видов товаров`,
+        images: "Ракурсы/Фото",
+        import: "Импорт",
+        inStockCount: (count) => `${count} шт в наличии`
     }
 };

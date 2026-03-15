@@ -203,7 +203,7 @@ const Products = () => {
                     <div>
                         <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.products}</h1>
                         <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {t.noData.includes('yuklanmadi') ? `Barcha mavjud mahsulotlar: ${products.length} xil` : `Все доступные товары: ${products.length} видов`}
+                            {t.totalProductsCount(products.length)}
                         </p>
                     </div>
                     {hasFullAccess && (
@@ -228,7 +228,7 @@ const Products = () => {
                                 disabled={uploadingImages}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-purple-800/50 hover:bg-purple-900/40 text-purple-400' : 'border-purple-200 hover:bg-purple-50 text-purple-600'}`}
                             >
-                                <ImageIcon size={20} /> {uploadingImages ? t.loading : (t.productImage || 'Rasmlar')}
+                                <ImageIcon size={20} /> {uploadingImages ? t.loading : t.images}
                             </button>
 
                             <input
@@ -242,7 +242,7 @@ const Products = () => {
                                 onClick={handleImportClick}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
                             >
-                                <Upload size={20} /> {t.receiveToStock.split(' ')[0]}
+                                <Upload size={20} /> {t.import}
                             </button>
                             <button
                                 onClick={handleExportProducts}
@@ -367,7 +367,7 @@ const Products = () => {
                                     ? (darkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700')
                                     : (darkMode ? 'bg-rose-900/30 text-rose-400' : 'bg-rose-50 text-rose-700')
                                     }`}>
-                                    {product.quantity > 0 ? `${product.quantity} ${t.auditLog.includes('Audit') ? 'ta mavjud' : 'шт в наличии'}` : t.noData}
+                                    {product.quantity > 0 ? t.inStockCount(product.quantity) : t.noData}
                                 </div>
                                 <button
                                     onClick={() => { setViewingProduct(product); setIsDetailModalOpen(true); }}

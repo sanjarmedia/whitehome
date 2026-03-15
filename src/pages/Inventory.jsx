@@ -91,7 +91,7 @@ const Inventory = () => {
                 <div>
                     <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.inventory}</h1>
                     <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {t.noData.includes('yuklanmadi') ? 'Mahsulotlar harakati va zaxira boshqaruvi' : 'Движение товаров и управление запасами'}
+                        {t.inventoryDesc}
                     </p>
                 </div>
                 <div className="flex items-center gap-3 w-full md:w-auto">
@@ -326,7 +326,7 @@ const Inventory = () => {
                             <table className="min-w-full">
                                 <thead>
                                     <tr className={darkMode ? 'bg-slate-900/50' : 'bg-slate-50'}>
-                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.noData.includes('yuklanmadi') ? 'Sana' : 'Дата'}</th>
+                                        <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.date}</th>
                                         <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.customers.slice(0, -1)}</th>
                                         <th className={`px-6 py-4 text-left text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.status}</th>
                                         <th className={`px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.sum}</th>
@@ -358,7 +358,7 @@ const Inventory = () => {
                                                                 <div className="text-[10px] font-bold opacity-60">${order.totalAmount.toFixed(2)}</div>
                                                             </div>
                                                             <span className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400 border border-blue-900/50' : 'bg-blue-50 text-blue-600 border border-blue-100'}`}>
-                                                                {t.noData.includes('yuklanmadi') ? 'Mijozda' : 'У клиента'}
+                                                                {t.atCustomer}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -407,7 +407,7 @@ const Inventory = () => {
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(order.date).toLocaleDateString()}</span>
                                                 <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
-                                                    {t.noData.includes('yuklanmadi') ? 'Mijozda' : 'У клиента'}
+                                                    {t.atCustomer}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">

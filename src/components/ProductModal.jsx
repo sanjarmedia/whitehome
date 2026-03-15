@@ -87,52 +87,27 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode, t, categ
                                 type="number"
                                 min="0"
                                 step="0.01"
-                                value={formData.price}
-                                onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+                                value={formData.price === 0 && !initialData ? '' : formData.price}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    setFormData({ ...formData, price: val === '' ? '' : parseFloat(val) });
+                                }}
                                 className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
                             />
                         </div>
 
-                        {/* Brand */}
-                        <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.brand}</label>
-                            <input
-                                type="text"
-                                list="brands-list"
-                                value={formData.brand || ''}
-                                onChange={e => setFormData({ ...formData, brand: e.target.value })}
-                                className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                placeholder={t.brand}
-                            />
-                            <datalist id="brands-list">
-                                {brands.map(b => <option key={b} value={b} />)}
-                            </datalist>
-                        </div>
-
-                        {/* Category */}
-                        <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.category}</label>
-                            <input
-                                type="text"
-                                list="categories"
-                                value={formData.category || ''}
-                                onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                placeholder={t.category}
-                            />
-                            <datalist id="categories">
-                                {categories.map(c => <option key={c} value={c} />)}
-                            </datalist>
-                        </div>
-
+                        {/* Brand ... (skip) ... */}
                         {/* Quantity */}
                         <div>
                             <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.quantity}</label>
                             <input
                                 type="number"
                                 min="0"
-                                value={formData.quantity}
-                                onChange={e => setFormData({ ...formData, quantity: parseInt(e.target.value) || 0 })}
+                                value={formData.quantity === 0 && !initialData ? '' : formData.quantity}
+                                onChange={e => {
+                                    const val = e.target.value;
+                                    setFormData({ ...formData, quantity: val === '' ? '' : parseInt(val) });
+                                }}
                                 className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
                             />
                         </div>

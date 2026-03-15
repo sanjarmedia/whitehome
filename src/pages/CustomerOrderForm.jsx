@@ -5,7 +5,7 @@ import { Plus, Trash2, Save, AlertTriangle, CheckCircle2, User, UserPlus, Packag
 
 const CustomerOrderForm = () => {
     const navigate = useNavigate();
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
 
     const [products, setProducts] = useState([]);
     const [customers, setCustomers] = useState([]);
@@ -83,11 +83,11 @@ const CustomerOrderForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (customerType === 'existing' && !customerId) return alert('Iltimos, mijozni tanlang.');
-        if (customerType === 'new' && !newCustomer.name.trim()) return alert('Iltimos, mijoz ismini kiriting.');
+        if (customerType === 'existing' && !customerId) return alert(t.selectCustomer);
+        if (customerType === 'new' && !newCustomer.name.trim()) return alert(t.required);
 
         const invalidItems = items.filter(i => !i.productId || !i.productName);
-        if (invalidItems.length > 0) return alert('Barcha mahsulotlarni to\'g\'ri tanlang.');
+        if (invalidItems.length > 0) return alert(t.atLeastOneProduct);
 
         setSubmitting(true);
         try {
@@ -119,13 +119,13 @@ const CustomerOrderForm = () => {
             const { stockInsufficient } = res.data;
 
             if (stockInsufficient) {
-                alert('⚠️ Sklad yetarli emas. Buyurtma admin tasdig\'iga yuborildi.');
+                alert(t.insufficientStock);
             } else {
-                alert('✅ Buyurtma muvaffaqiyatli shakllandi!');
+                alert(t.issuedSuccessfully);
             }
             navigate('/orders');
         } catch (err) {
-            alert('Xatolik: ' + (err.response?.data?.error || err.message));
+            alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message));
         } finally {
             setSubmitting(false);
         }
@@ -140,14 +140,14 @@ const CustomerOrderForm = () => {
     const customerCards = [
         {
             id: 'existing',
-            label: 'Doimiy Mijoz',
-            desc: 'Mavjud mijozlar ro\'yxatidan tanlash',
+            label: t.existingCustomer,
+            desc: t.existingCustomerDesc,
             icon: User,
         },
         {
             id: 'new',
-            label: 'Yangi Mijoz',
-            desc: 'Yangi mijoz ma\'lumotlarini kiritish',
+            label: t.newCustomerLabel,
+            desc: t.newCustomerDesc,
             icon: UserPlus,
         },
     ];
@@ -157,10 +157,10 @@ const CustomerOrderForm = () => {
             {/* Header */}
             <header>
                 <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                    Mijoz uchun shakillantirish
+                    {t.issuedForCustomer}
                 </h1>
                 <p className={`mt-1 text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Sklad ichidan mijoz uchun to'plam shakllantirish
+                    {t.issuedForCustomerDesc}
                 </p>
             </header>
 
@@ -169,10 +169,9 @@ const CustomerOrderForm = () => {
                 <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 animate-fade-in">
                     <AlertTriangle size={20} className="mt-0.5 shrink-0 text-amber-500" />
                     <div>
-                        <p className="font-semibold text-sm">Sklad yetarli emas!</p>
+                        <p className="font-semibold text-sm">{t.stockInsufficientTitle}</p>
                         <p className="text-xs mt-0.5">
-                            Ba'zi mahsulotlar uchun sklad miqdori yetarli emas.
-                            Yuborilganda <strong>Admin tasdig'iga</strong> yuboriladi.
+                            {t.stockInsufficientDesc}
                         </p>
                     </div>
                 </div>
@@ -184,7 +183,7 @@ const CustomerOrderForm = () => {
                 <section className={`p-6 rounded-2xl shadow-sm border ${card}`}>
                     <h2 className={`text-base font-medium mb-4 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>1</span>
-                        Mijoz
+                        {t.customerLabel}
                     </h2>
 
                     {/* Karta tanlash */}
@@ -225,7 +224,7 @@ const CustomerOrderForm = () => {
                     {customerType === 'existing' && (
                         <div className="max-w-md animate-fade-in">
                             <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                Mijozni tanlang
+                                {t.selectCustomer}
                             </label>
                             <div className="relative">
                                 <User size={16} className={`absolute left-3 top-3.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
@@ -235,7 +234,7 @@ const CustomerOrderForm = () => {
                                     onChange={e => setCustomerId(e.target.value)}
                                     required={customerType === 'existing'}
                                 >
-                                    <option value="">Tanlang...</option>
+                                    <option value="">{t.selectPlaceholder}</option>
                                     {customers.map(c => (
                                         <option key={c.id} value={c.id}>
                                             {c.name} {c.companyName ? `(${c.companyName})` : ''} — {c.phone || '-'}
@@ -252,7 +251,7 @@ const CustomerOrderForm = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                        Ism Familiya *
+                                        {t.firstNameLastName} *
                                     </label>
                                     <input
                                         type="text"
@@ -265,7 +264,7 @@ const CustomerOrderForm = () => {
                                 </div>
                                 <div>
                                     <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                        Telefon
+                                        {t.phone}
                                     </label>
                                     <input
                                         type="text"
@@ -278,7 +277,7 @@ const CustomerOrderForm = () => {
                             </div>
                             <div>
                                 <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                    Manzil
+                                    {t.addressLabel}
                                 </label>
                                 <input
                                     type="text"
@@ -296,7 +295,7 @@ const CustomerOrderForm = () => {
                 <section className={`p-6 rounded-2xl shadow-sm border ${card}`}>
                     <h2 className={`text-base font-medium mb-4 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>2</span>
-                        Mahsulotlar
+                        {t.products}
                     </h2>
 
                     <div className="space-y-3">
@@ -314,7 +313,7 @@ const CustomerOrderForm = () => {
 
                                         {/* Mahsulot tanlash */}
                                         <div className="flex-1 min-w-0">
-                                            <label className={`block text-xs font-medium mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulot</label>
+                                            <label className={`block text-xs font-medium mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.product}</label>
                                             <div className="relative">
                                                 <Package size={14} className={`absolute left-3 top-3.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
                                                 <select
@@ -325,10 +324,10 @@ const CustomerOrderForm = () => {
                                                     onChange={e => handleProductSelect(index, e.target.value)}
                                                     required
                                                 >
-                                                    <option value="">Mahsulot tanlang...</option>
+                                                    <option value="">{t.selectPlaceholder}</option>
                                                     {products.map(p => (
                                                         <option key={p.id} value={p.id}>
-                                                            {p.name} [Sklad: {p.quantity}]
+                                                            {p.name} [{t.warehouse}: {p.quantity}]
                                                         </option>
                                                     ))}
                                                 </select>
@@ -339,8 +338,8 @@ const CustomerOrderForm = () => {
                                                     : darkMode ? 'text-emerald-400' : 'text-emerald-600'
                                                     }`}>
                                                     {insufficient
-                                                        ? <><AlertCircle size={12} /> Sklad: <strong>{item.availableStock}</strong>, Kerak: <strong>{item.quantity}</strong> — yetarli emas</>
-                                                        : <><CheckCircle2 size={12} /> Sklad: <strong>{item.availableStock}</strong> — yetarli</>
+                                                        ? <><AlertCircle size={12} /> {typeof t.availableStockLabel === 'function' ? t.availableStockLabel(item.availableStock, item.quantity) : `Stock: ${item.availableStock}, Need: ${item.quantity}`}</>
+                                                        : <><CheckCircle2 size={12} /> {typeof t.stockSufficientLabel === 'function' ? t.stockSufficientLabel(item.availableStock) : `Stock: ${item.availableStock}`}</>
                                                     }
                                                 </div>
                                             )}
@@ -348,7 +347,7 @@ const CustomerOrderForm = () => {
 
                                         {/* Soni */}
                                         <div className="w-full lg:w-24">
-                                            <label className={`block text-xs font-medium mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Soni</label>
+                                            <label className={`block text-xs font-medium mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.quantityShort}</label>
                                             <input
                                                 type="number" min="1"
                                                 className={`w-full px-3 py-2.5 border rounded-lg outline-none text-center font-medium text-sm ${insufficient
@@ -363,7 +362,7 @@ const CustomerOrderForm = () => {
                                         {/* Narxi */}
                                         <div className="w-full lg:w-32">
                                             <label className={`block text-xs font-medium mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                                Narxi ($) <span className="text-blue-500 font-normal">(tahrirlash)</span>
+                                                {t.price} ($) <span className="text-blue-500 font-normal">({t.editLabel.toLowerCase()})</span>
                                             </label>
                                             <input
                                                 type="number" min="0" step="0.01"
@@ -376,7 +375,7 @@ const CustomerOrderForm = () => {
 
                                         {/* Jami */}
                                         <div className="w-full lg:w-28">
-                                            <label className={`block text-xs font-medium mb-1 text-right ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Jami</label>
+                                            <label className={`block text-xs font-medium mb-1 text-right ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.total}</label>
                                             <div className={`text-right font-bold text-base py-2.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                                 ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toLocaleString()}
                                             </div>
@@ -398,14 +397,14 @@ const CustomerOrderForm = () => {
 
                     <div className="mt-4 flex justify-between items-center">
                         <div className={`font-medium ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                            Jami: <span className="text-xl font-bold text-blue-600 ml-1">${total.toLocaleString()}</span>
+                            {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toLocaleString()}</span>
                         </div>
                         <button
                             type="button"
                             onClick={addItem}
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${darkMode ? 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'}`}
                         >
-                            <Plus size={16} /> Mahsulot qo'shish
+                            <Plus size={16} /> {t.addProduct}
                         </button>
                     </div>
                 </section>
@@ -414,12 +413,12 @@ const CustomerOrderForm = () => {
                 <section className={`p-6 rounded-2xl shadow-sm border ${card}`}>
                     <h2 className={`text-base font-medium mb-3 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                         <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>3</span>
-                        Izoh (ixtiyoriy)
+                        {t.notesOptional}
                     </h2>
                     <textarea
                         rows={3}
                         className={`w-full px-4 py-3 border rounded-xl outline-none text-sm resize-none transition-all ${inputCls}`}
-                        placeholder="Qo'shimcha ma'lumot..."
+                        placeholder={t.optionalNotesPlaceholder}
                         value={notes}
                         onChange={e => setNotes(e.target.value)}
                     />
@@ -442,7 +441,7 @@ const CustomerOrderForm = () => {
                         ) : (
                             <Save size={20} />
                         )}
-                        {stockWarning ? 'Admin tasdig\'iga yuborish' : 'Shakllantirishni Tasdiqlash'}
+                        {stockWarning ? t.sendToAdmin : t.confirmIssue}
                     </button>
                 </div>
             </form>

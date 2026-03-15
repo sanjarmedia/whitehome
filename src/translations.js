@@ -208,7 +208,23 @@ export const translations = {
         confirmDelete: "Haqiqatan ham bu mijozni o'chirmoqchimisiz?",
         uploadReceiptLaterHint: "To'lov chekini yuklash hozircha shart emas",
         vipLabel: "VIP",
-        ordinaryLabel: "Oddiy"
+        ordinaryLabel: "Oddiy",
+        systemReset: "Tizimni Nollash",
+        systemResetWarning: "DIQQAT! Siz butun tizimdagi barcha buyurtmalar, to'lovlar, mijozlar va loglarni o'chirib yuborasiz! Mahsulotlar soni 0 ta bo'lib qoladi. Rozimisiz?",
+        systemResetPrompt: "Buni amalda oshirish uchun \"O'CHIRISH\" deb yozing:",
+        systemResetConfirmWord: "O'CHIRISH",
+        systemResetError: "Tizimni nollashda muammo yuzaga keldi.",
+        systemResetSuccess: "Tizim ma'lumotlari muvaffaqiyatli tozalandi!",
+        searchUserPlaceholder: "Login yoki ism orqali qidirish...",
+        userManagementDesc: "Tizim kirish huquqlari va profil boshqaruvi",
+        addUserBtn: "Yangi Qo'shish",
+        userFetchError: "Ma'lumotlarni yuklashda xatolik",
+        userDeleteConfirm: "Rostdan ham o'chirmoqchimisiz?",
+        workerRole: "Ishchi",
+        onlineStatus: "Online",
+        offlineStatus: "Offline",
+        lastActiveLabel: "Ohirgi faollik",
+        notLoggedIn: "Tizimga kirmagan"
     },
     ru: {
         dashboard: "Панель управления",
@@ -419,6 +435,22 @@ export const translations = {
         confirmDelete: "Вы действительно хотите удалить этого клиента?",
         uploadReceiptLaterHint: "Загрузка чека пока не обязательна",
         vipLabel: "VIP",
-        ordinaryLabel: "Обычный"
+        ordinaryLabel: "Обычный",
+        systemReset: "Сброс системы",
+        systemResetWarning: "ВНИМАНИЕ! Вы удалите все заказы, платежи, клиентов и логи всей системы! Количество товаров станет 0. Вы согласны?",
+        systemResetPrompt: "Для выполнения напишите \"УДАЛИТЬ\":",
+        systemResetConfirmWord: "УДАЛИТЬ",
+        systemResetError: "Проблема при сбросе системы.",
+        systemResetSuccess: "Данные системы успешно очищены!",
+        searchUserPlaceholder: "Поиск по логину или имени...",
+        userManagementDesc: "Управление правами доступа и профилями",
+        addUserBtn: "Добавить нового",
+        userFetchError: "Ошибка загрузки данных",
+        userDeleteConfirm: "Вы действительно хотите удалить?",
+        workerRole: "Рабочий",
+        onlineStatus: "Онлайн",
+        offlineStatus: "Оффлайн",
+        lastActiveLabel: "Последняя активность",
+        notLoggedIn: "Не в системе"
     }
 };

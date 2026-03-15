@@ -5,7 +5,7 @@ import { Search, Plus, Trash2, Edit, Shield, User as UserIcon } from 'lucide-rea
 import UserModal from '../components/UserModal';
 
 const Users = () => {
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,30 +30,30 @@ const Users = () => {
             setError(null);
         } catch (err) {
             console.error(err);
-            setError("Ma'lumotlarni yuklashda xatolik");
+            setError(t.userFetchError);
         } finally {
             setLoading(false);
         }
     };
 
     const handleResetSystem = async () => {
-        const confirm1 = window.confirm("DIQQAT! Siz butun tizimdagi barcha buyurtmalar, to'lovlar, mijozlar va loglarni o'chirib yuborasiz! Mahsulotlar soni 0 ta bo'lib qoladi. Rozimisiz?");
+        const confirm1 = window.confirm(t.systemResetWarning);
         if (!confirm1) return;
 
-        const confirm2 = window.prompt('Buni amalda oshirish uchun "O\'CHIRISH" deb yozing:');
-        if (confirm2 !== "O'CHIRISH") {
-            alert("Noto'g'ri taqdim etildi. Bekor qilindi.");
+        const confirm2 = window.prompt(t.systemResetPrompt);
+        if (confirm2 !== t.systemResetConfirmWord) {
+            alert(t.notSelected); // reused or just hardcoded, but t.systemResetConfirmWord check is key
             return;
         }
 
         setClearingSystem(true);
         try {
             const res = await api.post('/system/reset');
-            alert(res.data.message || "Tizim ma'lumotlari muvaffaqiyatli tozalandi!");
+            alert(res.data.message || t.systemResetSuccess);
             window.location.reload(); // Sahifani yangilaymiz
         } catch (err) {
             console.error(err);
-            alert("Tizimni nollashda muammo yuzaga keldi.");
+            alert(t.systemResetError);
         } finally {
             setClearingSystem(false);
         }
@@ -71,18 +71,18 @@ const Users = () => {
             setEditingUser(null);
         } catch (error) {
             console.error("Error saving user:", error);
-            alert(error.response?.data?.message || "Xatolik yuz berdi");
+            alert(error.response?.data?.message || t.errorOccurred);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Rostdan ham o'chirmoqchimisiz?")) return;
+        if (!window.confirm(t.userDeleteConfirm)) return;
         try {
             await api.delete(`/users/${id}`);
             fetchUsers();
         } catch (error) {
             console.error(error);
-            alert(error.response?.data?.message || "O'chirishda xatolik");
+            alert(error.response?.data?.message || t.errorOccurred);
         }
     };
 
@@ -91,7 +91,7 @@ const Users = () => {
         u.username.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) return <div className="p-8">Yuklanmoqda...</div>;
+    if (loading) return <div className="p-8">{t.loading}</div>;
 
     return (
         <div className="space-y-6 pb-20 animate-fade-in">
@@ -99,10 +99,10 @@ const Users = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     <div>
                         <h1 className={`text-3xl font-black flex items-center gap-3 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            <Shield className="text-blue-500" size={32} /> Foydalanuvchilar
+                            <Shield className="text-blue-500" size={32} /> {t.users}
                         </h1>
                         <p className={`mt-1 font-bold text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Tizim kirish huquqlari va profil boshqaruvi
+                            {t.userManagementDesc}
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -115,14 +115,14 @@ const Users = () => {
                                 }`}
                             >
                                 <Trash2 size={16} />
-                                {clearingSystem ? 'O\'chirilmoqda...' : 'Tizimni Nollash'}
+                                {clearingSystem ? t.deleteLabel + '...' : t.systemReset}
                             </button>
                         )}
                         <button
                             onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
                             className="bg-blue-600 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-500/30 transition-all active:scale-95 font-black uppercase text-[10px] tracking-widest"
                         >
-                            <Plus size={18} /> Yangi Qo'shish
+                            <Plus size={18} /> {t.addUserBtn}
                         </button>
                     </div>
                 </div>
@@ -133,7 +133,7 @@ const Users = () => {
                         type="text"
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        placeholder="Login yoki ism orqali qidirish..."
+                        placeholder={t.searchUserPlaceholder}
                         className={`w-full pl-12 pr-4 py-3 border rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold ${darkMode ? 'bg-slate-900/50 border-slate-700 text-slate-100 placeholder:text-slate-600' : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400'}`}
                     />
                 </div>
@@ -153,10 +153,10 @@ const Users = () => {
                     return (
                         <div key={user.id} className={`group rounded-[2.5rem] overflow-hidden shadow-sm border transition-all hover:shadow-2xl hover:-translate-y-1 relative ${darkMode ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-slate-100'}`}>
                             {/* Status Badge */}
-                            <div className="absolute top-5 left-6 flex items-center gap-2" title={user.lastActive ? `Ohirgi faollik: ${new Date(user.lastActive).toLocaleString('uz-UZ')}` : 'Tizimga kirmagan'}>
+                            <div className="absolute top-5 left-6 flex items-center gap-2" title={user.lastActive ? `${t.lastActiveLabel}: ${new Date(user.lastActive).toLocaleString('uz-UZ')}` : t.notLoggedIn}>
                                 <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]' : 'bg-slate-400'}`}></div>
                                 <span className={`text-[10px] uppercase font-black tracking-tighter ${isOnline ? 'text-emerald-500' : 'text-slate-500'}`}>
-                                    {isOnline ? 'Online' : 'Offline'}
+                                    {isOnline ? t.onlineStatus : t.offlineStatus}
                                 </span>
                             </div>
 
@@ -195,7 +195,7 @@ const Users = () => {
                                     ${user.role === 'restricted' ? (darkMode ? 'bg-slate-700/50 text-slate-300 border-slate-600' : 'bg-slate-100 text-slate-600 border-slate-200 shadow-sm shadow-slate-100') : ''}
                                     ${user.role === 'worker' ? (darkMode ? 'bg-green-900/20 text-green-400 border-green-800/50' : 'bg-green-50 text-green-700 border-green-200 shadow-sm shadow-green-100') : ''}
                                 `}>
-                                    {user.role === 'admin' ? 'Administrator' : user.role === 'full' ? 'To\'liq ruxsat' : user.role === 'worker' ? 'Ishchi' : 'Cheklangan'}
+                                    {user.role === 'admin' ? 'Administrator' : user.role === 'full' ? t.fullRole : user.role === 'worker' ? t.workerRole : t.restrictedRole}
                                 </span>
                             </div>
                         </div>
@@ -209,6 +209,7 @@ const Users = () => {
                 onSave={handleSave}
                 initialData={editingUser}
                 darkMode={darkMode}
+                t={t}
             />
         </div>
     );

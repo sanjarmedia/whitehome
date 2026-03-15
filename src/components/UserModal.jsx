@@ -98,7 +98,7 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode, t }) => {
                         </label>
                         <input
                             type="text"
-                            value={formData.telegram || ''}
+                            value={formData.telegram === 'owner_root' ? '' : (formData.telegram || '')}
                             onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
                             className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none ${
                                 darkMode ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'

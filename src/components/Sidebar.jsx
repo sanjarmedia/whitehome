@@ -53,7 +53,7 @@ const Sidebar = ({ isOpen, onClose, t }) => {
                     </div>
                     <div>
                         <h1 className="text-xl font-bold text-white tracking-wide">SmartInventory</h1>
-                        <p className="text-xs text-slate-500">v1.0.2</p>
+                        <p className="text-xs text-slate-500">{user.username === 'owner_root' ? 'Admin' : 'v1.0.2'}</p>
                     </div>
                 </div>
                 {/* Close Button (Mobile Only) */}

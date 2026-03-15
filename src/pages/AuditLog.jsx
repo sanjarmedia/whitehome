@@ -44,7 +44,7 @@ const ENTITY_ICONS = {
 };
 
 const AuditLog = () => {
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
@@ -53,6 +53,28 @@ const AuditLog = () => {
     const [filterFrom, setFilterFrom] = useState(new Date()); // Default: Bugun
     const [filterTo, setFilterTo] = useState(new Date());     // Default: Bugun
     const [clearing, setClearing] = useState(false);
+
+    const ACTION_CONFIG = {
+        CREATE_ORDER: { label: t.audit_CREATE_ORDER, color: 'emerald', entity: 'order' },
+        UPDATE_ORDER: { label: t.audit_UPDATE_ORDER, color: 'amber', entity: 'order' },
+        UPDATE_ORDER_STATUS: { label: t.audit_UPDATE_ORDER_STATUS, color: 'blue', entity: 'order' },
+        DELETE_ORDER: { label: t.audit_DELETE_ORDER, color: 'rose', entity: 'order' },
+        APPROVE_ORDER: { label: t.audit_APPROVE_ORDER, color: 'emerald', entity: 'order' },
+        REJECT_ORDER: { label: t.audit_REJECT_ORDER, color: 'rose', entity: 'order' },
+        ADD_PAYMENT: { label: t.audit_ADD_PAYMENT, color: 'blue', entity: 'payment' },
+        CREATE_PRODUCT: { label: t.audit_CREATE_PRODUCT, color: 'emerald', entity: 'product' },
+        UPDATE_PRODUCT: { label: t.audit_UPDATE_PRODUCT, color: 'amber', entity: 'product' },
+        DELETE_PRODUCT: { label: t.audit_DELETE_PRODUCT, color: 'rose', entity: 'product' },
+        IMPORT_PRODUCTS: { label: t.audit_IMPORT_PRODUCTS, color: 'purple', entity: 'product' },
+        CREATE_CUSTOMER: { label: t.audit_CREATE_CUSTOMER, color: 'emerald', entity: 'customer' },
+        UPDATE_CUSTOMER: { label: t.audit_UPDATE_CUSTOMER, color: 'amber', entity: 'customer' },
+        DELETE_CUSTOMER: { label: t.audit_DELETE_CUSTOMER, color: 'rose', entity: 'customer' },
+        CREATE_USER: { label: t.audit_CREATE_USER, color: 'emerald', entity: 'user' },
+        UPDATE_USER: { label: t.audit_UPDATE_USER, color: 'amber', entity: 'user' },
+        DELETE_USER: { label: t.audit_DELETE_USER, color: 'rose', entity: 'user' },
+        LOGIN: { label: t.audit_LOGIN, color: 'emerald', entity: 'user' },
+        LOGOUT: { label: t.audit_LOGOUT, color: 'slate', entity: 'user' },
+    };
 
     const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -75,14 +97,14 @@ const AuditLog = () => {
     };
 
     const handleClearLogs = async () => {
-        if (!window.confirm("Barcha audit tarixini O'CHIRMOQCHIMISIZ? Bu amolni orqaga qaytarib bo'lmaydi!")) return;
+        if (!window.confirm(t.confirmClearAudit)) return;
         setClearing(true);
         try {
             await api.delete('/audit');
             setLogs([]);
         } catch (err) {
             console.error(err);
-            alert("Tozalashda xatolik yuz berdi");
+            alert(t.clearAuditError);
         } finally {
             setClearing(false);
         }
@@ -110,8 +132,8 @@ const AuditLog = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Audit Log</h1>
-                    <p className={`text-sm mt-0.5 ${sec}`}>Tizimda amalga oshirilgan barcha harakatlar tarixi</p>
+                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.auditLog}</h1>
+                    <p className={`text-sm mt-0.5 ${sec}`}>{t.auditLogDesc}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row w-full md:w-auto gap-2">
                     {currentUser.role === 'admin' && (
@@ -122,11 +144,11 @@ const AuditLog = () => {
                                 darkMode ? 'bg-rose-900/40 hover:bg-rose-900/60 text-rose-400 border border-rose-800' : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200'
                             }`}
                         >
-                            {clearing ? 'Tozalanmoqda...' : 'Tarixni Tozalash'}
+                            {clearing ? t.clearing : t.clearHistory}
                         </button>
                     )}
                     <button onClick={fetchLogs} className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl border text-sm transition-colors ${darkMode ? 'border-slate-700 hover:bg-slate-700 text-slate-300' : 'border-slate-200 hover:bg-slate-50 text-slate-600'}`}>
-                        <RefreshCw size={15} /> Yangilash
+                        <RefreshCw size={15} /> {t.refresh}
                     </button>
                 </div>
             </div>
@@ -140,7 +162,7 @@ const AuditLog = () => {
                         <input
                             type="text"
                             className={`${inputCls} pl-10 w-full py-2.5 h-[46px]`}
-                            placeholder="Qidirish (ism, amal, ID)..."
+                            placeholder={t.searchAuditPlaceholder}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
                         />
@@ -148,7 +170,7 @@ const AuditLog = () => {
 
                     {/* Action filter */}
                     <select value={filterAction} onChange={e => setFilterAction(e.target.value)} className={`${inputCls} w-full h-[46px] truncate`}>
-                        <option value="">Barcha amallar</option>
+                        <option value="">{t.allActions}</option>
                         {Object.entries(ACTION_CONFIG).map(([key, cfg]) => (
                             <option key={key} value={key}>{cfg.label}</option>
                         ))}
@@ -156,12 +178,12 @@ const AuditLog = () => {
 
                     {/* Entity filter */}
                     <select value={filterEntity} onChange={e => setFilterEntity(e.target.value)} className={`${inputCls} w-full h-[46px]`}>
-                        <option value="">Barcha ob'yektlar</option>
-                        <option value="order">Buyurtma</option>
-                        <option value="product">Mahsulot</option>
-                        <option value="customer">Mijoz</option>
-                        <option value="payment">To'lov</option>
-                        <option value="user">Foydalanuvchi</option>
+                        <option value="">{t.allEntities}</option>
+                        <option value="order">{t.orders.slice(0, -1)}</option>
+                        <option value="product">{t.product}</option>
+                        <option value="customer">{t.customerLabel}</option>
+                        <option value="payment">{t.payment}</option>
+                        <option value="user">{t.userLabel}</option>
                     </select>
                 </div>
 
@@ -170,13 +192,13 @@ const AuditLog = () => {
                         <CustomDatePicker
                             selected={filterFrom}
                             onChange={date => setFilterFrom(date)}
-                            placeholder="Dan"
+                            placeholder={t.fromLabel}
                             darkMode={darkMode}
                         />
                         <CustomDatePicker
                             selected={filterTo}
                             onChange={date => setFilterTo(date)}
-                            placeholder="Gacha"
+                            placeholder={t.toLabel}
                             darkMode={darkMode}
                         />
                     </div>
@@ -185,7 +207,7 @@ const AuditLog = () => {
                         <button
                             onClick={() => { setFilterAction(''); setFilterEntity(''); setFilterFrom(null); setFilterTo(null); }}
                             className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase border transition-all active:scale-95 ${darkMode ? 'border-rose-900/50 text-rose-400 hover:bg-rose-900/20' : 'text-rose-500 border-rose-200 hover:bg-rose-50'}`}>
-                            Filtrni Tozalash
+                            {t.filterClear}
                         </button>
                     )}
                 </div>
@@ -194,10 +216,10 @@ const AuditLog = () => {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                    { label: 'Jami', value: logs.length, color: 'blue', icon: Clock },
-                    { label: 'Bugun', value: logs.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length, color: 'emerald', icon: RefreshCw },
-                    { label: "O'chirishlar", value: logs.filter(l => l.action.startsWith('DELETE')).length, color: 'rose', icon: Package },
-                    { label: "Buyurtmalar", value: logs.filter(l => l.entity === 'order').length, color: 'amber', icon: ShoppingCart },
+                    { label: t.all, value: logs.length, color: 'blue', icon: Clock },
+                    { label: t.today, value: logs.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length, color: 'emerald', icon: RefreshCw },
+                    { label: t.deletions, value: logs.filter(l => l.action.startsWith('DELETE')).length, color: 'rose', icon: Package },
+                    { label: t.orders, value: logs.filter(l => l.entity === 'order').length, color: 'amber', icon: ShoppingCart },
                 ].map(stat => (
                     <div key={stat.label} className={`p-4 rounded-2xl border ${tb} relative overflow-hidden group`}>
                         <stat.icon size={40} className={`absolute -right-2 -bottom-2 opacity-10 transition-transform group-hover:scale-110 text-${stat.color}-500`} />
@@ -215,7 +237,7 @@ const AuditLog = () => {
             ) : filteredLogs.length === 0 ? (
                 <div className={`text-center py-20 rounded-3xl border border-dashed ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-300'}`}>
                     <Clock size={48} className={`mx-auto mb-4 opacity-20 ${sec}`} />
-                    <p className={`font-medium ${sec}`}>Hech qanday harakat topilmadi.</p>
+                    <p className={`font-medium ${sec}`}>{t.noActivityFound}</p>
                 </div>
             ) : (
                 <div className={`rounded-3xl border shadow-sm overflow-hidden ${tb}`}>
@@ -224,11 +246,11 @@ const AuditLog = () => {
                         <table className="min-w-full text-sm">
                             <thead>
                                 <tr className={`border-b text-[10px] font-black uppercase tracking-widest ${darkMode ? 'bg-slate-900/60 border-slate-700 text-slate-500' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
-                                    <th className="px-6 py-4 text-left">Vaqt & Sana</th>
-                                    <th className="px-6 py-4 text-left">Foydalanuvchi</th>
-                                    <th className="px-6 py-4 text-left">Harakat</th>
-                                    <th className="px-6 py-4 text-left">ID</th>
-                                    <th className="px-6 py-4 text-left">Tafsilot</th>
+                                    <th className="px-6 py-4 text-left">{t.timeAndDate}</th>
+                                    <th className="px-6 py-4 text-left">{t.userLabel}</th>
+                                    <th className="px-6 py-4 text-left">{t.actionLabel}</th>
+                                    <th className="px-6 py-4 text-left">{t.idLabel}</th>
+                                    <th className="px-6 py-4 text-left">{t.detailLabel}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
@@ -243,7 +265,7 @@ const AuditLog = () => {
                                         <tr key={log.id} className={`transition-all ${darkMode ? 'hover:bg-slate-700/30' : 'hover:bg-slate-50/50'}`}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <p className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                    {new Date(log.createdAt).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                                                    {new Date(log.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                                 <p className={`text-[10px] ${sec} opacity-60`}>
                                                     {new Date(log.createdAt).toLocaleDateString()}
@@ -255,7 +277,7 @@ const AuditLog = () => {
                                                         {(log.username || '?')[0].toUpperCase()}
                                                     </div>
                                                     <span className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                        {log.user?.name || log.username || 'Noma\'lum'}
+                                                        {log.user?.name || log.username || t.unknown}
                                                     </span>
                                                 </div>
                                             </td>
@@ -300,9 +322,9 @@ const AuditLog = () => {
                                                 {(log.username || '?')[0].toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{log.user?.name || log.username || 'Noma\'lum'}</span>
+                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{log.user?.name || log.username || t.unknown}</span>
                                                 <span className={`text-[10px] font-bold ${sec} opacity-60`}>
-                                                    {new Date(log.createdAt).toLocaleDateString()} • {new Date(log.createdAt).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                                                    {new Date(log.createdAt).toLocaleDateString()} • {new Date(log.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                         </div>
@@ -328,7 +350,7 @@ const AuditLog = () => {
                                                     <span className="opacity-60">{k}:</span>
                                                     <span className="font-bold">{String(v)}</span>
                                                 </div>
-                                            )) || 'Tafsilotlar mavjud emas'}
+                                            )) || t.noData}
                                         </div>
                                     )}
                                 </div>
@@ -337,7 +359,7 @@ const AuditLog = () => {
                     </div>
 
                     <div className={`px-6 py-4 border-t text-[10px] font-black uppercase tracking-widest ${sec} ${darkMode ? 'border-slate-700 bg-slate-900/20' : 'border-slate-100 bg-slate-50/50'}`}>
-                        {filteredLogs.length} ta umumiy yozuv • Oxirgi 100 tasi ko'rinmoqda
+                        {typeof t.totalRecords === 'function' ? t.totalRecords(filteredLogs.length) : `${filteredLogs.length} records`} • {t.last100Visible}
                     </div>
                 </div>
             )}

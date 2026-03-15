@@ -10,7 +10,7 @@ import {
 const OrderDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
 
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -29,7 +29,7 @@ const OrderDetails = () => {
             setOrder(res.data);
             setLoading(false);
         } catch (err) {
-            setError("Buyurtma topilmadi");
+            setError(t.noData);
             setLoading(false);
         }
     };
@@ -48,8 +48,8 @@ const OrderDetails = () => {
             setConfirmationModal({ isOpen: false, status: null }); // Close modal
             fetchOrder(); // Refresh full data
         } catch (err) {
-            console.error("Xatolik yuz berdi: " + err.message);
-            alert("Xatolik: " + err.message);
+            console.error(t.errorOccurred + ": " + err.message);
+            alert(t.errorOccurred + ": " + err.message);
         }
     };
 
@@ -83,16 +83,16 @@ const OrderDetails = () => {
 
     const getStatusLabel = (status) => {
         const labels = {
-            'NEW': 'Yangi',
-            'EXPECTED': 'Kutilmoqda (To\'lov qilingan)',
-            'CHECKED': 'Tekshirildi',
-            'COMPLETED': 'Yakunlandi (Skladga kirim)',
-            'CANCELLED': 'Bekor qilindi'
+            'NEW': t.status_NEW,
+            'EXPECTED': t.status_EXPECTED,
+            'CHECKED': t.status_CHECKED,
+            'COMPLETED': t.status_COMPLETED,
+            'CANCELLED': t.status_CANCELLED
         };
         return labels[status] || status;
     };
 
-    if (loading) return <div className="p-10 text-center">Yuklanmoqda...</div>;
+    if (loading) return <div className="p-10 text-center">{t.loading}</div>;
     if (error) return <div className="p-10 text-center text-red-500">{error}</div>;
 
     const allChecked = order.items.every(i => i.checked);
@@ -110,13 +110,13 @@ const OrderDetails = () => {
                 </button>
                 <div>
                     <h1 className={`text-2xl font-bold flex items-center gap-3 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                        Buyurtma #{order.id}
+                        {t.orders} #{order.id}
                         <span className={`text-xs px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                             {getStatusLabel(order.status)}
                         </span>
                     </h1>
                     <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Yaratilgan vaqt: {new Date(order.createdAt).toLocaleString()}
+                        {t.createdTime}: {new Date(order.createdAt).toLocaleString()}
                     </p>
                 </div>
             </div>
@@ -128,17 +128,17 @@ const OrderDetails = () => {
                     <div className={`p-6 rounded-3xl border shadow-sm ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                         <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                             <Package className="text-blue-500" size={20} />
-                            Buyurtma Tarkibi
+                            {t.orderComposition}
                         </h2>
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className={`text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-slate-400 border-slate-700' : 'text-slate-500 border-slate-100'} border-b`}>
                                     <tr>
-                                        <th className="px-4 py-3">Mahsulot</th>
-                                        <th className="px-4 py-3">Tur</th>
-                                        <th className="px-4 py-3 text-center">Soni</th>
-                                        <th className="px-4 py-3 text-right">Narx</th>
+                                        <th className="px-4 py-3">{t.product}</th>
+                                        <th className="px-4 py-3">{t.type}</th>
+                                        <th className="px-4 py-3 text-center">{t.quantityShort}</th>
+                                        <th className="px-4 py-3 text-right">{t.price}</th>
                                         <th className="px-4 py-3 text-center">Status</th>
                                     </tr>
                                 </thead>
@@ -165,7 +165,7 @@ const OrderDetails = () => {
                                                         ? 'text-green-500 hover:bg-green-50'
                                                         : (darkMode ? 'text-slate-600 hover:text-slate-400' : 'text-slate-300 hover:text-slate-500')
                                                         } ${order.status !== 'CHECKED' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                    title={order.status === 'CHECKED' ? (item.checked ? "Tekshirilgan" : "Tekshirish") : "Faqat tekshiruv jarayonida o'zgartirish mumkin"}
+                                                    title={order.status === 'CHECKED' ? (item.checked ? t.verified : t.verify) : t.onlyInCheckMode}
                                                 >
                                                     {item.checked ? <CheckSquare size={20} /> : <Square size={20} />}
                                                 </button>
@@ -175,7 +175,7 @@ const OrderDetails = () => {
                                 </tbody>
                                 <tfoot className={`border-t ${darkMode ? 'border-slate-700' : 'border-slate-100'}`}>
                                     <tr>
-                                        <td colSpan="3" className={`px-4 py-4 text-right font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Jami:</td>
+                                        <td colSpan="3" className={`px-4 py-4 text-right font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.total}:</td>
                                         <td className={`px-4 py-4 text-right font-bold text-lg ${darkMode ? 'text-white' : 'text-slate-800'}`}>
                                             ${order.totalAmount.toLocaleString()}
                                         </td>
@@ -192,7 +192,7 @@ const OrderDetails = () => {
                     {/* Customer / Destination Info */}
                     <div className={`p-6 rounded-3xl border shadow-sm ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                         <h3 className={`text-sm font-semibold uppercase tracking-wider mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {order.destinationType === 'WAREHOUSE' ? "Qabul Qiluvchi (Maqsad)" : "Mijoz Ma'lumotlari"}
+                            {order.destinationType === 'WAREHOUSE' ? t.destinationInfo : t.customerInfo}
                         </h3>
 
                         {order.destinationType === 'WAREHOUSE' ? (
@@ -202,10 +202,10 @@ const OrderDetails = () => {
                                         <Package size={24} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Manzil</p>
-                                        <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>Bosh Omborxona (Sklad)</p>
+                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.addressLabel}</p>
+                                        <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{t.mainWarehouse}</p>
                                         <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                            Tovarlar tekshiruvdan o'tgach, avtomatik ravishda sklad zaxirasiga qo'shiladi.
+                                            {t.itemsAddedToStock}
                                         </p>
                                     </div>
                                 </div>
@@ -224,7 +224,7 @@ const OrderDetails = () => {
                                         </p>
                                         {/* Display 'Doimiy Mijoz' or 'Oddiy Mijoz' based on logic if needed, currently storing 'type' in customer */}
                                         <p className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                            ({order.customer?.type === 'vip' ? 'Doimiy Mijoz' : 'Mijoz'})
+                                            ({order.customer?.type === 'vip' ? t.regularCustomer : t.customer})
                                         </p>
                                     </div>
                                 </div>
@@ -233,7 +233,7 @@ const OrderDetails = () => {
                                         <Phone size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Telefon</p>
+                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.phone}</p>
                                         <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{order.customer?.phone || '-'}</p>
                                     </div>
                                 </div>
@@ -242,8 +242,8 @@ const OrderDetails = () => {
                                         <MapPin size={18} />
                                     </div>
                                     <div>
-                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Manzil</p>
-                                        <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{order.customer?.address || 'Kiritilmagan'}</p>
+                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.addressLabel}</p>
+                                        <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{order.customer?.address || t.notSelected}</p>
                                         {order.customer?.lat && order.customer?.lng && (
                                             <a
                                                 href={`https://www.google.com/maps?q=${order.customer.lat},${order.customer.lng}`}
@@ -251,7 +251,7 @@ const OrderDetails = () => {
                                                 rel="noopener noreferrer"
                                                 className="text-xs text-blue-500 hover:underline flex items-center gap-1 mt-1"
                                             >
-                                                Xaritada ko'rish
+                                                {t.openInMap}
                                             </a>
                                         )}
                                     </div>
@@ -263,7 +263,7 @@ const OrderDetails = () => {
                     {/* Workflow Actions */}
                     <div className={`p-6 rounded-3xl border shadow-sm ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                         <h3 className={`text-sm font-semibold uppercase tracking-wider mb-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Harakatlar
+                            {t.actions}
                         </h3>
 
                         <div className="space-y-3">
@@ -274,9 +274,9 @@ const OrderDetails = () => {
                                         className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-200/50"
                                     >
                                         <Upload size={18} />
-                                        To'lovni Tasdiqlash
+                                        {t.confirmPayment}
                                     </button>
-                                    <p className="text-xs text-center text-slate-400">To'lov chekini yuklash hozircha shart emas</p>
+                                    <p className="text-xs text-center text-slate-400">{t.uploadReceiptLaterHint}</p>
                                 </>
                             )}
 
@@ -286,7 +286,7 @@ const OrderDetails = () => {
                                     className="w-full py-3 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-indigo-200/50"
                                 >
                                     <CheckCircle size={18} />
-                                    Tekshiruvni Boshlash
+                                    {t.startCheck}
                                 </button>
                             )}
 
@@ -295,7 +295,7 @@ const OrderDetails = () => {
                                     <div className={`p-3 rounded-xl border mb-3 ${allChecked ? 'bg-green-50 border-green-100 text-green-700' : 'bg-amber-50 border-amber-100 text-amber-700'}`}>
                                         <div className="flex items-center gap-2 text-sm font-medium">
                                             <AlertCircle size={16} />
-                                            {allChecked ? "Barcha tovarlar tekshirildi" : "Ba'zi tovarlar tekshirilmagan"}
+                                            {allChecked ? t.allCheckedMsg : t.someNotCheckedMsg}
                                         </div>
                                     </div>
                                     <button
@@ -307,7 +307,7 @@ const OrderDetails = () => {
                                             }`}
                                     >
                                         <Truck size={18} />
-                                        Skladga Kirim Qilish
+                                        {t.receiveToWarehouseSubmit}
                                     </button>
                                 </>
                             )}
@@ -317,8 +317,8 @@ const OrderDetails = () => {
                                     <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <CheckCircle size={24} />
                                     </div>
-                                    <h4 className="font-semibold text-green-700">Buyurtma Yakunlangan</h4>
-                                    <p className="text-sm text-green-600 mt-1">Tovarlar skladga qo'shildi</p>
+                                    <h4 className="font-semibold text-green-700">{t.orderCompleted}</h4>
+                                    <p className="text-sm text-green-600 mt-1">{t.itemsAddedToStock}</p>
                                 </div>
                             )}
                         </div>
@@ -331,10 +331,10 @@ const OrderDetails = () => {
                 isOpen={confirmationModal.isOpen}
                 onClose={() => setConfirmationModal({ isOpen: false, status: null })}
                 onConfirm={proceedWithStatusUpdate}
-                title="Tasdiqlaysizmi?"
+                title={t.confirmAction}
                 message={
                     <span>
-                        Buyurtma statusini <span className="font-bold text-blue-500">{getStatusLabel(confirmationModal.status)}</span> ga o'zgartirmoqchisiz.
+                        {t.statusUpdateWarning(getStatusLabel(confirmationModal.status))}
                     </span>
                 }
                 status={confirmationModal.status}

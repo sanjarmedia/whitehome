@@ -7,21 +7,11 @@ import {
 } from 'lucide-react';
 import OrderModal from '../components/OrderModal';
 
-const STATUS_LABELS = {
-    NEW: 'Yangi',
-    EXPECTED: 'Kutilmoqda',
-    CHECKED: 'Tekshirildi',
-    COMPLETED: 'Yakunlangan',
-    DELIVERED: 'Yetkazildi',
-    CANCELLED: 'Bekor',
-    PENDING_APPROVAL: 'Tasdig\'ini kutmoqda',
-    APPROVED: 'Tasdiqlandi',
-    REJECTED: 'Rad etildi',
-};
+// STATUS_LABELS is moved or handled inside the component with 't'
 
 const OrdersList = () => {
     const navigate = useNavigate();
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('ALL');
@@ -80,15 +70,15 @@ const OrdersList = () => {
         const isCustomer = sourceFilter === 'CUSTOMER_ISSUE';
         const isCompany = sourceFilter === 'COMPANY';
         const tabs = [
-            { id: 'ALL', label: 'Barchasi', icon: FileText },
+            { id: 'ALL', label: t.all, icon: FileText },
         ];
         if (!isCustomer) {
-            tabs.push({ id: 'NEW', label: 'Yangi', icon: Clock });
-            tabs.push({ id: 'ACTIVE', label: 'Faol', icon: Truck });
+            tabs.push({ id: 'NEW', label: t.new, icon: Clock });
+            tabs.push({ id: 'ACTIVE', label: t.active, icon: Truck });
         }
-        tabs.push({ id: 'PENDING_APPROVAL', label: 'Tasdig\'ini kutmoqda', icon: AlertTriangle, special: true });
-        tabs.push({ id: 'COMPLETED', label: 'Yakunlangan', icon: CheckCircle });
-        tabs.push({ id: 'REJECTED', label: 'Bekor / Rad etilgan', icon: XCircle });
+        tabs.push({ id: 'PENDING_APPROVAL', label: t.pendingApproval, icon: AlertTriangle, special: true });
+        tabs.push({ id: 'COMPLETED', label: t.completed, icon: CheckCircle });
+        tabs.push({ id: 'REJECTED', label: t.rejected, icon: XCircle });
         return tabs;
     };
 
@@ -129,7 +119,9 @@ const OrdersList = () => {
 
     const handleBulkOrder = async () => {
         if (!lowStockProducts || lowStockProducts.length === 0) return;
-        const confirmMsg = `Haqiqatdan ham yetishmayotgan barcha ${lowStockProducts.length} turdagi mahsulotlarni korxona buyurtmasi qilib yubormoqchimisiz? (Har biriga 10 ta miqdor yoziladi, keyin tahrirlashingiz mumkin)`;
+        const confirmMsg = t.noData.includes('yuklanmadi') 
+            ? `Haqiqatdan ham yetishmayotgan barcha ${lowStockProducts.length} turdagi mahsulotlarni korxona buyurtmasi qilib yubormoqchimisiz?` 
+            : `Вы действительно хотите заказать все ${lowStockProducts.length} видов недостающих товаров?`;
         if (!window.confirm(confirmMsg)) return;
 
         setLoading(true);
@@ -146,11 +138,11 @@ const OrdersList = () => {
                 orderSource: 'COMPANY',
                 destinationType: 'WAREHOUSE',
                 status: 'NEW',
-                notes: 'Avtomatik ravishda yetishmayotgan mahsulotlar asosida tuzildi.',
+                notes: t.auditLog.includes('Audit') ? 'Avtomatik ravishda yetishmayotgan mahsulotlar asosida tuzildi.' : 'Создано автоматически на основе недостающих товаров.',
                 items: items
             });
 
-            alert('Buyurtma muvaffaqiyatli shakllantirildi!');
+            alert(t.noData.includes('yuklanmadi') ? 'Buyurtma muvaffaqiyatli shakllantirildi!' : 'Заказ успешно сформирован!');
             setSourceFilter('COMPANY');
             setActiveTab('ALL');
             fetchOrders();
@@ -162,8 +154,9 @@ const OrdersList = () => {
     };
 
     if (loading) return (
-        <div className="p-8 flex justify-center">
+        <div className="p-8 flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
+            <p className={darkMode ? 'text-slate-400' : 'text-slate-500'}>{t.loading}</p>
         </div>
     );
 
@@ -172,9 +165,9 @@ const OrdersList = () => {
 
     // Manba filter pills
     const sourceOptions = [
-        { id: 'ALL', label: 'Barchasi', icon: null },
-        { id: 'COMPANY', label: 'Korxona Buyurtmasi', icon: Building2, color: 'blue' },
-        { id: 'CUSTOMER_ISSUE', label: 'Mijozga Berilgan', icon: Users, color: 'emerald' },
+        { id: 'ALL', label: t.all, icon: null },
+        { id: 'COMPANY', label: t.company, icon: Building2, color: 'blue' },
+        { id: 'CUSTOMER_ISSUE', label: t.customerIssue, icon: Users, color: 'emerald' },
     ];
 
     return (
@@ -182,9 +175,9 @@ const OrdersList = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Buyurtmalar</h1>
+                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.orders}</h1>
                     <p className={`text-sm mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Jami {orders.length} ta buyurtma
+                        {t.totalOrders}: {orders.length}
                     </p>
                 </div>
                 <div className="relative">
@@ -193,7 +186,7 @@ const OrdersList = () => {
                         className="bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5"
                     >
                         <Plus size={20} />
-                        Yangi Buyurtma
+                        {t.newOrders.slice(0, -1)}
                         <ChevronDown size={16} className={`transition-transform ${newOrderMenu ? 'rotate-180' : ''}`} />
                     </button>
                     {newOrderMenu && (
@@ -204,8 +197,8 @@ const OrdersList = () => {
                             >
                                 <Building2 size={16} className="text-blue-500" />
                                 <div>
-                                    <div className="font-medium">Korxona Buyurtmasi</div>
-                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sklad uchun import</div>
+                                    <div className="font-medium">{t.company} {t.orders.slice(0, -1)}</div>
+                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.auditLog.includes('Audit') ? 'Sklad uchun import' : 'Импорт для склада'}</div>
                                 </div>
                             </button>
                             <div className={`border-t ${darkMode ? 'border-slate-700' : 'border-slate-100'}`} />
@@ -215,8 +208,8 @@ const OrdersList = () => {
                             >
                                 <Users size={16} className="text-emerald-500" />
                                 <div>
-                                    <div className="font-medium">Mijoz Shakillantirish</div>
-                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sklad ichidan berish</div>
+                                    <div className="font-medium">{t.issue}</div>
+                                    <div className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.auditLog.includes('Audit') ? 'Sklad ichidan berish' : 'Выдача со склада'}</div>
                                 </div>
                             </button>
                         </div>
@@ -231,7 +224,7 @@ const OrdersList = () => {
                         <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-500" />
                         <div className="w-full">
                             <p className={`font-semibold text-sm ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>
-                                {lowStockProducts.length} ta mahsulot kam qoldi!
+                                {lowStockProducts.length} {t.lowStockAlert}!
                             </p>
                             <p className={`text-xs mt-0.5 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
                                 {lowStockProducts.slice(0, 4).map(p => `${p.name} (${p.quantity} ta)`).join(', ')}
@@ -243,7 +236,7 @@ const OrdersList = () => {
                         onClick={handleBulkOrder}
                         className={`shrink-0 w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl shadow-sm transition-all hover:-translate-y-0.5 ${darkMode ? 'bg-amber-600 text-white hover:bg-amber-500 shadow-amber-900/40' : 'bg-amber-500 text-white hover:bg-amber-400 shadow-amber-500/30'}`}
                     >
-                        <Building2 size={16} /> Barchasini buyurtma qilish
+                        <Building2 size={16} /> {t.bulkOrder}
                     </button>
                 </div>
             )}
@@ -334,7 +327,7 @@ const OrdersList = () => {
             <div className="grid gap-3">
                 {filteredOrders.length === 0 ? (
                     <div className={`text-center py-12 rounded-2xl border border-dashed ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-300'}`}>
-                        <p className={darkMode ? 'text-slate-400' : 'text-slate-500'}>Bu bo'limda buyurtmalar yo'q.</p>
+                        <p className={darkMode ? 'text-slate-400' : 'text-slate-500'}>{t.noData}</p>
                     </div>
                 ) : (
                     filteredOrders.map(order => {
@@ -358,7 +351,7 @@ const OrdersList = () => {
                                         <div className="flex items-center gap-2">
                                             <span className={`text-lg font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>#{order.id}</span>
                                             <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase border tracking-tight ${getStatusColor(order.status)}`}>
-                                                {STATUS_LABELS[order.status] || order.status}
+                                                {t[order.status.toLowerCase()] || order.status}
                                             </span>
                                         </div>
                                         <span className={`text-[10px] font-bold md:hidden ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
@@ -371,12 +364,12 @@ const OrdersList = () => {
                                         {isCustomerIssue ? (
                                             <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-emerald-900/40 text-emerald-400 border-emerald-700/50' : 'bg-emerald-100 text-emerald-700 border-emerald-200'}`}>
                                                 <Users size={12} className="text-emerald-500" />
-                                                Mijoz issue
+                                                {t.customerIssue}
                                             </span>
                                         ) : (
                                             <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-slate-700 text-slate-300 border-slate-600' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
                                                 <Building2 size={12} className="text-blue-500" />
-                                                Korxona
+                                                {t.company}
                                             </span>
                                         )}
                                         <span className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border tracking-tight ${darkMode ? 'bg-slate-900/40 text-slate-500 border-slate-700' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>
@@ -384,7 +377,7 @@ const OrdersList = () => {
                                         </span>
                                     </div>
                                     <h3 className={`text-base font-black truncate mb-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                        {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? 'Bosh Omborxona' : 'Noma\'lum')}
+                                        {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? (t.auditLog.includes('Audit') ? 'Bosh Omborxona' : 'Главный склад') : (t.auditLog.includes('Audit') ? 'Noma\'lum' : 'Неизвестно'))}
                                     </h3>
 
                                     <div className={`grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4`}>
@@ -396,15 +389,13 @@ const OrdersList = () => {
                                             <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Jami Summa</p>
                                             <p className={`text-sm font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${(order.totalAmount || 0).toLocaleString()}</p>
                                         </div>
-                                        {(order.paidAmount > 0 || order.status === 'NEW') && (
-                                            <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
-                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>To'langan</p>
+                                         <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.paidAmount}</p>
                                                 <p className="text-sm font-black text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</p>
                                             </div>
-                                        )}
                                         {((order.totalAmount || 0) > (order.status === 'NEW' ? 0 : (order.paidAmount || 0))) && (
-                                            <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
-                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Qarz</p>
+                                         <div className={`p-2 rounded-xl border ${darkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                                                <p className={`text-[9px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.debt}</p>
                                                 <p className={`text-sm font-black ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${((order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</p>
                                             </div>
                                         )}
@@ -417,19 +408,19 @@ const OrdersList = () => {
                                         {order.status === 'NEW' && order.orderSource === 'COMPANY' && (
                                             <button onClick={() => setActiveModal({ order, mode: 'view' })}
                                                 className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-500/20'}`}>
-                                                <Upload size={14} /> Tasdiq
+                                                <Upload size={14} /> {t.auditLog.includes('Audit') ? 'Tasdiq' : 'Подтвердить'}
                                             </button>
                                         )}
                                         {['EXPECTED', 'PAID_WAITING'].includes(order.status) && order.orderSource === 'COMPANY' && (
                                             <button onClick={() => setActiveModal({ order, mode: 'view' })}
                                                 className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-indigo-600 text-white hover:bg-indigo-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-500/20'}`}>
-                                                <CheckCircle size={14} /> Qabul
+                                                <CheckCircle size={14} /> {t.auditLog.includes('Audit') ? 'Qabul' : 'Принять'}
                                             </button>
                                         )}
                                         {order.status === 'CHECKED' && order.orderSource === 'COMPANY' && (
                                             <button onClick={() => setActiveModal({ order, mode: 'view' })}
                                                 className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase flex items-center justify-center gap-2 transition-all active:scale-95 ${darkMode ? 'bg-emerald-600 text-white hover:bg-emerald-500' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-md shadow-emerald-500/20'}`}>
-                                                <Truck size={14} /> Taqsim
+                                                <Truck size={14} /> {t.auditLog.includes('Audit') ? 'Taqsim' : 'Распределить'}
                                             </button>
                                         )}
 
@@ -480,6 +471,7 @@ const OrdersList = () => {
                     order={activeModal.order}
                     defaultMode={activeModal.mode}
                     darkMode={darkMode}
+                    t={t}
                     onClose={() => setActiveModal(null)}
                     onSaved={() => { setActiveModal(null); fetchOrders(); }}
                 />

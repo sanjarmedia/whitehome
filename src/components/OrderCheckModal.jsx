@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import api from '../api/axios';
 import { X, Upload, Check, AlertCircle, Camera, FileText } from 'lucide-react';
 
-const OrderCheckModal = ({ order, onClose, darkMode }) => {
+const OrderCheckModal = ({ order, onClose, darkMode, t }) => {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
     const [items, setItems] = useState(order.items || []);
@@ -21,7 +21,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
     };
 
     const handlePaymentSubmit = async () => {
-        if (!file) return alert("Iltimos, to'lov chekini yuklang!");
+        if (!file) return alert(t.uploadReceipt);
         setLoading(true);
         try {
             const formData = new FormData();
@@ -36,7 +36,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
             onClose();
         } catch (err) {
             console.error(err);
-            alert("Xatolik bo'ldi");
+            alert(t.errorOccurred);
         } finally {
             setLoading(false);
         }
@@ -56,7 +56,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
     };
 
     const handleCancelOrder = async () => {
-        if (!confirm("Haqiqatan ham ushbu buyurtmani bekor qilmoqchimisiz?")) return;
+        if (!confirm(t.confirmCancelOrder)) return;
         setLoading(true);
         try {
             await api.put(`/orders/${order.id}/status`, { status: 'CANCELLED' });
@@ -85,7 +85,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
 
     const handleArrivalSubmit = async () => {
         if (!isFullyReceived && !notes.trim()) {
-            return alert("Buyurtma to'liq emas! Iltimos, nima yetishmasligini izohda yozib qoldiring.");
+            return alert(t.incompleteOrderError);
         }
 
         setLoading(true);
@@ -125,9 +125,9 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                 <div className={`p-6 border-b flex justify-between items-center ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                     <div>
                         <h2 className={`text-2xl font-black tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
-                            {isNew ? "To'lovni Tasdiqlash" :
-                                isExpected ? "Qabul Qilish va Tekshirish" :
-                                    isChecked ? "Taqsimlash" : "Buyurtma Tafsilotlari"}
+                            {isNew ? t.confirmPayment :
+                                isExpected ? t.receiveAndCheck :
+                                    isChecked ? t.distribution : t.orderDetails}
                         </h2>
                         <div className="flex items-center gap-2 mt-1">
                             <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-500'}`}>ID: #{order.id}</span>
@@ -144,7 +144,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                     <div className={`p-5 rounded-3xl border transition-all ${darkMode ? 'bg-slate-800/30 border-slate-800/50 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-600'}`}>
                         <div className="grid grid-cols-2 gap-6">
                             <div>
-                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-1">Mijoz va Manzil</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-1">{t.customerAndAddress}</label>
                                 <div className={`font-bold ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{order.customer?.name}</div>
                                 {order.customer?.phone && <div className="text-xs opacity-70 mt-1">{order.customer.phone}</div>}
                                 {order.customer?.address && (
@@ -160,7 +160,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                                 rel="noreferrer"
                                                 className="mt-2 text-blue-500 hover:underline flex items-center gap-1 font-bold"
                                             >
-                                                Xaritada ochish →
+                                                {t.openInMap} →
                                             </a>
                                         )}
                                     </div>
@@ -168,12 +168,12 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                             </div>
                             <div className="text-right flex flex-col justify-between">
                                 <div>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-1">Jami Summa</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-1">{t.total}</label>
                                     <div className="font-black text-2xl text-blue-500">${order.totalAmount.toFixed(2)}</div>
                                 </div>
                                 <div className="mt-4">
                                     <span className={`text-[10px] font-black px-3 py-1 rounded-full uppercase ${darkMode ? 'bg-slate-700 text-slate-300' : 'bg-white shadow-sm text-slate-600'}`}>
-                                        Status: {order.status}
+                                        {t.status}: {order.status}
                                     </span>
                                 </div>
                             </div>
@@ -192,8 +192,8 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                     <div className={`p-4 rounded-2xl ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
                                         <Upload size={32} className="text-blue-500" />
                                     </div>
-                                    <span className="font-bold text-lg">{file ? file.name : "To'lov chekini yuklang"}</span>
-                                    <p className="text-xs opacity-60">PDF yoki Rasm holatida (max 5MB)</p>
+                                    <span className="font-bold text-lg">{file ? file.name : t.uploadReceipt}</span>
+                                    <p className="text-xs opacity-60">{t.uploadFileHint}</p>
                                 </div>
                             </label>
 
@@ -202,14 +202,14 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                     onClick={handleCancelOrder}
                                     className={`py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${darkMode ? 'bg-slate-800 text-slate-400 hover:bg-rose-500/10 hover:text-rose-500' : 'bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-500'}`}
                                 >
-                                    Bekor Qilish
+                                    {t.cancel.toUpperCase()}
                                 </button>
                                 <button
                                     onClick={handlePaymentSubmit}
                                     disabled={loading || !file}
                                     className="py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-500/30 hover:bg-blue-700 disabled:opacity-50 transition-all active:scale-95"
                                 >
-                                    {loading ? "Yuborilmoqda..." : "Tasdiqlash"}
+                                    {loading ? t.uploading : t.confirm}
                                 </button>
                             </div>
                         </div>
@@ -219,10 +219,10 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                     {!isNew && (
                         <div className="space-y-4">
                             <div className="flex justify-between items-end mb-2">
-                                <h3 className={`text-sm font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Mahsulotlar Tekshiruvi</h3>
+                                <h3 className={`text-sm font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.productCheck}</h3>
                                 {!isNew && (
                                     <span className={`text-[10px] font-bold ${isFullyReceived ? 'text-emerald-500' : 'text-amber-500'}`}>
-                                        {isFullyReceived ? "Hammasi to'liq" : "Qisman kelgan/topshirilgan"}
+                                        {isFullyReceived ? t.allReceived : t.partiallyReceived}
                                     </span>
                                 )}
                             </div>
@@ -239,7 +239,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <span className="text-[10px] font-black uppercase text-blue-500">{item.category}</span>
                                                     <span className="w-1 h-1 rounded-full bg-slate-500"></span>
-                                                    <span className="text-[10px] font-black uppercase text-slate-500">{item.quantity} ta buyurtma</span>
+                                                    <span className="text-[10px] font-black uppercase text-slate-500">{item.quantity} {t.itemsOrdered}</span>
                                                 </div>
                                             </div>
 
@@ -261,8 +261,8 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col items-end">
-                                                    <div className={`text-sm font-black ${item.receivedQuantity < item.quantity ? 'text-amber-500' : (darkMode ? 'text-slate-100' : 'text-slate-900')}`}>{item.receivedQuantity || 0} ta</div>
-                                                    <div className="text-[10px] font-bold text-slate-500 uppercase">Qabul qilindi</div>
+                                                    <div className={`text-sm font-black ${item.receivedQuantity < item.quantity ? 'text-amber-500' : (darkMode ? 'text-slate-100' : 'text-slate-900')}`}>{item.receivedQuantity || 0} {t.unitPiece}</div>
+                                                    <div className="text-[10px] font-bold text-slate-500 uppercase">{t.received}</div>
                                                 </div>
                                             )}
                                         </div>
@@ -273,14 +273,14 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                             {/* Notes Section */}
                             <div className="pt-4">
                                 <label className={`text-xs font-black uppercase tracking-widest mb-2 block ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    Izoh / Kommentariy {!isFullyReceived && isExpected && <span className="text-rose-500">* (Majburiy)</span>}
+                                    {t.notesComment} {!isFullyReceived && isExpected && <span className="text-rose-500">* ({t.required})</span>}
                                 </label>
                                 <textarea
                                     className={`w-full p-4 rounded-2xl border-2 transition-all outline-none text-sm resize-none ${darkMode
                                         ? 'bg-slate-800 border-slate-700 text-slate-200 focus:border-blue-500'
                                         : 'bg-slate-50 border-slate-100 text-slate-800 focus:border-blue-500'}`}
                                     rows="3"
-                                    placeholder={isFullyReceived ? "Ixtiyoriy izoh..." : "Nima to'liq emasligini tushuntiring..."}
+                                    placeholder={isFullyReceived ? t.optionalNotesPlaceholder : t.explainMissingNotes}
                                     value={notes}
                                     onChange={(e) => setNotes(e.target.value)}
                                     readOnly={!isExpected && !isChecked}
@@ -293,7 +293,7 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                         onClick={handleCancelOrder}
                                         className={`py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-all ${darkMode ? 'bg-slate-800 text-slate-400 hover:bg-rose-500/10 hover:text-rose-500' : 'bg-slate-100 text-slate-500 hover:bg-rose-50 hover:text-rose-500'}`}
                                     >
-                                        Bekor Qilish
+                                        {t.cancel.toUpperCase()}
                                     </button>
                                 )}
 
@@ -304,14 +304,14 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                             disabled={loading}
                                             className={`py-2 rounded-xl font-bold uppercase tracking-wider text-[10px] border-2 transition-all ${darkMode ? 'border-slate-800 text-slate-400 hover:bg-slate-800' : 'border-slate-100 text-slate-500 hover:bg-slate-50'}`}
                                         >
-                                            {loading ? "..." : "Hozircha Saqlash"}
+                                            {loading ? "..." : t.saveProgress}
                                         </button>
                                         <button
                                             onClick={handleArrivalSubmit}
                                             disabled={loading}
                                             className={`py-3 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl transition-all active:scale-95 ${!isFullyReceived && !notes.trim() ? 'bg-slate-400 cursor-not-allowed opacity-50' : 'bg-indigo-600 shadow-indigo-500/30 hover:bg-indigo-700'}`}
                                         >
-                                            {loading ? "..." : "Taqsimlashga O'tish"}
+                                            {loading ? "..." : t.goToDistribution}
                                         </button>
                                     </div>
                                 )}
@@ -323,14 +323,14 @@ const OrderCheckModal = ({ order, onClose, darkMode }) => {
                                             disabled={loading}
                                             className={`py-2 rounded-xl font-bold uppercase tracking-wider text-[10px] border-2 transition-all ${darkMode ? 'border-slate-800 text-slate-400 hover:bg-slate-800' : 'border-slate-100 text-slate-500 hover:bg-slate-50'}`}
                                         >
-                                            {loading ? "..." : "O'zgarishlarni Saqlash"}
+                                            {loading ? "..." : t.saveChanges}
                                         </button>
                                         <button
                                             onClick={handleDistributionSubmit}
                                             disabled={loading}
                                             className="py-3 bg-emerald-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/30 hover:bg-emerald-700 disabled:opacity-50 transition-all active:scale-95"
                                         >
-                                            {loading ? "..." : order.destinationType === 'WAREHOUSE' ? "Skladga Kirim Qilish" : "Yetkazib Berish"}
+                                            {loading ? "..." : order.destinationType === 'WAREHOUSE' ? t.receiveToWarehouse : t.deliver}
                                         </button>
                                     </div>
                                 )}

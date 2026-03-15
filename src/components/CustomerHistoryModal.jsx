@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Clock, FileText, CreditCard, ChevronDown, ChevronUp, Package, Building2 } from 'lucide-react';
 import api from '../api/axios';
 
-const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
+const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
     const [customerInfo, setCustomerInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedOrders, setExpandedOrders] = useState({});
@@ -20,7 +20,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
             setCustomerInfo(res.data);
         } catch (error) {
             console.error(error);
-            alert("Ma'lumotlarni yuklashda xatolik yuz berdi");
+            alert(t.noData.includes('yuklanmadi') ? "Ma'lumotlarni yuklashda xatolik yuz berdi" : "Ошибка при загрузке данных");
         } finally {
             setLoading(false);
         }
@@ -48,7 +48,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                             {customerInfo?.name?.[0] || 'M'}
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold">{customerInfo?.name || 'Mijoz Tarixi'}</h2>
+                            <h2 className="text-xl font-bold">{customerInfo?.name || t.history}</h2>
                             {customerInfo?.companyName && (
                                 <p className="text-blue-100 text-sm flex items-center gap-1 mt-0.5">
                                     <Building2 size={14} /> {customerInfo.companyName}
@@ -73,7 +73,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                             <div className={`p-4 rounded-2xl border ${border} ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                                 <div className="flex items-center gap-2 text-blue-500 mb-1">
                                     <FileText size={16} />
-                                    <span className="text-sm font-medium">Jami Xaridlar</span>
+                                    <span className="text-sm font-medium">{t.totalPurchases}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
                                     ${(customerInfo.summary?.totalPurchases || 0).toLocaleString()}
@@ -82,7 +82,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                             <div className={`p-4 rounded-2xl border ${border} ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                                 <div className="flex items-center gap-2 text-emerald-500 mb-1">
                                     <CreditCard size={16} />
-                                    <span className="text-sm font-medium">To'langan Summa</span>
+                                    <span className="text-sm font-medium">{t.totalPaid}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
                                     ${(customerInfo.summary?.totalPaid || 0).toLocaleString()}
@@ -91,7 +91,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                             <div className={`p-4 rounded-2xl border ${border} ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                                 <div className="flex items-center gap-2 text-rose-500 mb-1">
                                     <Clock size={16} />
-                                    <span className="text-sm font-medium">Qolgan Qarz</span>
+                                    <span className="text-sm font-medium">{t.remainingDebt}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
                                     ${(customerInfo.summary?.debt || 0).toLocaleString()}
@@ -102,7 +102,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                         {/* Combined History Timeline */}
                         <div>
                             <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${textMain}`}>
-                                <Clock size={20} className="text-indigo-500" /> Barcha Tranzaksiyalar Tarixi
+                                <Clock size={20} className="text-indigo-500" /> {t.transactions}
                             </h3>
 
                             {/* Merge and sort Orders and Payments */}
@@ -113,7 +113,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                 const history = [...orders, ...payments].sort((a, b) => b.date - a.date);
 
                                 if (history.length === 0) {
-                                    return <div className={`text-center py-8 ${textMuted}`}>Bu mijozda hech qanday tarix yo'q.</div>;
+                                    return <div className={`text-center py-8 ${textMuted}`}>{t.noData}</div>;
                                 }
 
                                 return (
@@ -130,13 +130,13 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                                             onClick={() => toggleOrder(order.id)}
                                                         >
                                                             <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                                                                 <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                                                                     <Package size={20} />
                                                                 </div>
                                                                 <div>
-                                                                    <div className={`font-bold ${textMain}`}>Buyurtma #{order.id}</div>
+                                                                    <div className={`font-bold ${textMain}`}>{t.orders.slice(0, -1)} #{order.id}</div>
                                                                     <div className={`text-xs ${textMuted}`}>
-                                                                        {new Date(order.createdAt).toLocaleString('uz-UZ')}
+                                                                        {new Date(order.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -145,7 +145,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                                                 <div className="text-left sm:text-right">
                                                                     <div className={`font-bold ${textMain}`}>${(order.totalAmount || 0).toLocaleString()}</div>
                                                                     <div className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-block mt-1 ${order.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
-                                                                        {order.status}
+                                                                        {t[`status_${order.status}`] || order.status}
                                                                     </div>
                                                                 </div>
                                                                 <div className={textMuted}>
@@ -162,7 +162,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                                                         <div key={i} className="flex justify-between items-center text-sm">
                                                                             <div className="flex items-center gap-2">
                                                                                 <div className={`w-1.5 h-1.5 rounded-full ${darkMode ? 'bg-slate-600' : 'bg-slate-300'}`} />
-                                                                                <span className={textMain}>{it.product?.name || 'Noma\'lum mahsulot'}</span>
+                                                                                <span className={textMain}>{it.product?.name || t.unknown}</span>
                                                                                 <span className={textMuted}>x {it.quantity}</span>
                                                                             </div>
                                                                             <span className={`font-medium ${textMain}`}>${(it.price * it.quantity).toLocaleString()}</span>
@@ -171,7 +171,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                                                     
                                                                     {/* Order Payment Summary */}
                                                                     <div className={`mt-3 pt-3 border-t border-dashed ${border} flex justify-between items-center text-sm`}>
-                                                                        <span className={textMuted}>Berilgan boshlang'ich to'lov (avans):</span>
+                                                                        <span className={textMuted}>{t.paidAmount}:</span>
                                                                         <span className="font-semibold text-emerald-500">${(order.paidAmount || 0).toLocaleString()}</span>
                                                                     </div>
                                                                 </div>
@@ -188,9 +188,9 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                                                                 <CreditCard size={20} />
                                                             </div>
                                                             <div>
-                                                                <div className={`font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>To'lov qilindi</div>
+                                                                <div className={`font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>{t.payment}</div>
                                                                 <div className={`text-xs ${textMuted}`}>
-                                                                    {new Date(payment.createdAt).toLocaleString('uz-UZ')}
+                                                                    {new Date(payment.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
                                                                     {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                                                                 </div>
                                                             </div>
@@ -214,7 +214,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode }) => {
                 {/* Footer */}
                 <div className={`p-4 border-t ${border} bg-slate-50/50 dark:bg-slate-800/80 shrink-0 text-right`}>
                     <button onClick={onClose} className="px-6 py-2.5 rounded-xl font-medium border bg-white dark:bg-slate-700 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors">
-                        Yopish
+                        {t.close}
                     </button>
                 </div>
             </div>

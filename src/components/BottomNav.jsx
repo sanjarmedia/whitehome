@@ -1,14 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ShoppingCart, Tag, Package, Menu } from 'lucide-react';
 
-const BottomNav = ({ darkMode, onOpenMenu }) => {
+const BottomNav = ({ darkMode, onOpenMenu, t }) => {
     const location = useLocation();
 
     const navItems = [
-        { to: '/', label: 'Asosiy', icon: LayoutDashboard },
-        { to: '/orders', label: 'Buyurtma', icon: ShoppingCart },
-        { to: '/products', label: 'Sklad', icon: Tag },
-        { to: '/inventory', label: 'Inventar', icon: Package },
+        { to: '/', label: t.dashboard.split(' ')[0], icon: LayoutDashboard },
+        { to: '/orders', label: t.orders.slice(0, -1), icon: ShoppingCart },
+        { to: '/products', label: t.products, icon: Tag },
+        { to: '/inventory', label: t.inventory, icon: Package },
     ];
 
     return (
@@ -56,7 +56,7 @@ const BottomNav = ({ darkMode, onOpenMenu }) => {
                     <div className="p-2 rounded-xl">
                         <Menu size={20} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-tighter">Yana</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter">{t.all}</span>
                 </button>
             </div>
         </div>

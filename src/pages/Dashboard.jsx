@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { RefreshCw, TrendingUp, ShoppingBag, CheckCircle, AlertTriangle, ArrowUpRight, ArrowDownRight, Minus, Users, PieChart as PieIcon, Phone, MapPin, X, Building2, CreditCard } from 'lucide-react';
+import { RefreshCw, TrendingUp, ShoppingBag, CheckCircle, AlertTriangle, ArrowUpRight, ArrowDownRight, Minus, Users, PieChart as PieIcon, Phone, MapPin, X, Building2, CreditCard, Package, Globe } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, AreaChart, Area, Legend } from 'recharts';
 
 const Dashboard = () => {
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
@@ -47,8 +47,8 @@ const Dashboard = () => {
 
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 animate-slide-in relative z-10">
                 <div>
-                    <h1 className={`text-3xl sm:text-4xl font-thin tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Boshqaruv Paneli</h1>
-                    <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Bugungi holat va statistika</p>
+                    <h1 className={`text-3xl sm:text-4xl font-thin tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.dashboard}</h1>
+                    <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.noData.includes('yuklanmadi') ? 'Bugungi holat va statistika' : 'Сегодняшнее состояние и статистика'}</p>
                 </div>
                 <button
                     onClick={fetchStats}
@@ -65,63 +65,83 @@ const Dashboard = () => {
             <div className="space-y-8 pb-20 relative">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 relative z-10">
                     <StatCard
-                        title="Jami Buyurtmalar"
+                        title={t.totalOrders}
                         value={stats.counts.total}
                         icon={ShoppingBag}
                         color="bg-blue-50 text-blue-600"
-                        trend="Jami buyurtma"
+                        trend={t.totalOrders}
                         trendType="info"
                         delay="0.1s"
                         darkMode={darkMode}
                     />
                     <StatCard
-                        title="Yangi Buyurtmalar"
+                        title={t.newOrders}
                         value={stats.counts.new}
                         icon={AlertTriangle}
                         color="bg-amber-50 text-amber-600"
-                        trend="Kutilmoqda"
+                        trend={t.newOrders}
                         trendType="neutral"
                         delay="0.2s"
                         darkMode={darkMode}
                     />
                     <StatCard
-                        title="Tugallangan"
+                        title={t.completed}
                         value={stats.counts.completed}
                         icon={CheckCircle}
                         color="bg-emerald-50 text-emerald-600"
-                        trend="Muvaffaqiyatli"
+                        trend={t.completed}
                         trendType="up"
                         delay="0.3s"
                         darkMode={darkMode}
                     />
                     <StatCard
-                        title="Jami Tushum (Sotuv)"
+                        title={t.revenue}
                         value={`$${stats.revenue.toLocaleString()}`}
                         icon={TrendingUp}
                         color="bg-indigo-50 text-indigo-600"
-                        trend="Mijozga sotuv"
+                        trend={t.revenue}
                         trendType="up"
                         delay="0.4s"
                         darkMode={darkMode}
                     />
                     <StatCard
-                        title="Jami Rasxod (Zakaz)"
+                        title={t.expense}
                         value={`$${(stats.totalExpense || 0).toLocaleString()}`}
                         icon={ShoppingBag}
                         color="bg-orange-50 text-orange-600"
-                        trend="Omborga zakaz"
+                        trend={t.expense}
                         trendType="down"
                         delay="0.5s"
                         darkMode={darkMode}
                     />
                     <StatCard
-                        title="Umumiy Qarzlar"
+                        title={t.debt}
                         value={`$${(stats.totalDebt || 0).toLocaleString()}`}
                         icon={Users}
                         color="bg-rose-50 text-rose-600"
-                        trend="Mijozlardan"
+                        trend={t.debt}
                         trendType="down"
                         delay="0.6s"
+                        darkMode={darkMode}
+                    />
+                    <StatCard
+                        title={t.stockValue}
+                        value={`$${(stats.totalStockValue || 0).toLocaleString()}`}
+                        icon={Package}
+                        color="bg-emerald-50 text-emerald-600"
+                        trend={`${stats.totalStockItems || 0} ${t.quantity.toLowerCase()}`}
+                        trendType="info"
+                        delay="0.7s"
+                        darkMode={darkMode}
+                    />
+                    <StatCard
+                        title={t.onlineOrders}
+                        value={stats.counts.online || 0}
+                        icon={Globe}
+                        color="bg-purple-50 text-purple-600"
+                        trend={t.onlineOrders}
+                        trendType="info"
+                        delay="0.8s"
                         darkMode={darkMode}
                     />
                 </div>
@@ -253,7 +273,7 @@ const Dashboard = () => {
                                     </div>
                                     <div>
                                         <p className={`font-semibold text-sm line-clamp-1 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                            {order.destinationType === 'WAREHOUSE' ? 'Omborxona (Sklad)' : (order.customer?.name || 'Mijoz')}
+                                            {order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : (order.customer?.name || t.customer)}
                                         </p>
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <span className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</span>

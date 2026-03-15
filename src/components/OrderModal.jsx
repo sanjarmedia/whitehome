@@ -14,33 +14,30 @@ const getFileUrl = (path) => {
     return `${window.location.protocol}//${window.location.hostname}:3000/${clean}`;
 };
 
-const STATUS_OPTIONS = [
-    { value: 'NEW', label: 'Yangi' },
-    { value: 'EXPECTED', label: 'Kutilmoqda' },
-    { value: 'CHECKED', label: 'Tekshirildi' },
-    { value: 'COMPLETED', label: 'Yakunlangan' },
-    { value: 'DELIVERED', label: 'Yetkazildi' },
-    { value: 'CANCELLED', label: 'Bekor' },
-    { value: 'PENDING_APPROVAL', label: "Tasdig'ini kutmoqda" },
-    { value: 'REJECTED', label: 'Rad etildi' },
-];
-
-const STATUS_COLORS = {
-    NEW: 'bg-amber-100 text-amber-800',
-    EXPECTED: 'bg-blue-100 text-blue-800',
-    CHECKED: 'bg-indigo-100 text-indigo-800',
-    COMPLETED: 'bg-emerald-100 text-emerald-800',
-    DELIVERED: 'bg-green-100 text-green-800',
-    CANCELLED: 'bg-rose-100 text-rose-800',
-    PENDING_APPROVAL: 'bg-amber-100 text-amber-800',
-    REJECTED: 'bg-rose-100 text-rose-800',
-};
-
-// ─────────────────────────────────────────────
-//  Universal Order Modal  (view + edit)
-// ─────────────────────────────────────────────
-const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view' }) => {
+const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t }) => {
     const [mode, setMode] = useState(defaultMode);
+
+    const STATUS_OPTIONS = [
+        { value: 'NEW', label: t.new },
+        { value: 'EXPECTED', label: t.expected },
+        { value: 'CHECKED', label: t.checked },
+        { value: 'COMPLETED', label: t.completed },
+        { value: 'DELIVERED', label: t.delivered },
+        { value: 'CANCELLED', label: t.cancelled },
+        { value: 'PENDING_APPROVAL', label: t.pendingApproval },
+        { value: 'REJECTED', label: t.rejected },
+    ];
+
+    const STATUS_COLORS = {
+        NEW: 'bg-amber-100 text-amber-800',
+        EXPECTED: 'bg-blue-100 text-blue-800',
+        CHECKED: 'bg-indigo-100 text-indigo-800',
+        COMPLETED: 'bg-emerald-100 text-emerald-800',
+        DELIVERED: 'bg-green-100 text-green-800',
+        CANCELLED: 'bg-rose-100 text-rose-800',
+        PENDING_APPROVAL: 'bg-amber-100 text-amber-800',
+        REJECTED: 'bg-rose-100 text-rose-800',
+    };
 
     // VIEW state
     const [loading, setLoading] = useState(false);
@@ -125,13 +122,13 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view' })
             }
             await api.put(`/orders/${order.id}/status`, { status: 'EXPECTED', paymentReceipt: receiptPath, notes: viewNotes });
             onSaved ? onSaved() : onClose();
-        } catch { alert("Xatolik bo'ldi"); }
+        } catch { alert(t.noData.includes('yuklanmadi') ? "Xatolik bo'ldi" : "Произошла ошибка"); }
         finally { setLoading(false); }
     };
 
     const handleStatusAction = async (newStatus) => {
         if (newStatus === 'CHECKED' && !isFullyReceived && !viewNotes.trim())
-            return alert("Buyurtma to'liq emas — izoh yozing.");
+            return alert(t.noData.includes('yuklanmadi') ? "Buyurtma to'liq emas — izoh yozing." : "Заказ не полон — напишите примечание.");
         setLoading(true);
         try {
             const finalStatus = newStatus === 'DISTRIBUTE'
@@ -180,53 +177,53 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view' })
 <body>
 <div class="header">
   <div>
-    <div class="logo">📦 Inventar Tizimi</div>
-    <div class="order-id">Buyurtma #${order.id} • ${new Date(order.createdAt).toLocaleDateString('uz-UZ')}</div>
+    <div class="logo">📦 ${t.auditLog.includes('Audit') ? 'Inventar Tizimi' : 'Система инвентаризации'}</div>
+    <div class="order-id">${t.orders.slice(0, -1)} #${order.id} • ${new Date(order.createdAt).toLocaleDateString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}</div>
   </div>
-  <span class="status-badge">${order.status}</span>
+  <span class="status-badge">${t[order.status.toLowerCase()] || order.status}</span>
 </div>
 
 <div class="section">
-  <h3>Buyurtma ma'lumotlari</h3>
+  <h3>${t.auditLog.includes('Audit') ? 'Buyurtma ma\'lumotlari' : 'Информация о заказе'}</h3>
   <div class="info-grid">
-    <div class="info-item"><label>Mijoz</label><span>${order.customer?.name || '—'}</span></div>
-    <div class="info-item"><label>Telefon</label><span>${order.customer?.phone || '—'}</span></div>
-    <div class="info-item"><label>Manzil</label><span>${order.customer?.address || '—'}</span></div>
-    <div class="info-item"><label>Tur</label><span>${order.orderSource === 'CUSTOMER_ISSUE' ? 'Mijozga Berilgan' : 'Korxona Buyurtmasi'}</span></div>
+    <div class="info-item"><label>${t.customers.slice(0, -1)}</label><span>${order.customer?.name || '—'}</span></div>
+    <div class="info-item"><label>${t.phone}</label><span>${order.customer?.phone || '—'}</span></div>
+    <div class="info-item"><label>${t.address}</label><span>${order.customer?.address || '—'}</span></div>
+    <div class="info-item"><label>${t.auditLog.includes('Audit') ? 'Tur' : 'Тип'}</label><span>${order.orderSource === 'CUSTOMER_ISSUE' ? t.customerIssue : t.company}</span></div>
   </div>
 </div>
 
 <div class="section">
-  <h3>Mahsulotlar</h3>
+  <h3>${t.products}</h3>
   <table>
-    <thead><tr><th>#</th><th>Mahsulot</th><th>Soni</th><th>Narx</th><th>Jami</th></tr></thead>
+    <thead><tr><th>#</th><th>${t.name}</th><th>${t.quantity}</th><th>${t.price}</th><th>${t.total}</th></tr></thead>
     <tbody>
-      ${(order.items || []).map((item, i) => `<tr><td>${i + 1}</td><td>${item.productName}</td><td>${item.quantity} ta</td><td>$${Number(item.price).toFixed(2)}</td><td>$${(item.quantity * item.price).toFixed(2)}</td></tr>`).join('')}
-      <tr class="total-row"><td colspan="4" style="text-align:right;padding-right:16px">JAMI:</td><td class="total-amount">$${Number(order.totalAmount).toFixed(2)}</td></tr>
+      ${(order.items || []).map((item, i) => `<tr><td>${i + 1}</td><td>${item.productName}</td><td>${item.quantity} ${t.auditLog.includes('Audit') ? 'ta' : 'шт'}</td><td>$${Number(item.price).toFixed(2)}</td><td>$${(item.quantity * item.price).toFixed(2)}</td></tr>`).join('')}
+      <tr class="total-row"><td colspan="4" style="text-align:right;padding-right:16px">${t.total.toUpperCase()}:</td><td class="total-amount">$${Number(order.totalAmount).toFixed(2)}</td></tr>
     </tbody>
   </table>
 </div>
 
-${order.notes ? `<div class="section"><h3>Izoh</h3><p style="font-size:13px;color:#475569">${order.notes}</p></div>` : ''}
+${order.notes ? `<div className="section"><h3>${t.notes}</h3><p style="font-size:13px;color:#475569">${order.notes}</p></div>` : ''}
 
-${receiptUrl ? `<div class="receipt-section"><h3>💳 To'lov Cheki</h3>${isPdf ? `<a href="${receiptUrl}" target="_blank" style="color:#16a34a;font-weight:600">PDF chekni ko'rish →</a>` : `<img class="receipt-img" src="${receiptUrl}" alt="To'lov cheki" />`}</div>` : ''}
+${receiptUrl ? `<div class="receipt-section"><h3>💳 ${t.auditLog.includes('Audit') ? 'To\'lov Cheki' : 'Чек оплаты'}</h3>${isPdf ? `<a href="${receiptUrl}" target="_blank" style="color:#16a34a;font-weight:600">${t.auditLog.includes('Audit') ? 'PDF chekni ko\'rish →' : 'Смотреть PDF чек →'}</a>` : `<img class="receipt-img" src="${receiptUrl}" alt="${t.auditLog.includes('Audit') ? 'To\'lov cheki' : 'Чек оплаты'}" />`}</div>` : ''}
 
 ${(order.payments && order.payments.length > 0) ? `
 <div class="section" style="margin-top:24px">
-  <h3 style="color:#10b981; border-bottom:1px solid #d1fae5; padding-bottom:8px; margin-bottom:12px">💳 To'lovlar Tarixi</h3>
+  <h3 style="color:#10b981; border-bottom:1px solid #d1fae5; padding-bottom:8px; margin-bottom:12px">💳 ${t.transactions}</h3>
   <table>
-    <thead><tr><th>Sana</th><th>O'tkazma nomi (Izoh)</th><th style="text-align:right">Summa</th></tr></thead>
+    <thead><tr><th>${t.auditLog.includes('Audit') ? 'Sana' : 'Дата'}</th><th>${t.notes}</th><th style="text-align:right">${t.sum}</th></tr></thead>
     <tbody>
-      ${order.payments.map(p => `<tr><td>${new Date(p.createdAt).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td><td>${p.note || '—'}</td><td style="text-align:right; font-weight:600; color:#10b981">$${Number(p.amount).toLocaleString()}</td></tr>`).join('')}
+      ${order.payments.map(p => `<tr><td>${new Date(p.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td><td>${p.note || '—'}</td><td style="text-align:right; font-weight:600; color:#10b981">$${Number(p.amount).toLocaleString()}</td></tr>`).join('')}
     </tbody>
   </table>
   <div style="text-align:right; margin-top:8px; font-size:14px; font-weight:bold; color:#059669">
-     Jami to'langan: $${Number(order.paidAmount || 0).toLocaleString()}
+     ${t.paidAmount}: $${Number(order.paidAmount || 0).toLocaleString()}
   </div>
 </div>
 ` : ''}
 
-<div class="footer">Hisobot ${new Date().toLocaleString('uz-UZ')} da shakllantirildi</div>
+<div class="footer">${t.report} ${new Date().toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')} ${t.auditLog.includes('Audit') ? 'da shakllantirildi' : 'сформирован'}</div>
 </body></html>`;
         const w = window.open('', '_blank');
         w.document.write(html);
@@ -279,7 +276,7 @@ ${(order.payments && order.payments.length > 0) ? `
     };
 
     const handleAddPayment = async () => {
-        if (!newPaymentAmount || Number(newPaymentAmount) <= 0) return alert("To'lov summasi kiritilmadi.");
+        if (!newPaymentAmount || Number(newPaymentAmount) <= 0) return alert(t.noData.includes('yuklanmadi') ? "To'lov summasi kiritilmadi." : "Сумма оплаты не введена.");
         setIsAddingPayment(true);
         try {
             let receiptUrl = null;
@@ -301,7 +298,7 @@ ${(order.payments && order.payments.length > 0) ? `
             setNewPaymentNote('');
             setNewPaymentFile(null);
             if (onSaved) onSaved();
-            alert("To'lov muvaffaqiyatli saqlandi!");
+            alert(t.noData.includes('yuklanmadi') ? "To'lov muvaffaqiyatli saqlandi!" : "Оплата успешно сохранена!");
         } catch (err) {
             alert("Xatolik: " + (err.response?.data?.error || err.message));
         } finally {
@@ -349,14 +346,14 @@ ${(order.payments && order.payments.length > 0) ? `
                         <div>
                             <div className="flex items-center gap-2">
                                 <span className={`font-semibold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                                    Buyurtma #{order.id}
+                                    {t.orders.slice(0, -1)} #{order.id}
                                 </span>
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${STATUS_COLORS[order.status] || 'bg-slate-100 text-slate-600'}`}>
                                     {STATUS_OPTIONS.find(s => s.value === order.status)?.label || order.status}
                                 </span>
                             </div>
                             <p className={`text-xs mt-0.5 ${sec}`}>
-                                {order.customer?.name || "Mijoz yo'q"} • {new Date(order.createdAt).toLocaleDateString('uz-UZ')}
+                                {order.customer?.name || t.noCustomer} • {new Date(order.createdAt).toLocaleDateString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
                             </p>
                         </div>
                         <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -368,7 +365,7 @@ ${(order.payments && order.payments.length > 0) ? `
                                         ? (darkMode ? 'bg-slate-700 text-slate-100 shadow' : 'bg-white text-slate-800 shadow-sm')
                                         : sec}`}
                                 >
-                                    <Eye size={12} /> Ko'rish
+                                    <Eye size={12} /> {t.view}
                                 </button>
                                 <button
                                     onClick={() => setMode('edit')}
@@ -376,15 +373,15 @@ ${(order.payments && order.payments.length > 0) ? `
                                         ? 'bg-blue-600 text-white shadow'
                                         : sec}`}
                                 >
-                                    <Pencil size={12} /> Tahrirlash
+                                    <Pencil size={12} /> {t.edit}
                                 </button>
                             </div>
                             <button
                                 onClick={handlePrint}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors border ${darkMode ? 'border-slate-600 text-slate-400 hover:bg-slate-700 hover:text-slate-200' : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}
-                                title="Hisobot chiqarish"
+                                title={t.report}
                             >
-                                <Printer size={13} /> Hisobot
+                                <Printer size={13} /> {t.report}
                             </button>
                             <button onClick={onClose} className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
                                 <X size={18} />
@@ -402,9 +399,9 @@ ${(order.payments && order.payments.length > 0) ? `
                                 <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <p className={`text-xs font-semibold uppercase ${sec}`}>{order.destinationType === 'WAREHOUSE' ? 'Yuboriladigan manzil' : 'Mijoz'}</p>
+                                            <p className={`text-xs font-semibold uppercase ${sec}`}>{order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : t.customers.slice(0, -1)}</p>
                                             <p className={`font-bold mt-0.5 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                                                {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? 'Bosh Omborxona' : '—')}
+                                                {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : '—')}
                                             </p>
                                             {order.customer?.phone && <p className={`text-xs ${sec}`}>{order.customer.phone}</p>}
                                             {order.customer?.address && (
@@ -419,19 +416,19 @@ ${(order.payments && order.payments.length > 0) ? `
                                             )}
                                         </div>
                                         <div className="text-right">
-                                            <p className={`text-xs font-semibold uppercase ${sec}`}>Summa</p>
+                                            <p className={`text-xs font-semibold uppercase ${sec}`}>{t.sum}</p>
                                             <div className="flex flex-col items-end gap-1 mt-1">
                                                 <div className="flex justify-between w-40">
-                                                    <span className={`text-sm ${sec}`}>Jami:</span>
+                                                    <span className={`text-sm ${sec}`}>{t.total}:</span>
                                                     <span className={`text-sm font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>${(order.totalAmount || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="flex justify-between w-40">
-                                                    <span className={`text-sm ${sec}`}>To'landi:</span>
+                                                    <span className={`text-sm ${sec}`}>{t.paidAmount}:</span>
                                                     <span className="text-sm font-semibold text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</span>
                                                 </div>
                                                 <div className="w-40 border-t my-0.5 border-slate-200 dark:border-slate-700"></div>
                                                 <div className="flex justify-between w-40">
-                                                    <span className={`text-sm font-semibold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>Qarz:</span>
+                                                    <span className={`text-sm font-semibold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>{t.remainingDebt}:</span>
                                                     <span className={`font-black text-lg ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${Math.max(0, (order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</span>
                                                 </div>
                                             </div>
@@ -442,7 +439,7 @@ ${(order.payments && order.payments.length > 0) ? `
                                 {/* To'lovlar tarixi View */}
                                 {(order.payments && order.payments.length > 0) && (
                                     <div className={`p-4 rounded-xl border ${darkMode ? 'bg-emerald-900/10 border-emerald-700/30' : 'bg-emerald-50 border-emerald-200'}`}>
-                                        <h4 className={`text-xs font-semibold uppercase mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>💳 To'lovlar Tarixi</h4>
+                                        <h4 className={`text-xs font-semibold uppercase mb-3 ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>💳 {t.transactions}</h4>
                                         <div className="space-y-2">
                                             {order.payments.map((p, pIdx) => (
                                                 <div key={p.id || pIdx} className={`flex items-center justify-between p-2.5 rounded-lg bg-white/50 dark:bg-slate-800/50 border ${darkMode ? 'border-slate-700' : 'border-slate-100'} backdrop-blur-sm`}>
@@ -451,9 +448,9 @@ ${(order.payments && order.payments.length > 0) ? `
                                                             {new Date(p.createdAt).toLocaleString('uz-UZ', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                                                         </p>
                                                         <div className="flex items-center gap-2">
-                                                            <p className={`text-sm font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{p.note || "Izohsiz to'lov"}</p>
+                                                            <p className={`text-sm font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{p.note || t.notSelected}</p>
                                                             {p.receiptUrl && (
-                                                                <a href={getFileUrl(p.receiptUrl)} target="_blank" rel="noreferrer" title="Chekni ko'rish" className="text-blue-500 hover:text-blue-600 transition-colors">
+                                                                <a href={getFileUrl(p.receiptUrl)} target="_blank" rel="noreferrer" title={t.viewFull} className="text-blue-500 hover:text-blue-600 transition-colors">
                                                                     <FileImage size={15} />
                                                                 </a>
                                                             )}
@@ -475,16 +472,16 @@ ${(order.payments && order.payments.length > 0) ? `
                                             <input type="file" className="hidden" onChange={e => setFile(e.target.files[0])} accept="image/*,.pdf" />
                                             <Upload size={28} className="mx-auto mb-2 text-blue-500" />
                                             <p className={`font-semibold text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                                {file ? file.name : "To'lov chekini yuklang (Ixtiyoriy)"}
+                                                {file ? file.name : t.uploadReceipt}
                                             </p>
-                                            <p className={`text-xs mt-1 ${sec}`}>PDF yoki Rasm (max 5MB)</p>
+                                            <p className={`text-xs mt-1 ${sec}`}>PDF / Image (max 5MB)</p>
                                         </label>
                                         <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                             <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${darkMode ? 'bg-slate-800 text-rose-400 hover:bg-rose-900/20' : 'bg-slate-100 text-rose-600 hover:bg-rose-50'}`}>
-                                                Bekor qilish
+                                                {t.cancel}
                                             </button>
                                             <button onClick={handlePaymentSubmit} disabled={loading} className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 disabled:opacity-50 transition-all">
-                                                {loading ? 'Yuborilmoqda...' : (file ? 'To\'lov bilan tasdiqlash' : 'Qarzga tasdiqlash')}
+                                                {loading ? t.loading : (file ? t.confirmWithPayment : t.confirmDebt)}
                                             </button>
                                         </div>
                                     </div>
@@ -516,13 +513,13 @@ ${(order.payments && order.payments.length > 0) ? `
                                                         />
                                                         {(item.receivedQuantity !== '' && item.receivedQuantity > item.quantity) && (
                                                             <span className="text-[10px] text-rose-500 font-semibold animate-pulse">
-                                                                Ko'payib ketdi (Buyurtma: {item.quantity})
+                                                                {t.auditLog.includes('Audit') ? `Ko'payib ketdi (Buyurtma: ${item.quantity})` : `Превышено (Заказ: ${item.quantity})`}
                                                             </span>
                                                         )}
                                                     </div>
                                                 ) : (
                                                     <span className={`text-sm font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                                                        {item.receivedQuantity || item.quantity} ta
+                                                        {item.receivedQuantity || item.quantity} {t.auditLog.includes('Audit') ? 'ta' : 'шт'}
                                                     </span>
                                                 )}
                                             </div>
@@ -535,7 +532,7 @@ ${(order.payments && order.payments.length > 0) ? `
                                     <textarea
                                         rows={2}
                                         className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm resize-none transition-colors ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200'} ${(!isExpected && !isChecked) ? 'opacity-60' : ''}`}
-                                        placeholder="Izoh..."
+                                        placeholder={t.notes}
                                         value={viewNotes}
                                         onChange={e => setViewNotes(e.target.value)}
                                         readOnly={!isExpected && !isChecked}
@@ -550,11 +547,11 @@ ${(order.payments && order.payments.length > 0) ? `
                                         <div className={`p-3 rounded-xl border ${darkMode ? 'bg-emerald-900/10 border-emerald-700/30' : 'bg-emerald-50 border-emerald-200'}`}>
                                             <div className="flex items-center justify-between mb-2">
                                                 <p className="text-xs font-semibold text-emerald-600 uppercase flex items-center gap-1.5">
-                                                    <FileImage size={13} /> To'lov Cheki
+                                                    <FileImage size={13} /> {t.auditLog.includes('Audit') ? 'To\'lov Cheki' : 'Чек оплаты'}
                                                 </p>
                                                 <a href={recUrl} target="_blank" rel="noreferrer"
                                                     className="text-xs text-emerald-600 hover:text-emerald-700 font-medium underline">
-                                                    To'liq ko'rish →
+                                                    {t.auditLog.includes('Audit') ? 'To\'liq ko\'rish →' : 'Смотреть полностью →'}
                                                 </a>
                                             </div>
                                             {isPdf
@@ -569,24 +566,24 @@ ${(order.payments && order.payments.length > 0) ? `
                                 {order.status === 'PENDING_APPROVAL' && (
                                     <div className={`flex gap-3 p-4 rounded-xl border ${darkMode ? 'bg-amber-900/10 border-amber-700/30' : 'bg-amber-50 border-amber-200'}`}>
                                         <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                                        <p className={`text-sm ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>Sklad yetarli emas. Admin tasdig'i kutilmoqda.</p>
+                                        <p className={`text-sm ${darkMode ? 'text-amber-300' : 'text-amber-800'}`}>{t.auditLog.includes('Audit') ? 'Sklad yetarli emas. Admin tasdig\'i kutilmoqda.' : 'Недостаточно на складе. Ожидается подтверждение админа.'}</p>
                                     </div>
                                 )}
 
                                 {/* Action buttons */}
                                 {isExpected && (
                                     <div className="flex flex-col sm:flex-row gap-3">
-                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>Bekor qilish</button>
+                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>{t.cancel}</button>
                                         <button onClick={() => handleStatusAction('CHECKED')} disabled={loading} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                                            {loading ? '...' : "Taqsimlashga o'tish"}
+                                            {loading ? '...' : t.distribute}
                                         </button>
                                     </div>
                                 )}
                                 {isChecked && (
                                     <div className="flex flex-col sm:flex-row gap-3">
-                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>Bekor qilish</button>
+                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>{t.cancel}</button>
                                         <button onClick={() => handleStatusAction('DISTRIBUTE')} disabled={loading} className="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50">
-                                            {loading ? '...' : order.destinationType === 'WAREHOUSE' ? 'Skladga kirim' : 'Yetkazib berish'}
+                                            {loading ? '...' : order.destinationType === 'WAREHOUSE' ? t.auditLog.includes('Audit') ? 'Skladga kirim' : 'Приход на склад' : (t.auditLog.includes('Audit') ? 'Yetkazib berish' : 'Доставка')}
                                         </button>
                                     </div>
                                 )}
@@ -599,15 +596,15 @@ ${(order.payments && order.payments.length > 0) ? `
                                 {/* Status + Mijoz */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div>
-                                        <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>Status</label>
+                                        <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>{t.status}</label>
                                         <select className={inp} value={editStatus} onChange={e => setEditStatus(e.target.value)}>
                                             {STATUS_OPTIONS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                                         </select>
                                     </div>
-                                    <div>
-                                        <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>Mijoz</label>
+                                     <div>
+                                        <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>{t.customers.slice(0, -1)}</label>
                                         <select className={inp} value={editCustomerId} onChange={e => setEditCustomerId(e.target.value)}>
-                                            <option value="">Tanlanmagan</option>
+                                            <option value="">{t.notSelected}</option>
                                             {customers.map(c => <option key={c.id} value={c.id}>{c.name}{c.phone ? ` — ${c.phone}` : ''}</option>)}
                                         </select>
                                     </div>
@@ -615,13 +612,13 @@ ${(order.payments && order.payments.length > 0) ? `
 
                                 {/* Mahsulotlar */}
                                 <div>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <label className={`text-xs font-semibold uppercase ${sec}`}>Mahsulotlar</label>
+                                     <div className="flex justify-between items-center mb-2">
+                                        <label className={`text-xs font-semibold uppercase ${sec}`}>{t.products}</label>
                                         <button
                                             onClick={() => setEditItems(p => [...p, { productId: '', productName: '', quantity: 1, price: 0, category: '' }])}
                                             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${darkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
                                         >
-                                            <Plus size={12} /> Qo'shish
+                                            <Plus size={12} /> {t.add}
                                         </button>
                                     </div>
                                     <div className="space-y-2">
@@ -629,30 +626,30 @@ ${(order.payments && order.payments.length > 0) ? `
                                             <div key={idx} className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                                                 <div className="flex gap-2 flex-wrap md:flex-nowrap items-end">
                                                     <div className="flex-1 min-w-[120px]">
-                                                        {idx === 0 && <label className={`hidden sm:block text-[10px] font-semibold mb-1 uppercase ${sec}`}>Mahsulot</label>}
+                                                        {idx === 0 && <label className={`hidden sm:block text-[10px] font-semibold mb-1 uppercase ${sec}`}>{t.product}</label>}
                                                         <div className="relative">
                                                             <Package size={12} className={`absolute left-2.5 top-2.5 ${sec}`} />
                                                             <select className={`${inp} pl-7 w-full`} value={item.productId || ''} onChange={e => handleEditItemChange(idx, 'productId', e.target.value)}>
-                                                                <option value="">Qo'lda kiriting</option>
-                                                                {products.map(p => <option key={p.id} value={p.id}>{p.name} [Sklad: {p.quantity}]</option>)}
+                                                                <option value="">{t.enterManually}</option>
+                                                                {products.map(p => <option key={p.id} value={p.id}>{p.name} [{t.stockLabel}: {p.quantity}]</option>)}
                                                             </select>
                                                         </div>
                                                         {!item.productId && (
-                                                            <input type="text" className={`${inp} mt-1 w-full`} placeholder="Mahsulot nomi" value={item.productName} onChange={e => handleEditItemChange(idx, 'productName', e.target.value)} />
+                                                            <input type="text" className={`${inp} mt-1 w-full`} placeholder={t.productNamePlaceholder} value={item.productName} onChange={e => handleEditItemChange(idx, 'productName', e.target.value)} />
                                                         )}
                                                     </div>
                                                     <div className="flex gap-2 w-full sm:w-auto">
                                                         <div className="flex-1 sm:w-20">
-                                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>Soni</label>}
+                                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>{t.quantityLabel}</label>}
                                                             <input type="number" min="1" className={`${inp} text-center w-full`} value={item.quantity} onChange={e => handleEditItemChange(idx, 'quantity', e.target.value)} />
                                                         </div>
                                                         <div className="flex-1 sm:w-28">
-                                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>Narx ($)</label>}
+                                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>{t.price} ($)</label>}
                                                             <input type="number" min="0" step="0.01" className={`${inp} w-full`} value={item.price} onChange={e => handleEditItemChange(idx, 'price', e.target.value)} />
                                                         </div>
                                                     </div>
                                                     <div className="w-full sm:w-20 text-right sm:text-right flex items-center sm:block justify-between mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-0 border-dashed border-slate-200 dark:border-slate-700">
-                                                        {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>Jami</label>}
+                                                        {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${sec}`}>{t.total}</label>}
                                                         <div className={`py-2 text-sm font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                                             ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(0)}
                                                         </div>
@@ -669,16 +666,16 @@ ${(order.payments && order.payments.length > 0) ? `
                                         ))}
                                     </div>
                                     <div className={`flex flex-col items-end mt-2 pt-2 border-t gap-2 ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
-                                        <span className={`text-sm ${sec}`}>Jami: <span className="text-lg font-bold text-blue-600 ml-2">${editTotal.toFixed(0)}</span></span>
+                                        <span className={`text-sm ${sec}`}>{t.total}: <span className="text-lg font-bold text-blue-600 ml-2">${editTotal.toFixed(0)}</span></span>
                                     </div>
                                 </div>
 
                                 {/* Yangi To'lov qo'shish */}
                                 <div className={`p-4 rounded-xl border ${darkMode ? 'bg-emerald-900/10 border-emerald-700/40' : 'bg-emerald-50/50 border-emerald-200'}`}>
                                     <div className="flex items-center justify-between mb-3">
-                                        <label className={`text-xs font-semibold uppercase ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>💳 Yangi To'lov Qo'shish</label>
+                                        <label className={`text-xs font-semibold uppercase ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>💳 {t.addPayment}</label>
                                         <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${darkMode ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-600 border'}`}>
-                                            Hozirgi qarz: ${Math.max(0, (order.totalAmount || 0) - (order.paidAmount || 0)).toLocaleString()}
+                                            {t.currentDebt}: ${Math.max(0, (order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}
                                         </span>
                                     </div>
                                     <div className="flex flex-col sm:flex-row gap-3 items-end">
@@ -686,7 +683,7 @@ ${(order.payments && order.payments.length > 0) ? `
                                             <input
                                                 type="number" min="0" step="0.01"
                                                 className={`w-full px-3 py-2 border rounded-lg outline-none text-sm font-semibold transition-colors ${darkMode ? 'bg-slate-800 border-slate-600 text-slate-100 focus:border-emerald-500' : 'bg-white border-slate-300 text-slate-800 focus:border-emerald-500'}`}
-                                                placeholder="Summa ($)"
+                                                placeholder={`${t.price} ($)`}
                                                 value={newPaymentAmount}
                                                 onChange={e => setNewPaymentAmount(e.target.value)}
                                             />
@@ -695,14 +692,14 @@ ${(order.payments && order.payments.length > 0) ? `
                                             <input
                                                 type="text"
                                                 className={`w-full px-3 py-2 border rounded-lg outline-none text-sm transition-colors ${darkMode ? 'bg-slate-800 border-slate-600 text-slate-100 focus:border-emerald-500' : 'bg-white border-slate-300 text-slate-800 focus:border-emerald-500'}`}
-                                                placeholder="Izoh (Karta, Naqd pul...)"
+                                                placeholder={t.paymentNotePlaceholder}
                                                 value={newPaymentNote}
                                                 onChange={e => setNewPaymentNote(e.target.value)}
                                             />
                                         </div>
                                         <div className="flex-[2] w-full">
                                             <label className={`flex items-center justify-center w-full px-3 py-2 border border-dashed rounded-lg cursor-pointer text-sm font-medium transition-colors ${darkMode ? 'hover:bg-emerald-900/30 text-emerald-400 border-emerald-700' : 'hover:bg-emerald-50 text-emerald-600 border-emerald-300'}`}>
-                                                {newPaymentFile ? <span className="truncate max-w-[120px]">{newPaymentFile.name}</span> : <><Upload size={14} className="mr-1" /> Chek yuklash</>}
+                                                {newPaymentFile ? <span className="truncate max-w-[120px]">{newPaymentFile.name}</span> : <><Upload size={14} className="mr-1" /> {t.uploadReceipt}</>}
                                                 <input
                                                     type="file"
                                                     accept="image/*,.pdf"
@@ -716,15 +713,15 @@ ${(order.payments && order.payments.length > 0) ? `
                                             disabled={isAddingPayment || !newPaymentAmount}
                                             className="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition-colors"
                                         >
-                                            {isAddingPayment ? '...' : "Qo'shish"}
+                                            {isAddingPayment ? '...' : t.add}
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Izoh */}
                                 <div>
-                                    <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>Izoh</label>
-                                    <textarea rows={2} className={`${inp} resize-none`} placeholder="Qo'shimcha ma'lumot..." value={editNotes} onChange={e => setEditNotes(e.target.value)} />
+                                     <label className={`block text-xs font-semibold mb-1 uppercase ${sec}`}>{t.notes}</label>
+                                    <textarea rows={2} className={`${inp} resize-none`} placeholder={t.notes} value={editNotes} onChange={e => setEditNotes(e.target.value)} />
                                 </div>
                             </div>
                         )}
@@ -740,21 +737,23 @@ ${(order.payments && order.payments.length > 0) ? `
                                     : darkMode ? 'border-slate-600 text-rose-400 hover:bg-rose-900/20' : 'border-rose-200 text-rose-600 hover:bg-rose-50'}`}
                             >
                                 {deleting ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <Trash2 size={14} />}
-                                {confirmDelete ? "Tasdiqlang!" : "O'chirish"}
+                                {confirmDelete ? t.confirmDeleteWarning : t.delete}
                             </button>
                             {confirmDelete && (
-                                <button onClick={() => setConfirmDelete(false)} className={`text-xs px-3 py-2 rounded-lg ${sec}`}>Bekor</button>
+                                <button onClick={() => setConfirmDelete(false)} className={`text-xs px-3 py-2 rounded-lg ${sec}`}>
+                                    {t.cancel}
+                                </button>
                             )}
                             <div className="flex gap-2 ml-auto">
                                 <button onClick={onClose} className={`px-4 py-2.5 rounded-xl text-sm transition-colors ${sec} ${darkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}>
-                                    Yopish
+                                    {t.close}
                                 </button>
                                 <button
                                     onClick={handleSaveEdit} disabled={saving}
                                     className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/30 disabled:opacity-60 transition-all hover:-translate-y-0.5"
                                 >
                                     {saving ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
-                                    Saqlash
+                                    {t.save}
                                 </button>
                             </div>
                         </div>

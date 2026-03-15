@@ -23,14 +23,15 @@ const LocationPicker = ({ position, onLocationSelect }) => {
     return position ? <Marker position={position} /> : null;
 };
 
-const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
+const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
         type: 'regular',
         address: '',
         lat: 41.2995, // Default Tashkent
-        lng: 69.2401
+        lng: 69.2401,
+        telegram: ''
     });
 
     useEffect(() => {
@@ -42,7 +43,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                 address: customer.address || '',
                 lat: customer.lat || 41.2995,
                 lng: customer.lng || 69.2401,
-                companyName: customer.companyName || ''
+                companyName: customer.companyName || '',
+                telegram: customer.telegram || ''
             });
         } else {
             // Reset for new customer
@@ -53,7 +55,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                 address: '',
                 lat: 41.2995,
                 lng: 69.2401,
-                companyName: ''
+                companyName: '',
+                telegram: ''
             });
         }
     }, [customer, isOpen]);
@@ -77,6 +80,24 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
         }
     };
 
+    const fetchCoordinates = async (address) => {
+        if (!address) return;
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+            const data = await response.json();
+            if (data && data.length > 0) {
+                const { lat, lon } = data[0];
+                setFormData(prev => ({
+                    ...prev,
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lon)
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching coordinates:", error);
+        }
+    };
+
     const handleLocationSelect = (latlng) => {
         setFormData(prev => ({
             ...prev,
@@ -93,7 +114,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                 {/* Header */}
                 <div className={`p-6 border-b flex justify-between items-center ${darkMode ? 'border-slate-700' : 'border-slate-100'}`}>
                     <h2 className={`text-xl font-semibold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                        {customer ? "Mijozni Tahrirlash" : "Yangi Mijoz Qo'shish"}
+                        {customer ? t.editCustomer : t.addCustomer}
                     </h2>
                     <button onClick={onClose} className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
                         <X size={24} />
@@ -107,7 +128,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                             {/* Left Column: Details */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Ism / Familiya</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.name}</label>
                                     <div className="relative">
                                         <User className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
                                         <input
@@ -116,13 +137,12 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                             value={formData.name}
                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                                             className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                            placeholder="Ism Familiya"
+                                            placeholder={t.name}
                                         />
                                     </div>
                                 </div>
-
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Telefon</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.phone}</label>
                                     <div className="relative">
                                         <Phone className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
                                         <input
@@ -136,7 +156,18 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                 </div>
 
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Mijoz Turi</label>
+                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.telegram}</label>
+                                    <input
+                                        type="text"
+                                        value={formData.telegram || ''}
+                                        onChange={e => setFormData({ ...formData, telegram: e.target.value })}
+                                        className={`w-full px-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                                        placeholder="@mijoz_tele"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.customerType}</label>
                                     <div className="flex gap-2">
                                         <button
                                             type="button"
@@ -146,7 +177,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                                 : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-400' : 'bg-white border-slate-200 text-slate-600')
                                                 }`}
                                         >
-                                            Oddiy
+                                            {t.regular}
                                         </button>
                                         <button
                                             type="button"
@@ -166,14 +197,14 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                                 : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-400' : 'bg-white border-slate-200 text-slate-600')
                                                 }`}
                                         >
-                                            Tashkilot
+                                            {t.organization}
                                         </button>
                                     </div>
                                 </div>
 
                                 {formData.type === 'organization' && (
                                     <div className="animate-fade-in">
-                                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Tashkilot Nomi</label>
+                                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.organization} {t.name.toLowerCase()}</label>
                                         <div className="relative">
                                             <Package className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
                                             <input
@@ -182,23 +213,38 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                                 value={formData.companyName || ''}
                                                 onChange={e => setFormData({ ...formData, companyName: e.target.value })}
                                                 className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                                placeholder="Masalan: Mirobod Avinum..."
+                                                placeholder={t.organization}
                                             />
                                         </div>
                                     </div>
                                 )}
 
                                 <div>
-                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Manzil (Matn)</label>
-                                    <div className="relative">
-                                        <MapPin className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
-                                        <input
-                                            type="text"
-                                            value={formData.address}
-                                            onChange={e => setFormData({ ...formData, address: e.target.value })}
-                                            className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                            placeholder="Toshkent sh..."
-                                        />
+                                    <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.address}</label>
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <MapPin className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
+                                            <input
+                                                type="text"
+                                                value={formData.address}
+                                                onChange={e => setFormData({ ...formData, address: e.target.value })}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        fetchCoordinates(formData.address);
+                                                    }
+                                                }}
+                                                className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                                                placeholder={t.search}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => fetchCoordinates(formData.address)}
+                                            className={`px-4 py-2.5 rounded-xl border transition-all ${darkMode ? 'bg-slate-700 hover:bg-slate-600 border-slate-600 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-600'}`}
+                                        >
+                                            {t.search.replace('...', '')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -220,7 +266,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                                     />
                                 </MapContainer>
                                 <div className={`absolute bottom-2 left-2 right-2 p-2 rounded-lg text-xs text-center z-[1000] ${darkMode ? 'bg-slate-800/90 text-slate-300' : 'bg-white/90 text-slate-600'}`}>
-                                    Koordinatalar: {formData.lat.toFixed(6)}, {formData.lng.toFixed(6)}
+                                    {t.coordinates}: {formData.lat.toFixed(6)}, {formData.lng.toFixed(6)}
                                 </div>
                             </div>
                         </div>
@@ -234,7 +280,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                         onClick={onClose}
                         className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${darkMode ? 'text-slate-300 hover:bg-slate-700' : 'text-slate-600 hover:bg-slate-100'}`}
                     >
-                        Bekor qilish
+                        {t.cancel}
                     </button>
                     <button
                         type="submit"
@@ -242,7 +288,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode }) => {
                         className="bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 font-semibold shadow-lg shadow-blue-500/30 flex items-center gap-2"
                     >
                         <Save size={18} />
-                        Saqlash
+                        {t.save}
                     </button>
                 </div>
             </div>

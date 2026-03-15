@@ -13,7 +13,19 @@ const STATUS_OPTIONS = [
     { value: 'REJECTED', label: 'Rad etildi' },
 ];
 
-const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
+const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
+    const STATUS_OPTIONS = [
+        { value: 'NEW', label: t.status_NEW },
+        { value: 'EXPECTED', label: t.status_EXPECTED },
+        { value: 'CHECKED', label: t.status_CHECKED },
+        { value: 'COMPLETED', label: t.status_COMPLETED },
+        { value: 'DELIVERED', label: t.status_DELIVERED },
+        { value: 'CANCELLED', label: t.status_CANCELLED },
+        { value: 'PENDING_APPROVAL', label: t.status_PENDING_APPROVAL },
+        { value: 'REJECTED', label: t.status_REJECTED },
+        { value: 'PAID_WAITING', label: t.status_PAID_WAITING },
+    ];
+
     const [products, setProducts] = useState([]);
     const [customers, setCustomers] = useState([]);
     const [items, setItems] = useState([]);
@@ -131,10 +143,10 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                 <div className={`sticky top-0 z-10 flex items-center justify-between p-5 border-b ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                     <div>
                         <h2 className={`text-lg font-semibold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            Buyurtma #{order.id} — Tahrirlash
+                            {t.order} #{order.id} — {t.edit}
                         </h2>
                         <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Har qanday o'zgarish amalga oshiriladi
+                            {t.editOrderWarning}
                         </p>
                     </div>
                     <button onClick={onClose} className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
@@ -147,7 +159,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className={`block text-xs font-semibold mb-1.5 uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Status
+                                {t.status}
                             </label>
                             <select className={inputCls} value={status} onChange={e => setStatus(e.target.value)}>
                                 {STATUS_OPTIONS.map(s => (
@@ -157,10 +169,10 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                         </div>
                         <div>
                             <label className={`block text-xs font-semibold mb-1.5 uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Mijoz
+                                {t.customers}
                             </label>
                             <select className={inputCls} value={customerId} onChange={e => setCustomerId(e.target.value)}>
-                                <option value="">Tanlanmagan</option>
+                                <option value="">{t.notSelected}</option>
                                 {customers.map(c => (
                                     <option key={c.id} value={c.id}>
                                         {c.name} {c.phone ? `— ${c.phone}` : ''}
@@ -174,10 +186,10 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                     <div>
                         <div className="flex items-center justify-between mb-3">
                             <label className={`text-xs font-semibold uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Mahsulotlar
+                                {t.products}
                             </label>
                             <button onClick={addItem} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${darkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
-                                <Plus size={13} /> Qo'shish
+                                <Plus size={13} /> {t.add}
                             </button>
                         </div>
 
@@ -187,7 +199,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                                     <div className="flex gap-2 flex-wrap md:flex-nowrap items-end">
                                         {/* Mahsulot */}
                                         <div className="flex-1 min-w-[160px]">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Mahsulot</label>}
+                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.product}</label>}
                                             <div className="relative">
                                                 <Package size={13} className={`absolute left-2.5 top-2.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
                                                 <select
@@ -195,10 +207,10 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                                                     value={item.productId || ''}
                                                     onChange={e => handleItemChange(idx, 'productId', e.target.value)}
                                                 >
-                                                    <option value="">Qo'lda kiriting</option>
+                                                    <option value="">{t.enterManually}</option>
                                                     {products.map(p => (
                                                         <option key={p.id} value={p.id}>
-                                                            {p.name} [Sklad: {p.quantity}]
+                                                            {p.name} [{t.stockLabel}: {p.quantity}]
                                                         </option>
                                                     ))}
                                                 </select>
@@ -207,7 +219,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                                                 <input
                                                     type="text"
                                                     className={`${inputCls} mt-1`}
-                                                    placeholder="Mahsulot nomi"
+                                                    placeholder={t.productNamePlaceholder}
                                                     value={item.productName}
                                                     onChange={e => handleItemChange(idx, 'productName', e.target.value)}
                                                 />
@@ -216,7 +228,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
 
                                         {/* Soni */}
                                         <div className="w-20">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Soni</label>}
+                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.quantityLabel}</label>}
                                             <input
                                                 type="number" min="1"
                                                 className={`${inputCls} text-center`}
@@ -227,7 +239,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
 
                                         {/* Narx */}
                                         <div className="w-28">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Narx ($)</label>}
+                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.price} ($)</label>}
                                             <input
                                                 type="number" min="0" step="0.01"
                                                 className={inputCls}
@@ -238,7 +250,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
 
                                         {/* Jami */}
                                         <div className="w-24 text-right">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Jami</label>}
+                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.total}</label>}
                                             <div className={`py-2 text-sm font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                                 ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(0)}
                                             </div>
@@ -260,7 +272,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                         {/* Jami */}
                         <div className={`flex justify-end mt-3 pt-3 border-t ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
                             <span className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Jami: <span className="text-xl font-bold text-blue-600 ml-1">${total.toFixed(0)}</span>
+                                {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toFixed(0)}</span>
                             </span>
                         </div>
                     </div>
@@ -268,12 +280,12 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                     {/* Izoh */}
                     <div>
                         <label className={`block text-xs font-semibold mb-1.5 uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Izoh
+                            {t.notes}
                         </label>
                         <textarea
                             rows={2}
                             className={inputCls}
-                            placeholder="Qo'shimcha ma'lumot..."
+                            placeholder={t.optionalNotesPlaceholder}
                             value={notes}
                             onChange={e => setNotes(e.target.value)}
                         />
@@ -295,18 +307,18 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                             ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                             : <Trash2 size={15} />
                         }
-                        {confirmDelete ? 'Tasdiqlang — O\'chiriladi!' : 'O\'chirish'}
+                        {confirmDelete ? t.confirmDeleteWarning : t.delete}
                     </button>
                     {confirmDelete && (
                         <button onClick={() => setConfirmDelete(false)} className={`text-xs px-3 py-2 rounded-lg ${darkMode ? 'text-slate-400 hover:bg-slate-700' : 'text-slate-500 hover:bg-slate-100'}`}>
-                            Bekor
+                            {t.cancel}
                         </button>
                     )}
 
                     {/* Save */}
                     <div className="flex gap-2 ml-auto">
                         <button onClick={onClose} className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${darkMode ? 'text-slate-400 hover:bg-slate-700' : 'text-slate-500 hover:bg-slate-100'}`}>
-                            Yopish
+                            {t.close}
                         </button>
                         <button
                             onClick={handleSave}
@@ -317,7 +329,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode }) => {
                                 ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                 : <Save size={15} />
                             }
-                            Saqlash
+                            {t.save}
                         </button>
                     </div>
                 </div>

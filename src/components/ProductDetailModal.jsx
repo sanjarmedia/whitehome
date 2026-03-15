@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { X, Package, Tag, Building2, Layers, DollarSign, Archive } from 'lucide-react';
 
-const ProductDetailModal = ({ isOpen, onClose, product, darkMode }) => {
+const ProductDetailModal = ({ isOpen, onClose, product, darkMode, t }) => {
     if (!isOpen || !product) return null;
 
     return createPortal(
@@ -46,7 +46,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, darkMode }) => {
                     <div className="mb-6">
                         <div className={`text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                             <div className="w-1.5 h-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]"></div>
-                            {product.category || 'Kategoriyasiz'}
+                            {product.category || (t.auditLog.includes('Audit') ? 'Kategoriyasiz' : 'Без категории')}
                         </div>
                         <h2 className={`text-3xl md:text-4xl font-black leading-tight mb-4 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                             {product.name}
@@ -59,7 +59,7 @@ const ProductDetailModal = ({ isOpen, onClose, product, darkMode }) => {
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className={`rounded-2xl p-5 border transition-all ${darkMode ? 'bg-slate-900/40 border-slate-700/50 hover:bg-slate-900/60' : 'bg-blue-50/50 border-blue-100 hover:bg-blue-50'}`}>
                             <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-2 flex items-center gap-1.5">
-                                <DollarSign size={14} /> Narxi
+                                <DollarSign size={14} /> {t.price}
                             </div>
                             <div className={`text-3xl font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                                 ${product.price?.toLocaleString()}
@@ -68,23 +68,23 @@ const ProductDetailModal = ({ isOpen, onClose, product, darkMode }) => {
 
                         <div className={`rounded-2xl p-5 border transition-all ${darkMode ? 'bg-slate-900/40 border-slate-700/50 hover:bg-slate-900/60' : 'bg-slate-50 border-slate-200 hover:bg-slate-100/50'}`}>
                             <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-2 flex items-center gap-1.5">
-                                <Archive size={14} /> Zaxira
+                                <Archive size={14} /> {t.stock}
                             </div>
                             <div className={`text-3xl font-black ${product.quantity > 10 ? (darkMode ? 'text-emerald-400' : 'text-emerald-600') :
                                     product.quantity > 0 ? (darkMode ? 'text-amber-400' : 'text-amber-600') :
                                         (darkMode ? 'text-rose-400' : 'text-rose-600')
                                 }`}>
-                                {product.quantity} <span className="text-xs font-bold opacity-60">ta</span>
+                                {product.quantity} <span className="text-xs font-bold opacity-60">{t.auditLog.includes('Audit') ? 'ta' : 'шт'}</span>
                             </div>
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <h3 className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                            Mahsulot Tavsifi
+                            {t.description}
                         </h3>
                         <div className={`p-5 rounded-2xl text-sm leading-relaxed max-h-[160px] overflow-y-auto custom-scrollbar border transition-all ${darkMode ? 'bg-slate-700/30 border-slate-700/50 text-slate-300' : 'bg-slate-50/50 border-slate-100 text-slate-600 hover:bg-slate-50'}`}>
-                            {product.description || "Ushbu mahsulot uchun qo'shimcha ma'lumot kiritilmagan."}
+                            {product.description || t.noData}
                         </div>
                     </div>
                 </div>

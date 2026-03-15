@@ -3,15 +3,15 @@ import { createPortal } from 'react-dom';
 import { X, Upload, Save } from 'lucide-react';
 import api from '../api/axios';
 
-const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
+const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode, t, categories = [], brands = [] }) => {
     const [formData, setFormData] = useState({
         name: '',
         sku: '',
         description: '',
         quantity: 0,
         price: 0,
-        brand: 'Akuvox',
-        category: 'Doorphone',
+        brand: '',
+        category: '',
         image: ''
     });
 
@@ -25,8 +25,8 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                 description: '',
                 quantity: 0,
                 price: 0,
-                brand: 'Akuvox',
-                category: 'Doorphone',
+                brand: '',
+                category: '',
                 image: ''
             });
         }
@@ -45,7 +45,7 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                 {/* Header */}
                 <div className={`px-6 py-4 flex items-center justify-between border-b ${darkMode ? 'border-slate-700' : 'border-slate-100'}`}>
                     <h2 className={`text-xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                        {initialData ? "Mahsulotni Tahrirlash" : "Yangi Mahsulot Qo'shish"}
+                        {initialData ? t.edit : t.add}
                     </h2>
                     <button onClick={onClose} className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
                         <X size={24} />
@@ -57,32 +57,32 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name */}
                         <div className="md:col-span-2">
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Nomi *</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.name} *</label>
                             <input
                                 required
                                 type="text"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                placeholder="Masalan: X915S Face Recognition Android Door Phone"
+                                placeholder={t.name}
                             />
                         </div>
 
                         {/* SKU */}
                         <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>SKU (Kod)</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.sku}</label>
                             <input
                                 type="text"
                                 value={formData.sku || ''}
                                 onChange={e => setFormData({ ...formData, sku: e.target.value })}
                                 className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                placeholder="X915S"
+                                placeholder={t.sku.split(' / ')[0]}
                             />
                         </div>
 
                         {/* Price */}
                         <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Narx ($)</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.price} ($)</label>
                             <input
                                 type="number"
                                 min="0"
@@ -95,41 +95,39 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
 
                         {/* Brand */}
                         <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Brand</label>
-                            <select
-                                value={formData.brand || 'Akuvox'}
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.brand}</label>
+                            <input
+                                type="text"
+                                list="brands-list"
+                                value={formData.brand || ''}
                                 onChange={e => setFormData({ ...formData, brand: e.target.value })}
-                                className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all cursor-pointer ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                            >
-                                <option value="Akuvox">Akuvox</option>
-                                <option value="Akubela">Akubela</option>
-                                <option value="Other">Boshqa</option>
-                            </select>
+                                className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                                placeholder={t.brand}
+                            />
+                            <datalist id="brands-list">
+                                {brands.map(b => <option key={b} value={b} />)}
+                            </datalist>
                         </div>
 
                         {/* Category */}
                         <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Kategoriya</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.category}</label>
                             <input
                                 type="text"
                                 list="categories"
                                 value={formData.category || ''}
                                 onChange={e => setFormData({ ...formData, category: e.target.value })}
                                 className={`w-full px-4 py-2.5 rounded-xl border outline-none focus:ring-2 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
-                                placeholder="Kategoriya tanlang yoki yozing"
+                                placeholder={t.category}
                             />
                             <datalist id="categories">
-                                <option value="Doorphone" />
-                                <option value="Indoor Monitor" />
-                                <option value="Access Control" />
-                                <option value="Smart Panel" />
-                                <option value="Accessory" />
+                                {categories.map(c => <option key={c} value={c} />)}
                             </datalist>
                         </div>
 
                         {/* Quantity */}
                         <div>
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Soni (Ombordagi)</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.quantity}</label>
                             <input
                                 type="number"
                                 min="0"
@@ -141,7 +139,7 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
 
                         {/* Image Upload */}
                         <div className="md:col-span-2">
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Mahsulot Rasmi</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.productImage}</label>
                             <div className="flex gap-2 items-center">
                                 <input
                                     type="file"
@@ -158,7 +156,7 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                                             setFormData({ ...formData, image: res.data.url });
                                         } catch (error) {
                                             console.error('Rasm yuklashda xatolik:', error);
-                                            alert('Rasm yuklashda xatolik yuz berdi');
+                                            alert(t.imageUploadError);
                                         }
                                     }}
                                     className="hidden"
@@ -171,7 +169,7 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                                     }`}
                                 >
                                     <Upload size={20} className={darkMode ? 'text-slate-400' : 'text-slate-500'} />
-                                    <span className={darkMode ? 'text-slate-300' : 'text-slate-600'}>Rasm tanlash yoki yuklash</span>
+                                    <span className={darkMode ? 'text-slate-300' : 'text-slate-600'}>{t.selectImage}</span>
                                 </label>
                                 {formData.image && (
                                     <button
@@ -195,7 +193,7 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
 
                         {/* Description */}
                         <div className="md:col-span-2">
-                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Tavsif</label>
+                            <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.description}</label>
                             <textarea
                                 rows={3}
                                 value={formData.description || ''}
@@ -212,13 +210,13 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                             onClick={onClose}
                             className={`px-6 py-2.5 rounded-xl font-medium transition-colors ${darkMode ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}
                         >
-                            Bekor qilish
+                            {t.cancel}
                         </button>
                         <button
                             type="submit"
                             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg shadow-blue-500/30 transition-all active:scale-95 flex items-center gap-2"
                         >
-                            <Save size={20} /> Saqlash
+                            <Save size={20} /> {t.save}
                         </button>
                     </div>
                 </form>

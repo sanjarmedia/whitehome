@@ -7,7 +7,7 @@ import ProductDetailModal from '../components/ProductDetailModal';
 import * as XLSX from 'xlsx';
 
 const Products = () => {
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -24,7 +24,7 @@ const Products = () => {
     const imageInputRef = useRef(null);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const isAdmin = user.role === 'admin';
+    const hasFullAccess = ['admin', 'full'].includes(user.role);
 
     const [error, setError] = useState(null);
 
@@ -39,13 +39,13 @@ const Products = () => {
             setError(null);
         } catch (err) {
             console.error(err);
-            setError("Ma'lumotlarni yuklashda xatolik: " + (err.response?.data?.message || err.message));
+            setError(t.noData.includes('yuklanmadi') ? "Ma'lumotlarni yuklashda xatolik" : "Ошибка при загрузке данных");
         } finally {
             setLoading(false);
         }
     };
 
-    if (loading) return <div className="p-8">Yuklanmoqda...</div>;
+    if (loading) return <div className="p-8">{t.loading}</div>;
     if (error) return <div className="p-8 text-red-500">{error}</div>;
 
     const handleSave = async (formData) => {
@@ -193,7 +193,7 @@ const Products = () => {
         return matchesSearch && matchesBrand && matchesCategory;
     });
 
-    if (loading) return <div className="p-8">Yuklanmoqda...</div>;
+    if (loading) return <div className="p-8">{t.loading}</div>;
 
     return (
         <div className="space-y-6 pb-20 animate-fade-in">
@@ -201,18 +201,18 @@ const Products = () => {
             <div className={`p-6 rounded-2xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
-                        <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Mahsulotlar Katalogi</h1>
+                        <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.products}</h1>
                         <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            Barcha mavjud mahsulotlar: {products.length} xil (Jami: {products.reduce((acc, curr) => acc + curr.quantity, 0)} ta)
+                            {t.noData.includes('yuklanmadi') ? `Barcha mavjud mahsulotlar: ${products.length} xil` : `Все доступные товары: ${products.length} видов`}
                         </p>
                     </div>
-                    {isAdmin && (
+                    {hasFullAccess && (
                         <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto justify-end">
                             <button
                                 onClick={handleDownloadTemplate}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-blue-800/50 hover:bg-blue-900/40 text-blue-400' : 'border-blue-200 hover:bg-blue-50 text-blue-600'}`}
                             >
-                                <Download size={20} /> Shablon
+                                <Download size={20} /> {t.reports.slice(0, -1)}
                             </button>
 
                             <input
@@ -228,7 +228,7 @@ const Products = () => {
                                 disabled={uploadingImages}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-purple-800/50 hover:bg-purple-900/40 text-purple-400' : 'border-purple-200 hover:bg-purple-50 text-purple-600'}`}
                             >
-                                <ImageIcon size={20} /> {uploadingImages ? 'Yuklanmoqda...' : 'Rasmlarni Yulash'}
+                                <ImageIcon size={20} /> {uploadingImages ? t.loading : (t.productImage || 'Rasmlar')}
                             </button>
 
                             <input
@@ -242,19 +242,19 @@ const Products = () => {
                                 onClick={handleImportClick}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
                             >
-                                <Upload size={20} /> Import
+                                <Upload size={20} /> {t.receiveToStock.split(' ')[0]}
                             </button>
                             <button
                                 onClick={handleExportProducts}
                                 className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-amber-800/50 hover:bg-amber-900/40 text-amber-500' : 'border-amber-200 hover:bg-amber-50 text-amber-600'}`}
                             >
-                                <FileText size={20} /> Eksport
+                                <FileText size={20} /> {t.report}
                             </button>
                             <button
                                 onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
                                 className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95"
                             >
-                                <Plus size={20} /> Yangi Qo'shish
+                                <Plus size={20} /> {t.add}
                             </button>
                         </div>
                     )}
@@ -268,7 +268,7 @@ const Products = () => {
                             type="text"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            placeholder="Qidirish (Nomi, SKU)..."
+                            placeholder={t.search}
                             className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-500' : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400'}`}
                         />
                     </div>
@@ -305,7 +305,7 @@ const Products = () => {
                     <div key={product.id} className={`group rounded-2xl overflow-hidden shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 relative ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
 
                         {/* Admin Actions */}
-                        {isAdmin && (
+                        {hasFullAccess && (
                             <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => { setEditingProduct(product); setIsModalOpen(true); }}
@@ -347,7 +347,7 @@ const Products = () => {
                             <div className="flex justify-between items-start gap-2">
                                 <div>
                                     <div className={`text-xs font-semibold mb-1 uppercase tracking-wider ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                                        {product.category || 'Uncategorized'}
+                                        {product.category || t.notSelected}
                                     </div>
                                     <h3 className={`font-bold text-lg leading-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                                         {product.name}
@@ -359,7 +359,7 @@ const Products = () => {
                             </div>
 
                             <p className={`text-sm line-clamp-2 min-h-[40px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {product.description || "Tavsif mavjud emas."}
+                                {product.description || t.noData}
                             </p>
 
                             <div className="pt-4 flex items-center justify-between border-t border-dashed mt-4 dark:border-slate-700">
@@ -367,13 +367,13 @@ const Products = () => {
                                     ? (darkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700')
                                     : (darkMode ? 'bg-rose-900/30 text-rose-400' : 'bg-rose-50 text-rose-700')
                                     }`}>
-                                    {product.quantity > 0 ? `${product.quantity} dona mavjud` : 'Sotuvda yo\'q'}
+                                    {product.quantity > 0 ? `${product.quantity} ${t.auditLog.includes('Audit') ? 'ta mavjud' : 'шт в наличии'}` : t.noData}
                                 </div>
                                 <button
                                     onClick={() => { setViewingProduct(product); setIsDetailModalOpen(true); }}
                                     className={`text-sm font-medium hover:underline ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}
                                 >
-                                    Batafsil
+                                    {t.view}
                                 </button>
                             </div>
                         </div>
@@ -384,7 +384,7 @@ const Products = () => {
             {filteredProducts.length === 0 && (
                 <div className={`text-center py-20 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                     <Package size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>Mahsulotlar topilmadi</p>
+                    <p>{t.noData}</p>
                 </div>
             )}
 
@@ -394,6 +394,9 @@ const Products = () => {
                 onSave={handleSave}
                 initialData={editingProduct}
                 darkMode={darkMode}
+                t={t}
+                categories={categories}
+                brands={brands}
             />
 
             <ProductDetailModal
@@ -401,6 +404,7 @@ const Products = () => {
                 onClose={() => setIsDetailModalOpen(false)}
                 product={viewingProduct}
                 darkMode={darkMode}
+                t={t}
             />
         </div>
     );

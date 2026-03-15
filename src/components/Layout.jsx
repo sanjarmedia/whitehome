@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
+import { translations } from '../translations';
 import { Moon, Sun, Menu } from 'lucide-react';
 import api from '../api/axios';
 
@@ -15,6 +16,10 @@ const Layout = () => {
 
     const [fontSize, setFontSize] = useState(() => {
         return localStorage.getItem('fontSize') || 'base';
+    });
+
+    const [lang, setLang] = useState(() => {
+        return localStorage.getItem('lang') || 'uz';
     });
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,6 +38,14 @@ const Layout = () => {
         setFontSize(newSize);
         localStorage.setItem('fontSize', newSize);
     };
+
+    const toggleLang = () => {
+        const newLang = lang === 'uz' ? 'ru' : 'uz';
+        setLang(newLang);
+        localStorage.setItem('lang', newLang);
+    };
+
+    const t = translations[lang];
 
     const getFontSizeClass = () => {
         if (fontSize === 'lg') return 'text-lg';
@@ -61,6 +74,8 @@ const Layout = () => {
 
             <Sidebar
                 darkMode={darkMode}
+                lang={lang}
+                t={t}
                 isOpen={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
             />
@@ -85,14 +100,14 @@ const Layout = () => {
                             ? 'bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700'
                             : 'bg-white text-slate-600 hover:text-blue-600 border border-slate-200'
                             }`}
-                        title="Yozuv hajmini o'zgartirish"
+                        title={t.changeFontSize}
                     >
                         {fontSize === 'base' && <span className="text-xs">A</span>}
                         {fontSize === 'lg' && <span className="text-sm">A+</span>}
                         {fontSize === 'xl' && <span className="text-lg">A++</span>}
                     </button>
 
-                    {/* Theme Toggle - On mobile it's top right, on desktop it's in header */}
+                    {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
                         className={`p-3 rounded-full shadow-lg transition-all duration-300 w-12 h-12 flex items-center justify-center ${darkMode
@@ -102,11 +117,22 @@ const Layout = () => {
                     >
                         {darkMode ? <Sun size={20} /> : <Moon size={20} />}
                     </button>
+
+                    {/* Language Toggle */}
+                    <button
+                        onClick={toggleLang}
+                        className={`p-3 rounded-xl shadow-lg transition-all duration-300 h-12 flex items-center justify-center gap-2 px-4 ${darkMode
+                            ? 'bg-slate-800 text-blue-400 hover:bg-slate-700 border border-slate-700'
+                            : 'bg-white text-blue-600 hover:text-blue-700 border border-slate-200 hover:bg-blue-50'
+                            }`}
+                    >
+                        <span className="font-black text-sm uppercase">{lang}</span>
+                    </button>
                 </div>
             </div>
 
             <div className="max-w-7xl mx-auto w-full animate-fade-in pt-14 md:pt-0">
-                    <Outlet context={{ darkMode }} />
+                    <Outlet context={{ darkMode, lang, t }} />
                 </div>
             </div>
 
@@ -114,6 +140,7 @@ const Layout = () => {
             <BottomNav 
                 darkMode={darkMode} 
                 onOpenMenu={() => setIsMobileMenuOpen(true)} 
+                t={t}
             />
         </div>
     );

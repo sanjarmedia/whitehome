@@ -255,7 +255,7 @@ const AuditLog = () => {
                                                         {(log.username || '?')[0].toUpperCase()}
                                                     </div>
                                                     <span className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                        {log.username || 'Noma\'lum'}
+                                                        {log.user?.name || log.username || 'Noma\'lum'}
                                                     </span>
                                                 </div>
                                             </td>
@@ -300,7 +300,7 @@ const AuditLog = () => {
                                                 {(log.username || '?')[0].toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{log.username || 'Noma\'lum'}</span>
+                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{log.user?.name || log.username || 'Noma\'lum'}</span>
                                                 <span className={`text-[10px] font-bold ${sec} opacity-60`}>
                                                     {new Date(log.createdAt).toLocaleDateString()} • {new Date(log.createdAt).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
                                                 </span>

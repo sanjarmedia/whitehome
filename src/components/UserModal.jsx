@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Shield, User as UserIcon } from 'lucide-react';
 
-const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
+const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode, t }) => {
     const [formData, setFormData] = useState({
         name: '',
         username: '',
         password: '',
-        role: 'restricted'
+        role: 'restricted',
+        telegram: ''
     });
 
     useEffect(() => {
@@ -15,14 +16,16 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                 name: initialData.name || '',
                 username: initialData.username || '',
                 password: '', // Bo'sh qoladi, kiritilsa yangilanadi
-                role: initialData.role || 'restricted'
+                role: initialData.role || 'restricted',
+                telegram: initialData.telegram || ''
             });
         } else {
             setFormData({
                 name: '',
                 username: '',
                 password: '',
-                role: 'restricted'
+                role: 'restricted',
+                telegram: ''
             });
         }
     }, [initialData, isOpen]);
@@ -44,7 +47,7 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                 }`}>
                     <h2 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                         <UserIcon className="text-blue-500" />
-                        {initialData ? 'Foydalanuvchini Tahrirlash' : 'Yangi Foydalanuvchi'}
+                        {initialData ? t.editUser : t.addUser}
                     </h2>
                     <button 
                         onClick={onClose}
@@ -59,7 +62,7 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>
                         <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                            F.I.SH. (To'liq ism)
+                            {t.fullName}
                         </label>
                         <input
                             type="text"
@@ -69,13 +72,13 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                             className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none ${
                                 darkMode ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'
                             }`}
-                            placeholder="Masalan: Sardor Aliyev"
+                            placeholder={t.name}
                         />
                     </div>
 
                     <div>
                         <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                            Login
+                            {t.username}
                         </label>
                         <input
                             type="text"
@@ -85,13 +88,28 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                             className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none ${
                                 darkMode ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'
                             }`}
-                            placeholder="sardor_"
+                            placeholder={t.username.toLowerCase()}
                         />
                     </div>
 
                     <div>
                         <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                            Parol {initialData && "(o'zgartirish uchun kiriting)"}
+                            {t.telegram}
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.telegram || ''}
+                            onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
+                            className={`w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all outline-none ${
+                                darkMode ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'
+                            }`}
+                            placeholder="@..."
+                        />
+                    </div>
+
+                    <div>
+                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                            {t.password} {initialData && t.changePasswordHint}
                         </label>
                         <input
                             type="password"
@@ -107,7 +125,7 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
 
                     <div>
                         <label className={`block text-sm font-medium mb-1.5 flex items-center gap-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                            <Shield size={16} /> Huquq (Rol)
+                            <Shield size={16} /> {t.role}
                         </label>
                         <select
                             value={formData.role}
@@ -116,9 +134,9 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                                 darkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                             }`}
                         >
-                            <option value="admin">Admin (To'liq boshqaruv)</option>
-                            <option value="full">To'liq (Maxsulot/Buyurtma boshqarish)</option>
-                            <option value="restricted">Cheklangan (Faqat ko'rish yoki oddiy vazifalar)</option>
+                            <option value="admin">{t.adminRole}</option>
+                            <option value="full">{t.fullRole}</option>
+                            <option value="restricted">{t.restrictedRole}</option>
                         </select>
                     </div>
 
@@ -130,14 +148,14 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode }) => {
                                 darkMode ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-100 text-slate-600'
                             }`}
                         >
-                            Bekor qilish
+                            {t.cancel}
                         </button>
                         <button
                             type="submit"
                             className="bg-blue-600 text-white px-6 py-2.5 rounded-xl hover:bg-blue-700 font-medium shadow-lg shadow-blue-500/30 transition-all flex items-center gap-2 active:scale-95"
                         >
                             <Save size={18} />
-                            Saqlash
+                            {t.save}
                         </button>
                     </div>
                 </form>

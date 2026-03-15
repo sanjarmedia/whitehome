@@ -3,7 +3,7 @@ import { LayoutDashboard, Users, ShoppingCart, Package, FileText, LogOut, Home, 
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, t }) => {
     const location = useLocation();
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -27,15 +27,15 @@ const Sidebar = ({ isOpen, onClose }) => {
     };
 
     const links = [
-        { to: '/', label: 'Boshqaruv', icon: LayoutDashboard },
-        { to: '/orders', label: 'Buyurtmalar', icon: ShoppingCart },
-        { to: '/products', label: 'Mahsulotlar', icon: Tag },
-        { to: '/inventory', label: 'Omborxona', icon: Package },
-        { to: '/customers', label: 'Mijozlar', icon: Users },
+        { to: '/', label: t.dashboard, icon: LayoutDashboard },
+        { to: '/orders', label: t.orders, icon: ShoppingCart },
+        { to: '/products', label: t.products, icon: Tag },
+        { to: '/inventory', label: t.inventory, icon: Package },
+        { to: '/customers', label: t.customers, icon: Users },
         ...(isAdmin ? [
-            { to: '/users', label: 'Foydalanuvchilar', icon: ShieldCheck },
-            { to: '/reports', label: 'Hisobotlar', icon: FileText },
-            { to: '/audit-log', label: 'Audit Log', icon: Shield },
+            { to: '/users', label: t.users, icon: ShieldCheck },
+            { to: '/reports', label: t.reports, icon: FileText },
+            { to: '/audit-log', label: t.auditLog, icon: Shield },
         ] : []),
     ];
 
@@ -92,7 +92,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     className="flex items-center gap-3 px-4 py-3 w-full rounded-xl hover:bg-rose-500/10 hover:text-rose-400 transition-all duration-200 group text-sm font-medium"
                 >
                     <LogOut size={18} className="text-slate-500 group-hover:text-rose-400" />
-                    <span>Tizimdan Chiqish</span>
+                    <span>{t.logout}</span>
                 </button>
             </div>
         </div>

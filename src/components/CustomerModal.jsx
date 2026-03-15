@@ -172,8 +172,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, type: 'regular' })}
-                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-medium ${formData.type === 'regular'
-                                                ? (darkMode ? 'bg-blue-900/30 border-blue-500 text-blue-400' : 'bg-blue-50 border-blue-500 text-blue-700')
+                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-black uppercase tracking-widest ${formData.type === 'regular'
+                                                ? (darkMode ? 'bg-white text-slate-900 border-white' : 'bg-slate-100 border-slate-300 text-slate-800 shadow-sm')
                                                 : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-400' : 'bg-white border-slate-200 text-slate-600')
                                                 }`}
                                         >
@@ -182,8 +182,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, type: 'vip' })}
-                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-medium ${formData.type === 'vip'
-                                                ? (darkMode ? 'bg-purple-900/30 border-purple-500 text-purple-400' : 'bg-purple-50 border-purple-500 text-purple-700')
+                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-black uppercase tracking-widest ${formData.type === 'vip'
+                                                ? (darkMode ? 'bg-amber-500 border-amber-500 text-slate-900' : 'bg-amber-400 border-amber-500 text-slate-900 shadow-lg shadow-amber-500/20')
                                                 : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-400' : 'bg-white border-slate-200 text-slate-600')
                                                 }`}
                                         >
@@ -192,8 +192,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, type: 'organization' })}
-                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-medium ${formData.type === 'organization'
-                                                ? (darkMode ? 'bg-amber-900/30 border-amber-500 text-amber-400' : 'bg-amber-50 border-amber-500 text-amber-700')
+                                            className={`flex-1 py-2.5 rounded-xl border transition-all text-sm font-black uppercase tracking-widest ${formData.type === 'organization'
+                                                ? (darkMode ? 'bg-blue-600 border-blue-600 text-white' : 'bg-blue-600 border-blue-700 text-white shadow-lg shadow-blue-500/20')
                                                 : (darkMode ? 'bg-slate-700 border-slate-600 text-slate-400' : 'bg-white border-slate-200 text-slate-600')
                                                 }`}
                                         >

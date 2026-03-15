@@ -150,10 +150,10 @@ const Customers = () => {
                                 </div>
                                 <span className={`px-3 py-1.5 text-[10px] font-black uppercase rounded-xl border tracking-tight ${
                                     customer.type === 'vip' 
-                                        ? (darkMode ? 'bg-purple-900/30 text-purple-400 border-purple-800' : 'bg-purple-100 text-purple-700 border-purple-200 shadow-sm shadow-purple-200/50') 
+                                        ? (darkMode ? 'bg-amber-500 text-slate-900 border-amber-500' : 'bg-amber-400 text-slate-900 border-amber-500 shadow-sm shadow-amber-400/50') 
                                         : customer.type === 'organization' 
-                                            ? (darkMode ? 'bg-amber-900/30 text-amber-400 border-amber-800' : 'bg-amber-100 text-amber-700 border-amber-200 shadow-sm shadow-amber-200/50') 
-                                            : (darkMode ? 'bg-slate-900/50 text-slate-400 border-slate-700' : 'bg-slate-50 text-slate-500 border-slate-200')
+                                            ? (darkMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-600 text-white border-blue-700 shadow-sm shadow-blue-500/50') 
+                                            : (darkMode ? 'bg-white text-slate-900 border-white' : 'bg-slate-100 text-slate-600 border-slate-300')
                                 }`}>
                                     {customer.type === 'organization' ? t.organization : (customer.type === 'vip' ? t.vipLabel : t.ordinaryLabel)}
                                 </span>
@@ -235,10 +235,10 @@ const Customers = () => {
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1.5 text-[10px] font-black uppercase rounded-xl border tracking-tight ${
                                             customer.type === 'vip' 
-                                                ? (darkMode ? 'bg-purple-900/30 text-purple-400 border-purple-800' : 'bg-purple-100 text-purple-700 border-purple-200 shadow-sm shadow-purple-200/50') 
+                                                ? (darkMode ? 'bg-amber-500 text-slate-900 border-amber-500' : 'bg-amber-400 text-slate-900 border-amber-500 shadow-sm shadow-amber-400/50') 
                                                 : customer.type === 'organization' 
-                                                    ? (darkMode ? 'bg-amber-900/30 text-amber-400 border-amber-800' : 'bg-amber-100 text-amber-700 border-amber-200 shadow-sm shadow-amber-200/50') 
-                                                    : (darkMode ? 'bg-slate-900/50 text-slate-400 border-slate-700' : 'bg-slate-50 text-slate-500 border-slate-200')
+                                                    ? (darkMode ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-600 text-white border-blue-700 shadow-sm shadow-blue-500/50') 
+                                                    : (darkMode ? 'bg-white text-slate-900 border-white' : 'bg-slate-100 text-slate-600 border-slate-300')
                                         }`}>
                                             {customer.type === 'organization' ? t.organization : (customer.type === 'vip' ? t.vipLabel : t.ordinaryLabel)}
                                         </span>

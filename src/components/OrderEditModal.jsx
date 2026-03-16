@@ -252,7 +252,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
                                         <div className="w-24 text-right">
                                             {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.total}</label>}
                                             <div className={`py-2 text-sm font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(0)}
+                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}
                                             </div>
                                         </div>
 
@@ -272,7 +272,7 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
                         {/* Jami */}
                         <div className={`flex justify-end mt-3 pt-3 border-t ${darkMode ? 'border-slate-700' : 'border-slate-200'}`}>
                             <span className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toFixed(0)}</span>
+                                {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toFixed(2)}</span>
                             </span>
                         </div>
                     </div>

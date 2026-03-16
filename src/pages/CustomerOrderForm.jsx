@@ -377,7 +377,7 @@ const CustomerOrderForm = () => {
                                         <div className="w-full lg:w-28">
                                             <label className={`block text-xs font-medium mb-1 text-right ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.total}</label>
                                             <div className={`text-right font-bold text-base py-2.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toLocaleString()}
+                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}
                                             </div>
                                         </div>
 
@@ -397,7 +397,7 @@ const CustomerOrderForm = () => {
 
                     <div className="mt-4 flex justify-between items-center">
                         <div className={`font-medium ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                            {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toLocaleString()}</span>
+                            {t.total}: <span className="text-xl font-bold text-blue-600 ml-1">${total.toFixed(2)}</span>
                         </div>
                         <button
                             type="button"

@@ -25,6 +25,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchStats();
+        // Set up real-time polling every 30 seconds
+        const intervalId = setInterval(fetchStats, 30000);
+        return () => clearInterval(intervalId);
     }, []);
 
     if (loading) return (
@@ -156,13 +159,13 @@ const Dashboard = () => {
                             <div>
                                 <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                     <TrendingUp className="text-blue-500" size={20} />
-                                    Moliyaviy O'sish va Mijozlar
+                                    {t.financialGrowth}
                                 </h2>
-                                <p className="text-sm text-slate-400 mt-1">Oxirgi 6 oylik dinamika</p>
+                                <p className="text-sm text-slate-400 mt-1">{t.last6months}</p>
                             </div>
                             <div className="flex gap-4 text-xs font-medium text-slate-400">
-                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Foyda ($)</div>
-                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-400"></span> Mijozlar</div>
+                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> {t.profitLabel}</div>
+                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-400"></span> {t.customersLabel}</div>
                             </div>
                         </div>
 
@@ -194,8 +197,8 @@ const Dashboard = () => {
                                         }}
                                         itemStyle={{ fontSize: '13px', fontWeight: 500 }}
                                     />
-                                    <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" name="Foyda" animationDuration={2000} />
-                                    <Area yAxisId="right" type="monotone" dataKey="customers" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorCustomers)" name="Mijozlar" animationDuration={2500} />
+                                    <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" name={t.profitLabel} animationDuration={2000} />
+                                    <Area yAxisId="right" type="monotone" dataKey="customers" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorCustomers)" name={t.customersLabel} animationDuration={2500} />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
@@ -207,9 +210,9 @@ const Dashboard = () => {
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-rose-500 rounded-t-3xl"></div>
                         <h2 className={`text-xl font-medium mb-2 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                             <PieIcon className="text-amber-500" size={20} />
-                            Top Mahsulotlar
+                            {t.topProducts}
                         </h2>
-                        <p className="text-sm text-slate-400 mb-6">Sotuv hajmi bo'yicha</p>
+                        <p className="text-sm text-slate-400 mb-6">{t.bySalesVolume}</p>
 
                         <div className="h-[300px] w-full flex justify-center items-center relative">
                             <ResponsiveContainer width="100%" height="100%">
@@ -244,7 +247,7 @@ const Dashboard = () => {
                             {/* Center Text */}
                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                                 <span className={`text-3xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{pieData.reduce((a, b) => a + b.value, 0)}</span>
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">Jami</span>
+                                <span className="text-xs text-slate-400 uppercase tracking-wider">{t.jamiLabel}</span>
                             </div>
                         </div>
                     </div>
@@ -255,9 +258,9 @@ const Dashboard = () => {
                         <div className="flex justify-between items-center mb-6">
                             <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                 <Users className="text-indigo-500" size={20} />
-                                So'nggi Faolliklar
+                                {t.recentActivity}
                             </h2>
-                            <button className="text-blue-500 text-sm font-medium hover:underline">Barchasini ko'rish</button>
+                            <button className="text-blue-500 text-sm font-medium hover:underline">{t.viewAllLabel}</button>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -278,8 +281,9 @@ const Dashboard = () => {
                                         <div className="flex items-center gap-2 mt-0.5">
                                             <span className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</span>
                                             <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                            <span className={`text-[10px] font-bold ${order.status === 'COMPLETED' ? 'text-green-600' : 'text-amber-600'
-                                                }`}>{order.status}</span>
+                                            <span className="text-[10px] font-bold">
+                                                {t[`status_${order.status}`] || order.status}
+                                            </span>
                                         </div>
                                     </div>
                                     <div className={`ml-auto font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>${order.totalAmount}</div>
@@ -297,14 +301,14 @@ const Dashboard = () => {
                         <div className="mb-6">
                             <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                 <Users className="text-rose-500" size={20} />
-                                Eng Yirik Qarzdorlar
+                                {t.largestDebtors}
                             </h2>
-                            <p className="text-sm text-slate-400 mt-1">Qolgan balans (Debt) hajmi bo'yicha</p>
+                            <p className="text-sm text-slate-400 mt-1">{t.byDebtVolume}</p>
                         </div>
 
                         {debtData.length === 0 ? (
                             <div className={`flex flex-col items-center justify-center h-[280px] text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                Hozircha qarzdorlar yo'q
+                                {t.noDebtors}
                             </div>
                         ) : (
                             <div className="h-[280px] w-full">
@@ -343,9 +347,9 @@ const Dashboard = () => {
                             <div>
                                 <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                     <CheckCircle className="text-emerald-500" size={20} />
-                                    Mijozlar Balansi va To'lovlari
+                                    {t.customerBalanceSummary}
                                 </h2>
-                                <p className="text-sm text-slate-400 mt-1">Xarid, berilgan to'lov va qoldiq summary</p>
+                                <p className="text-sm text-slate-400 mt-1">{t.balanceReportSubtitle}</p>
                             </div>
                         </div>
 
@@ -353,17 +357,17 @@ const Dashboard = () => {
                         <div className="overflow-x-auto w-full -mx-4 px-4 sm:mx-0 sm:px-0">
                             <div className="min-w-[500px]">
                                 <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 px-4 py-2 border-b text-xs uppercase tracking-wider font-semibold ${darkMode ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
-                                    <div>Mijoz Ismi</div>
-                                    <div className="hidden md:block text-right">Jami Xarid ($)</div>
-                                    <div className="hidden md:block text-right">To'landi ($)</div>
-                                    <div className="text-right">Qarz Qoldig'i ($)</div>
+                                    <div>{t.customerName}</div>
+                                    <div className="hidden md:block text-right">{t.totalPurchaseAmount}</div>
+                                    <div className="hidden md:block text-right">{t.totalPaidAmount}</div>
+                                    <div className="text-right">{t.remainingDebtAmount}</div>
                                 </div>
 
                                 {/* Rows */}
                                 <div className="divide-y divide-transparent">
                             {debtData.length === 0 ? (
                                 <div className={`text-center py-8 text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    Mijozlar balansi ma'lumotlari yo'q
+                                    {t.noBalanceData}
                                 </div>
                             ) : (
                                 debtData.map((c, i) => (
@@ -432,7 +436,7 @@ const Dashboard = () => {
                                     </p>
                                 )}
                                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full mt-1 inline-block ${selectedCustomer.type === 'organization' ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'
-                                    }`}>{selectedCustomer.type === 'organization' ? 'Tashkilot' : 'Shaxs'}</span>
+                                    }`}>{selectedCustomer.type === 'organization' ? t.organizationType : t.individualType}</span>
                             </div>
                         </div>
 
@@ -444,7 +448,7 @@ const Dashboard = () => {
                                         <Phone size={14} className="text-emerald-600" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-slate-400 uppercase tracking-wide">Telefon</p>
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.phoneLabel}</p>
                                         <a href={`tel:${selectedCustomer.phone}`} className="text-sm font-semibold text-emerald-500 hover:underline">{selectedCustomer.phone}</a>
                                     </div>
                                 </div>
@@ -460,7 +464,7 @@ const Dashboard = () => {
                                         <MapPin size={12} className="text-blue-600" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-slate-400 uppercase tracking-wide">Manzil</p>
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.addressPlaceholder}</p>
                                         <p className={`text-sm font-medium hover:underline ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{selectedCustomer.address}</p>
                                     </div>
                                 </a>
@@ -470,7 +474,7 @@ const Dashboard = () => {
                                     <CreditCard size={14} className="text-rose-600" />
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">Qarz Qoldig'i</p>
+                                    <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.remainingDebtAmount}</p>
                                     <p className="text-sm font-bold text-rose-500">${(selectedCustomer.debt || 0).toLocaleString()}</p>
                                 </div>
                             </div>
@@ -479,11 +483,11 @@ const Dashboard = () => {
                         {/* Stats */}
                         <div className="grid grid-cols-2 gap-3">
                             <div className={`p-3 rounded-2xl text-center ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">Jami Xarid</p>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.totalPurchaseAmount}</p>
                                 <p className={`text-lg font-bold mt-0.5 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>${(selectedCustomer.totalPurchases || 0).toLocaleString()}</p>
                             </div>
                             <div className={`p-3 rounded-2xl text-center ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">To'langan</p>
+                                <p className="text-[10px] text-slate-400 uppercase tracking-wide">{t.totalPaidAmount}</p>
                                 <p className="text-lg font-bold mt-0.5 text-emerald-500">${(selectedCustomer.totalPaid || 0).toLocaleString()}</p>
                             </div>
                         </div>

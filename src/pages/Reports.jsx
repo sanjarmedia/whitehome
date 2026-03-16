@@ -139,7 +139,7 @@ const Reports = () => {
                         <DatePicker
                             selected={startDate}
                             onChange={date => setStartDate(date)}
-                            placeholder="KK.OO.YYYY"
+                            placeholder={t.datePlaceholder}
                             darkMode={darkMode}
                         />
                     </div>
@@ -148,7 +148,7 @@ const Reports = () => {
                         <DatePicker
                             selected={endDate}
                             onChange={date => setEndDate(date)}
-                            placeholder="KK.OO.YYYY"
+                            placeholder={t.datePlaceholder}
                             darkMode={darkMode}
                         />
                     </div>

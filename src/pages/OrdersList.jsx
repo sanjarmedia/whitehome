@@ -37,7 +37,12 @@ const OrdersList = () => {
         }
     };
 
-    useEffect(() => { fetchOrders(); }, []);
+    useEffect(() => {
+        fetchOrders();
+        // Har 45 sekundda yangilab turish
+        const intervalId = setInterval(fetchOrders, 45000);
+        return () => clearInterval(intervalId);
+    }, []);
 
     // Manba bo'yicha filtrlangan buyurtmalar
     const sourceFiltered = orders.filter(o => {

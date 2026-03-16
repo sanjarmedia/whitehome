@@ -19,6 +19,29 @@ const Login = () => {
     const vantaRef = useRef(null);
     const [vantaEffect, setVantaEffect] = useState(null);
 
+    useEffect(() => {
+        if (!vantaEffect && window.VANTA) {
+            setVantaEffect(window.VANTA.BIRDS({
+                el: vantaRef.current,
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                backgroundColor: 0x030712, // bg-slate-950
+                color1: 0x3b82f6,
+                color2: 0x6366f1,
+                birdSize: 1.5,
+                quantity: 3.0
+            }))
+        }
+        return () => {
+            if (vantaEffect) vantaEffect.destroy()
+        }
+    }, [vantaEffect]);
+
     const t = translations[lang];
 
     const toggleLang = () => {
@@ -66,7 +89,7 @@ const Login = () => {
     };
 
     return (
-        <div ref={vantaRef} className={`min-h-screen flex items-center justify-center overflow-hidden p-4 ${getFontSizeClass()}`}>
+        <div ref={vantaRef} className={`min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden p-4 ${getFontSizeClass()}`}>
             {/* Glassmorphism Login Card */}
             <div className="relative z-10 bg-slate-900/40 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 w-full sm:w-[420px] max-w-md animate-fade-in group hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.5)] transition-shadow duration-500">
 

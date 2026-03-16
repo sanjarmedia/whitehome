@@ -138,37 +138,39 @@ const Login = () => {
                 </form>
 
                 {/* Settings Widget Inside Login Card */}
-                <div className="mt-8 pt-6 border-t border-white/10 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                        {/* Language Toggle */}
-                        <button
-                            onClick={toggleLang}
-                            className="bg-white/5 hover:bg-white/10 text-white p-2.5 rounded-xl border border-white/10 transition-colors flex items-center gap-2 px-3 cursor-pointer"
-                        >
-                            <span className="text-xs font-bold uppercase">{lang}</span>
-                        </button>
+                {/* Settings Widget Inside Login Card (Premium Style) */}
+                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-3">
+                    {/* Language Badge */}
+                    <button
+                        onClick={toggleLang}
+                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                        title={t.changeLanguage}
+                    >
+                        <span className="text-[10px] font-black uppercase tracking-tighter">{lang}</span>
+                    </button>
 
-                        {/* Theme Toggle */}
-                        <button
-                            onClick={() => {
-                                const newMode = !darkMode;
-                                setDarkMode(newMode);
-                                localStorage.setItem('darkMode', newMode);
-                            }}
-                            className="bg-white/5 hover:bg-white/10 text-white p-2.5 rounded-xl border border-white/10 transition-colors cursor-pointer"
-                        >
-                            {darkMode ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} />}
-                        </button>
-                    </div>
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={() => {
+                            const newMode = !darkMode;
+                            setDarkMode(newMode);
+                            localStorage.setItem('darkMode', newMode);
+                        }}
+                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                    >
+                        {darkMode ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} className="text-indigo-300" />}
+                    </button>
 
                     {/* Font Size Cycle */}
                     <button
                         onClick={cycleFontSize}
-                        className="bg-white/5 hover:bg-white/10 text-white p-2.5 rounded-xl border border-white/10 transition-colors flex items-center gap-1 cursor-pointer min-w-[50px] justify-center"
+                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                        title={t.changeFontSize}
                     >
-                        <span className="text-xs font-bold">A</span>
-                        {fontSize === 'lg' && <span className="text-xs font-bold">+</span>}
-                        {fontSize === 'xl' && <span className="text-xs font-bold">++</span>}
+                        <div className="flex items-baseline gap-0.5">
+                            <span className="text-xs font-bold">A</span>
+                            {fontSize !== 'base' && <span className="text-[10px] font-black">{fontSize === 'lg' ? '+' : '++'}</span>}
+                        </div>
                     </button>
                 </div>
 

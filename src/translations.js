@@ -343,7 +343,10 @@ export const translations = {
         phoneLabel: "Telefon",
         addressPlaceholder: "Manzil",
         datePlaceholder: "KK.OO.YYYY",
-        recentActivity: "So'nggi Faolliklar"
+        latestActivity: "So'nggi Faolliklar",
+        dailyStatus: "Bugungi holat va statistika",
+        dataLoadError: "Ma'lumotlar yuklanmadi.",
+        debtLabelShort: "Qarz"
     },
     ru: {
         dashboard: "Панель управления",
@@ -689,6 +692,9 @@ export const translations = {
         phoneLabel: "Телефон",
         addressPlaceholder: "Адрес",
         datePlaceholder: "ДД.ММ.ГГГГ",
-        recentActivity: "Последние Действия"
+        latestActivity: "Последние Действия",
+        dailyStatus: "Сегодняшнее состояние и статистика",
+        dataLoadError: "Данные не загружены.",
+        debtLabelShort: "Долг"
     }
 };

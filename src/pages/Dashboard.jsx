@@ -38,7 +38,7 @@ const Dashboard = () => {
         </div>
     );
 
-    if (!stats) return <div className="text-center p-10 text-slate-500">Ma'lumotlar yuklanmadi.</div>;
+    if (!stats) return <div className="text-center p-10 text-slate-500">{t.dataLoadError}</div>;
 
     const pieData = stats.topSelling || [];
     const areaData = stats.monthlyStats || [];
@@ -51,7 +51,7 @@ const Dashboard = () => {
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 animate-slide-in relative z-10">
                 <div>
                     <h1 className={`text-3xl sm:text-4xl font-thin tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.dashboard}</h1>
-                    <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.noData.includes('yuklanmadi') ? 'Bugungi holat va statistika' : 'Сегодняшнее состояние и статистика'}</p>
+                    <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.dailyStatus}</p>
                 </div>
                 <button
                     onClick={fetchStats}
@@ -326,9 +326,9 @@ const Dashboard = () => {
                                                 backgroundColor: darkMode ? '#1e293b' : '#fff',
                                                 color: darkMode ? '#fff' : '#000'
                                             }}
-                                            formatter={(value) => [`$${value.toLocaleString()}`, 'Qarz']}
+                                            formatter={(value) => [`$${value.toLocaleString()}`, t.debtLabelShort]}
                                         />
-                                        <Bar dataKey="debt" name="Qarz" radius={[0, 4, 4, 0]} barSize={20}>
+                                        <Bar dataKey="debt" name={t.debtLabelShort} radius={[0, 4, 4, 0]} barSize={20}>
                                             {debtData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={['#ef4444', '#f43f5e', '#fb7185', '#fda4af'][index % 4]} />
                                             ))}

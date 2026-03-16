@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Clock, FileText, CreditCard, ChevronDown, ChevronUp, Package, Building2 } from 'lucide-react';
 import api from '../api/axios';
 
-const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
+const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t, lang }) => {
     const [customerInfo, setCustomerInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedOrders, setExpandedOrders] = useState({});
@@ -20,7 +20,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
             setCustomerInfo(res.data);
         } catch (error) {
             console.error(error);
-            alert(t.noData.includes('yuklanmadi') ? "Ma'lumotlarni yuklashda xatolik yuz berdi" : "Ошибка при загрузке данных");
+            alert(lang === 'uz' ? "Ma'lumotlarni yuklashda xatolik yuz berdi" : "Ошибка при загрузке данных");
         } finally {
             setLoading(false);
         }
@@ -134,9 +134,9 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                                                     <Package size={20} />
                                                                 </div>
                                                                 <div>
-                                                                    <div className={`font-bold ${textMain}`}>{t.orders.slice(0, -1)} #{order.id}</div>
+                                                                    <div className={`font-bold ${textMain}`}>{t.order} #{order.id}</div>
                                                                     <div className={`text-xs ${textMuted}`}>
-                                                                        {new Date(order.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
+                                                                        {new Date(order.createdAt).toLocaleString(lang === 'uz' ? 'uz-UZ' : 'ru-RU')}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -190,7 +190,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                                             <div>
                                                                 <div className={`font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>{t.payment}</div>
                                                                 <div className={`text-xs ${textMuted}`}>
-                                                                    {new Date(payment.createdAt).toLocaleString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
+                                                                    {new Date(payment.createdAt).toLocaleString(lang === 'uz' ? 'uz-UZ' : 'ru-RU')}
                                                                     {payment.paymentMethod && ` • ${payment.paymentMethod}`}
                                                                 </div>
                                                             </div>

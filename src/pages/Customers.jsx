@@ -6,7 +6,7 @@ import CustomerModal from '../components/CustomerModal';
 import CustomerHistoryModal from '../components/CustomerHistoryModal';
 
 const Customers = () => {
-    const { darkMode, t } = useOutletContext();
+    const { darkMode, lang, t } = useOutletContext();
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -299,6 +299,7 @@ const Customers = () => {
                 customerId={historyCustomerId}
                 darkMode={darkMode}
                 t={t}
+                lang={lang}
             />
         </div>
     );

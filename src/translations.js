@@ -2,6 +2,7 @@ export const translations = {
     uz: {
         dashboard: "Boshqaruv Paneli",
         orders: "Buyurtmalar",
+        order: "Buyurtma",
         inventory: "Sklad",
         customers: "Mijozlar",
         products: "Mahsulotlar",
@@ -322,6 +323,7 @@ export const translations = {
     ru: {
         dashboard: "Панель управления",
         orders: "Заказы",
+        order: "Заказ",
         inventory: "Склад",
         customers: "Клиенты",
         products: "Товары",

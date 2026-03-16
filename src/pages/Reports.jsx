@@ -10,7 +10,7 @@ import ExportMenu from '../components/ui/ExportMenu';
 import DatePicker from '../components/ui/DatePicker';
 
 const Reports = () => {
-    const { darkMode } = useOutletContext();
+    const { darkMode, t } = useOutletContext();
     const [startDate, setStartDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
     const [endDate, setEndDate] = useState(new Date());
     const [salesData, setSalesData] = useState([]);
@@ -22,7 +22,6 @@ const Reports = () => {
         setLoading(true);
         try {
             const params = {};
-            // Convert Date objects to ISO string for API
             if (startDate) params.startDate = startDate.toISOString();
             if (endDate) params.endDate = endDate.toISOString();
 
@@ -52,73 +51,72 @@ const Reports = () => {
     const handleExportExcel = () => {
         const wb = XLSX.utils.book_new();
         const salesSheet = XLSX.utils.json_to_sheet(salesData.map(d => ({
-            Sana: d.date,
-            Buyurtmalar: d.orders,
-            Tushum: d.revenue
+            [t.date]: d.date,
+            [t.orderCountShort]: d.orders,
+            [t.revenueAmount]: d.revenue
         })));
-        XLSX.utils.book_append_sheet(wb, salesSheet, "Savdo Tarixi");
+        XLSX.utils.book_append_sheet(wb, salesSheet, t.salesStatistics);
 
         const productsSheet = XLSX.utils.json_to_sheet(topProducts.map(p => ({
-            Mahsulot: p.name,
-            Sotilgan_Soni: p.value,
-            Jami_Foyda: p.revenue
+            [t.product]: p.name,
+            [t.soldCount]: p.value,
+            [t.totalProfit]: p.revenue
         })));
-        XLSX.utils.book_append_sheet(wb, productsSheet, "Top Mahsulotlar");
+        XLSX.utils.book_append_sheet(wb, productsSheet, t.topProducts);
 
         const summarySheet = XLSX.utils.json_to_sheet([{
-            Jami_Tushum: summary.totalRevenue,
-            Jami_Buyurtmalar: summary.totalOrders,
-            Boshlanish_Sanasi: startDate ? startDate.toLocaleDateString() : 'Boshi',
-            Tugash_Sanasi: endDate ? endDate.toLocaleDateString() : 'Hozir'
+            [t.revenueAmount]: summary.totalRevenue,
+            [t.orderCountShort]: summary.totalOrders,
+            [t.startDateLabel]: startDate ? startDate.toLocaleDateString() : t.start,
+            [t.endDateLabel]: endDate ? endDate.toLocaleDateString() : t.now
         }]);
-        XLSX.utils.book_append_sheet(wb, summarySheet, "Umumiy");
+        XLSX.utils.book_append_sheet(wb, summarySheet, t.all);
 
-        XLSX.writeFile(wb, `Hisobot_${new Date().toISOString().split('T')[0]}.xlsx`);
+        XLSX.writeFile(wb, `${t.report}_${new Date().toISOString().split('T')[0]}.xlsx`);
     };
 
     const handleExportPDF = () => {
         try {
             const doc = new jsPDF();
 
-            // Title
             doc.setFontSize(20);
-            doc.text("Savdo Hisoboti", 14, 22);
+            doc.text(t.salesReport, 14, 22);
 
             doc.setFontSize(11);
-            doc.text(`Sana: ${new Date().toLocaleDateString()}`, 14, 30);
-            doc.text(`Davr: ${startDate ? startDate.toLocaleDateString() : 'Boshi'} - ${endDate ? endDate.toLocaleDateString() : 'Hozir'}`, 14, 36);
+            doc.text(`${t.date}: ${new Date().toLocaleDateString()}`, 14, 30);
+            doc.text(`${t.timeAndDate}: ${startDate ? startDate.toLocaleDateString() : t.start} - ${endDate ? endDate.toLocaleDateString() : t.now}`, 14, 36);
 
             // Summary
             doc.setFillColor(240, 240, 240);
             doc.rect(14, 45, 180, 25, 'F');
             doc.setFontSize(12);
-            doc.text("Umumiy Ko'rsatkichlar", 20, 55);
+            doc.text(t.overallIndicators, 20, 55);
             doc.setFontSize(10);
-            doc.text(`Jami Tushum: $${summary.totalRevenue.toLocaleString()}`, 20, 63);
-            doc.text(`Jami Buyurtmalar: ${summary.totalOrders}`, 100, 63);
+            doc.text(`${t.revenueAmount}: $${summary.totalRevenue.toFixed(2)}`, 20, 63);
+            doc.text(`${t.orderCountShort}: ${summary.totalOrders}`, 100, 63);
 
             // Sales Table
             doc.setFontSize(14);
-            doc.text("Savdo Tarixi", 14, 85);
+            doc.text(t.salesStatistics, 14, 85);
             autoTable(doc, {
                 startY: 90,
-                head: [['Sana', 'Buyurtmalar Soni', 'Tushum ($)']],
-                body: salesData.map(d => [d.date, d.orders, `$${d.revenue}`]),
+                head: [[t.date, t.orderCountShort, t.revenueAmount]],
+                body: salesData.map(d => [d.date, d.orders, `$${(d.revenue || 0).toFixed(2)}`]),
             });
 
             // Top Products Table
             const finalY = doc.lastAutoTable.finalY || 90;
-            doc.text("Top Mahsulotlar", 14, finalY + 15);
+            doc.text(t.topProducts, 14, finalY + 15);
             autoTable(doc, {
                 startY: finalY + 20,
-                head: [['Mahsulot', 'Sotilgan Soni']],
+                head: [[t.product, t.soldCount]],
                 body: topProducts.map(p => [p.name, p.value]),
             });
 
-            doc.save(`Hisobot_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`${t.report}_${new Date().toISOString().split('T')[0]}.pdf`);
         } catch (error) {
             console.error("PDF Export Error:", error);
-            alert("PDF yuklab olishda xatolik yuz berdi. Konsolni tekshiring.");
+            alert(t.errorOccurred);
         }
     };
 
@@ -128,8 +126,8 @@ const Reports = () => {
         <div className="max-w-7xl mx-auto pb-20 space-y-8 animate-fade-in">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>Hisobotlar va Tahlil</h1>
-                    <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Biznes ko'rsatkichlarini kuzatib boring</p>
+                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.reportsAndAnalysis}</h1>
+                    <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.businessOverviewDesc}</p>
                 </div>
             </header>
 
@@ -137,7 +135,7 @@ const Reports = () => {
             <div className={`p-6 rounded-2xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                 <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
                     <div className="w-full md:w-auto">
-                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Boshlanish Sanasi</label>
+                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.startDateLabel}</label>
                         <DatePicker
                             selected={startDate}
                             onChange={date => setStartDate(date)}
@@ -146,7 +144,7 @@ const Reports = () => {
                         />
                     </div>
                     <div className="w-full md:w-auto">
-                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>Tugash Sanasi</label>
+                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.endDateLabel}</label>
                         <DatePicker
                             selected={endDate}
                             onChange={date => setEndDate(date)}
@@ -155,10 +153,10 @@ const Reports = () => {
                         />
                     </div>
                     <button
-                        onClick={handleFilter}
+                        onClick={fetchData}
                         className="w-full md:w-auto cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 font-medium flex items-center justify-center gap-2 transition-colors h-[42px]"
                     >
-                        <Filter size={18} /> Filtrlash
+                        <Filter size={18} /> {t.filter}
                     </button>
                     <div className="flex-1 hidden md:block"></div>
 
@@ -179,9 +177,9 @@ const Reports = () => {
                         <TrendingUp size={32} />
                     </div>
                     <div>
-                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Jami Tushum</p>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.revenue}</p>
                         <h3 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            ${summary.totalRevenue.toLocaleString()}
+                            ${summary.totalRevenue.toFixed(2)}
                         </h3>
                     </div>
                 </div>
@@ -190,7 +188,7 @@ const Reports = () => {
                         <ShoppingBag size={32} />
                     </div>
                     <div>
-                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Jami Buyurtmalar</p>
+                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.totalOrders}</p>
                         <h3 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                             {summary.totalOrders}
                         </h3>
@@ -208,7 +206,7 @@ const Reports = () => {
                     <div className={`lg:col-span-2 p-6 rounded-3xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                         <div className="mb-6 flex items-center gap-2">
                             <BarChart2 className="text-blue-500" size={24} />
-                            <h2 className={`text-xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>Savdo Statistikasi</h2>
+                            <h2 className={`text-xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{t.salesStatistics}</h2>
                         </div>
                         <div className="h-[400px]">
                             {salesData.length > 0 ? (
@@ -231,12 +229,13 @@ const Reports = () => {
                                                 backgroundColor: darkMode ? '#1e293b' : '#fff',
                                                 color: darkMode ? '#fff' : '#000'
                                             }}
+                                            formatter={(value) => [`$${value.toFixed(2)}`, t.revenueAmount]}
                                         />
-                                        <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" name="Tushum ($)" />
+                                        <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" name={t.revenueAmount} />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             ) : (
-                                <div className="h-full flex items-center justify-center text-slate-400">Ma'lumot mavjud emas</div>
+                                <div className="h-full flex items-center justify-center text-slate-400">{t.noData}</div>
                             )}
                         </div>
                     </div>
@@ -245,7 +244,7 @@ const Reports = () => {
                     <div className={`p-6 rounded-3xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                         <div className="mb-6 flex items-center gap-2">
                             <PieIcon className="text-emerald-500" size={24} />
-                            <h2 className={`text-xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>Top Mahsulotlar</h2>
+                            <h2 className={`text-xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{t.topProducts}</h2>
                         </div>
                         <div className="h-[400px]">
                             {topProducts.length > 0 ? (
@@ -281,7 +280,7 @@ const Reports = () => {
                                     </PieChart>
                                 </ResponsiveContainer>
                             ) : (
-                                <div className="h-full flex items-center justify-center text-slate-400">Ma'lumot mavjud emas</div>
+                                <div className="h-full flex items-center justify-center text-slate-400">{t.noData}</div>
                             )}
                         </div>
                     </div>

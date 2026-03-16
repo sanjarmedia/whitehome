@@ -76,7 +76,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                     <span className="text-sm font-medium">{t.totalPurchases}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
-                                    ${(customerInfo.summary?.totalPurchases || 0).toLocaleString()}
+                                    ${(customerInfo.summary?.totalPurchases || 0).toFixed(2)}
                                 </div>
                             </div>
                             <div className={`p-4 rounded-2xl border ${border} ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
@@ -85,7 +85,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                     <span className="text-sm font-medium">{t.totalPaid}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
-                                    ${(customerInfo.summary?.totalPaid || 0).toLocaleString()}
+                                    ${(customerInfo.summary?.totalPaid || 0).toFixed(2)}
                                 </div>
                             </div>
                             <div className={`p-4 rounded-2xl border ${border} ${darkMode ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
@@ -94,7 +94,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                     <span className="text-sm font-medium">{t.remainingDebt}</span>
                                 </div>
                                 <div className={`text-2xl font-bold ${textMain}`}>
-                                    ${(customerInfo.summary?.debt || 0).toLocaleString()}
+                                    ${(customerInfo.summary?.debt || 0).toFixed(2)}
                                 </div>
                             </div>
                         </div>
@@ -143,7 +143,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
 
                                                             <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full">
                                                                 <div className="text-left sm:text-right">
-                                                                    <div className={`font-bold ${textMain}`}>${(order.totalAmount || 0).toLocaleString()}</div>
+                                                                    <div className={`font-bold ${textMain}`}>${(order.totalAmount || 0).toFixed(2)}</div>
                                                                     <div className={`text-xs font-semibold px-2 py-0.5 rounded-full inline-block mt-1 ${order.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
                                                                         {t[`status_${order.status}`] || order.status}
                                                                     </div>
@@ -165,14 +165,14 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                                                                 <span className={textMain}>{it.product?.name || t.unknown}</span>
                                                                                 <span className={textMuted}>x {it.quantity}</span>
                                                                             </div>
-                                                                            <span className={`font-medium ${textMain}`}>${(it.price * it.quantity).toLocaleString()}</span>
+                                                                            <span className={`font-medium ${textMain}`}>${((it.price || 0) * (it.quantity || 0)).toFixed(2)}</span>
                                                                         </div>
                                                                     ))}
                                                                     
                                                                     {/* Order Payment Summary */}
                                                                     <div className={`mt-3 pt-3 border-t border-dashed ${border} flex justify-between items-center text-sm`}>
                                                                         <span className={textMuted}>{t.paidAmount}:</span>
-                                                                        <span className="font-semibold text-emerald-500">${(order.paidAmount || 0).toLocaleString()}</span>
+                                                                        <span className="font-semibold text-emerald-500">${(order.paidAmount || 0).toFixed(2)}</span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -196,7 +196,7 @@ const CustomerHistoryModal = ({ isOpen, onClose, customerId, darkMode, t }) => {
                                                             </div>
                                                         </div>
                                                         <div className="text-left sm:text-right ml-12 sm:ml-0">
-                                                            <div className="font-bold text-emerald-500">+ ${(payment.amount || 0).toLocaleString()}</div>
+                                                            <div className="font-bold text-emerald-500">+ ${(payment.amount || 0).toFixed(2)}</div>
                                                             {payment.notes && <div className={`text-xs mt-0.5 ${textMuted}`}>{payment.notes}</div>}
                                                         </div>
                                                     </div>

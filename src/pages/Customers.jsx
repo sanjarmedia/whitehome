@@ -298,6 +298,7 @@ const Customers = () => {
                 onClose={() => setHistoryModalOpen(false)}
                 customerId={historyCustomerId}
                 darkMode={darkMode}
+                t={t}
             />
         </div>
     );

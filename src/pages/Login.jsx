@@ -42,6 +42,31 @@ const Login = () => {
         }
     }, [vantaEffect]);
 
+    useEffect(() => {
+        if (vantaEffect) vantaEffect.destroy(); // Destroy existing effect
+
+        if (window.VANTA) {
+            setVantaEffect(window.VANTA.BIRDS({
+                el: vantaRef.current,
+                mouseControls: true,
+                touchControls: true,
+                gyroControls: false,
+                minHeight: 200.00,
+                minWidth: 200.00,
+                scale: 1.00,
+                scaleMobile: 1.00,
+                backgroundColor: darkMode ? 0x030712 : 0xf8fafc, // bg-slate-950 vs bg-slate-50
+                color1: darkMode ? 0x3b82f6 : 0x2563eb,
+                color2: darkMode ? 0x6366f1 : 0x4f46e5,
+                birdSize: 1.5,
+                quantity: 3.0
+            }))
+        }
+        return () => {
+            if (vantaEffect) vantaEffect.destroy()
+        }
+    }, [darkMode]); // Re-run when theme toggles
+
     const t = translations[lang];
 
     const toggleLang = () => {
@@ -89,40 +114,46 @@ const Login = () => {
     };
 
     return (
-        <div ref={vantaRef} className={`min-h-screen bg-slate-950 flex items-center justify-center overflow-hidden p-4 ${getFontSizeClass()}`}>
+        <div ref={vantaRef} className={`min-h-screen ${darkMode ? 'bg-slate-950' : 'bg-slate-50'} flex items-center justify-center overflow-hidden p-4 transition-colors duration-500 ${getFontSizeClass()}`}>
             {/* Glassmorphism Login Card */}
-            <div className="relative z-10 bg-slate-900/40 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] border border-white/10 w-full sm:w-[420px] max-w-md animate-fade-in group hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.5)] transition-shadow duration-500">
+            <div className={`relative z-10 backdrop-blur-xl p-8 sm:p-10 rounded-3xl border animate-fade-in group transition-all duration-500 w-full sm:w-[420px] max-w-md ${darkMode 
+                ? 'bg-slate-900/40 border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.5)]' 
+                : 'bg-white/70 border-slate-200 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.15)]'
+                }`}>
 
                 <div className="flex flex-col items-center mb-8">
                     <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-blue-500/50 transform group-hover:scale-105 transition-transform duration-500">
                         <ShieldCheck size={32} />
                     </div>
-                    <h2 className="text-3xl font-bold tracking-tight text-white drop-shadow-md">{t.loginTitle}</h2>
-                    <p className="text-sm font-medium text-blue-100/80 mt-2">{t.welcomeToPanel}</p>
+                    <h2 className={`text-3xl font-bold tracking-tight drop-shadow-sm ${darkMode ? 'text-white' : 'text-slate-800'}`}>{t.loginTitle}</h2>
+                    <p className={`text-sm font-medium mt-2 ${darkMode ? 'text-blue-100/80' : 'text-slate-500'}`}>{t.welcomeToPanel}</p>
                 </div>
 
                 {error && (
-                    <div className="bg-rose-500/20 backdrop-blur-md border border-rose-500/50 text-rose-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
+                    <div className="bg-rose-500/20 backdrop-blur-md border border-rose-500/50 text-rose-600 dark:text-rose-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
                         {error}
                     </div>
                 )}
 
                 {isSuccess && (
-                    <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 text-emerald-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
+                    <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 text-emerald-600 dark:text-emerald-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
                         {t.successLoading}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-bold uppercase tracking-wider text-blue-200/70 px-1">{t.usernameLabel}</label>
+                        <label className={`text-xs font-bold uppercase tracking-wider px-1 ${darkMode ? 'text-blue-200/70' : 'text-slate-400'}`}>{t.usernameLabel}</label>
                         <div className="relative group/input">
                             <User className="absolute left-4 top-3.5 text-blue-400 group-focus-within/input:text-blue-500 transition-colors z-10" size={20} />
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:bg-slate-900/80 transition-all text-white font-medium placeholder:text-slate-400 [&:-webkit-autofill]:[transition-delay:9999s] relative z-0 cursor-pointer"
+                                className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 transition-all font-medium [&:-webkit-autofill]:[transition-delay:9999s] relative z-0 cursor-pointer ${darkMode 
+                                    ? 'bg-slate-900/50 border-white/10 text-white placeholder:text-slate-400 focus:bg-slate-900/80' 
+                                    : 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white'
+                                    }`}
                                 placeholder={t.enterUsername}
                                 required
                             />
@@ -130,14 +161,17 @@ const Login = () => {
                     </div>
 
                     <div className="space-y-1.5 mb-2">
-                        <label className="text-xs font-bold uppercase tracking-wider text-blue-200/70 px-1">{t.password}</label>
+                        <label className={`text-xs font-bold uppercase tracking-wider px-1 ${darkMode ? 'text-blue-200/70' : 'text-slate-400'}`}>{t.password}</label>
                         <div className="relative group/input">
                             <Lock className="absolute left-4 top-3.5 text-blue-400 group-focus-within/input:text-blue-500 transition-colors z-10" size={20} />
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:bg-slate-900/80 transition-all text-white font-medium placeholder:text-slate-400 [&:-webkit-autofill]:[transition-delay:9999s] relative z-0 cursor-pointer"
+                                className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400/50 transition-all font-medium [&:-webkit-autofill]:[transition-delay:9999s] relative z-0 cursor-pointer ${darkMode 
+                                    ? 'bg-slate-900/50 border-white/10 text-white placeholder:text-slate-400 focus:bg-slate-900/80' 
+                                    : 'bg-white border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white'
+                                    }`}
                                 placeholder={t.enterPassword}
                                 required
                             />
@@ -160,13 +194,15 @@ const Login = () => {
                     </button>
                 </form>
 
-                {/* Settings Widget Inside Login Card */}
                 {/* Settings Widget Inside Login Card (Premium Style) */}
-                <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-3">
+                <div className={`mt-8 pt-6 border-t flex items-center justify-center gap-3 ${darkMode ? 'border-white/5' : 'border-slate-100'}`}>
                     {/* Language Badge */}
                     <button
                         onClick={toggleLang}
-                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                        className={`w-10 h-10 rounded-2xl border transition-all flex items-center justify-center cursor-pointer active:scale-90 ${darkMode 
+                            ? 'bg-white/5 hover:bg-white/10 text-white border-white/10' 
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                            }`}
                         title={t.changeLanguage}
                     >
                         <span className="text-[10px] font-black uppercase tracking-tighter">{lang}</span>
@@ -179,15 +215,21 @@ const Login = () => {
                             setDarkMode(newMode);
                             localStorage.setItem('darkMode', newMode);
                         }}
-                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                        className={`w-10 h-10 rounded-2xl border transition-all flex items-center justify-center cursor-pointer active:scale-90 ${darkMode 
+                            ? 'bg-white/5 hover:bg-white/10 text-white border-white/10' 
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                            }`}
                     >
-                        {darkMode ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} className="text-indigo-300" />}
+                        {darkMode ? <Sun size={16} className="text-yellow-400" /> : <Moon size={16} className="text-indigo-400" />}
                     </button>
 
                     {/* Font Size Cycle */}
                     <button
                         onClick={cycleFontSize}
-                        className="bg-white/5 hover:bg-white/10 text-white w-10 h-10 rounded-2xl border border-white/10 transition-all flex items-center justify-center cursor-pointer active:scale-90"
+                        className={`w-10 h-10 rounded-2xl border transition-all flex items-center justify-center cursor-pointer active:scale-90 ${darkMode 
+                            ? 'bg-white/5 hover:bg-white/10 text-white border-white/10' 
+                            : 'bg-slate-50 hover:bg-slate-100 text-slate-600 border-slate-200'
+                            }`}
                         title={t.changeFontSize}
                     >
                         <div className="flex items-baseline gap-0.5">

@@ -20,30 +20,7 @@ const Login = () => {
     const [vantaEffect, setVantaEffect] = useState(null);
 
     useEffect(() => {
-        if (!vantaEffect && window.VANTA) {
-            setVantaEffect(window.VANTA.BIRDS({
-                el: vantaRef.current,
-                mouseControls: true,
-                touchControls: true,
-                gyroControls: false,
-                minHeight: 200.00,
-                minWidth: 200.00,
-                scale: 1.00,
-                scaleMobile: 1.00,
-                backgroundColor: 0x030712, // bg-slate-950
-                color1: 0x3b82f6,
-                color2: 0x6366f1,
-                birdSize: 1.5,
-                quantity: 3.0
-            }))
-        }
-        return () => {
-            if (vantaEffect) vantaEffect.destroy()
-        }
-    }, [vantaEffect]);
-
-    useEffect(() => {
-        if (vantaEffect) vantaEffect.destroy(); // Destroy existing effect
+        if (vantaEffect) vantaEffect.destroy();
 
         if (window.VANTA) {
             setVantaEffect(window.VANTA.BIRDS({
@@ -55,7 +32,8 @@ const Login = () => {
                 minWidth: 200.00,
                 scale: 1.00,
                 scaleMobile: 1.00,
-                backgroundColor: darkMode ? 0x030712 : 0xf8fafc, // bg-slate-950 vs bg-slate-50
+                backgroundColor: darkMode ? 0x030712 : 0xf8fafc,
+                backgroundAlpha: 0.0, // Make Vanta background transparent to show CSS bg
                 color1: darkMode ? 0x3b82f6 : 0x2563eb,
                 color2: darkMode ? 0x6366f1 : 0x4f46e5,
                 birdSize: 1.5,
@@ -65,7 +43,7 @@ const Login = () => {
         return () => {
             if (vantaEffect) vantaEffect.destroy()
         }
-    }, [darkMode]); // Re-run when theme toggles
+    }, [darkMode]);
 
     const t = translations[lang];
 
@@ -114,29 +92,29 @@ const Login = () => {
     };
 
     return (
-        <div ref={vantaRef} className={`min-h-screen ${darkMode ? 'bg-slate-950' : 'bg-slate-50'} flex items-center justify-center overflow-hidden p-4 transition-colors duration-500 ${getFontSizeClass()}`}>
+        <div ref={vantaRef} className={`min-h-screen ${darkMode ? 'dark bg-slate-950 text-white' : 'bg-slate-50 text-slate-800'} flex items-center justify-center overflow-hidden p-4 transition-colors duration-500 ${getFontSizeClass()}`}>
             {/* Glassmorphism Login Card */}
             <div className={`relative z-10 backdrop-blur-xl p-8 sm:p-10 rounded-3xl border animate-fade-in group transition-all duration-500 w-full sm:w-[420px] max-w-md ${darkMode 
-                ? 'bg-slate-900/40 border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.5)]' 
-                : 'bg-white/70 border-slate-200 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.15)]'
+                ? 'bg-slate-900/40 border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.5)] text-white' 
+                : 'bg-white/70 border-slate-200 shadow-[0_8px_32px_0_rgba(0,0,0,0.1)] hover:shadow-[0_8px_40px_0_rgba(0,0,0,0.15)] text-slate-800'
                 }`}>
 
                 <div className="flex flex-col items-center mb-8">
                     <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg shadow-blue-500/50 transform group-hover:scale-105 transition-transform duration-500">
                         <ShieldCheck size={32} />
                     </div>
-                    <h2 className={`text-3xl font-bold tracking-tight drop-shadow-sm ${darkMode ? 'text-white' : 'text-slate-800'}`}>{t.loginTitle}</h2>
+                    <h2 className="text-3xl font-bold tracking-tight drop-shadow-sm">{t.loginTitle}</h2>
                     <p className={`text-sm font-medium mt-2 ${darkMode ? 'text-blue-100/80' : 'text-slate-500'}`}>{t.welcomeToPanel}</p>
                 </div>
 
                 {error && (
-                    <div className="bg-rose-500/20 backdrop-blur-md border border-rose-500/50 text-rose-600 dark:text-rose-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
+                    <div className={`bg-rose-500/20 backdrop-blur-md border border-rose-500/50 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in ${darkMode ? 'text-rose-200' : 'text-rose-600'}`}>
                         {error}
                     </div>
                 )}
 
                 {isSuccess && (
-                    <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 text-emerald-600 dark:text-emerald-200 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in">
+                    <div className={`bg-emerald-500/20 backdrop-blur-md border border-emerald-500/50 px-4 py-3 rounded-xl text-sm font-medium mb-6 text-center animate-slide-in ${darkMode ? 'text-emerald-200' : 'text-emerald-600'}`}>
                         {t.successLoading}
                     </div>
                 )}

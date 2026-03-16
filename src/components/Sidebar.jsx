@@ -52,9 +52,9 @@ const Sidebar = ({ isOpen, onClose, t }) => {
                         <Home className="text-white" size={24} />
                     </div>
                     <div>
-                        <h1 className="text-xl font-bold text-white tracking-wide">SmartInventory</h1>
+                        <h1 className="text-xl font-bold text-white tracking-wide">WhiteHome</h1>
                         <p className="text-xs text-slate-500">
-                            {['owner_root', 'master_admin'].includes(user.username) ? 'Admin' : 'v1.0.2'}
+                            {['owner_root', 'master_admin'].includes(user.username) ? 'Admin' : 'v1.0.3'}
                         </p>
                     </div>
                 </div>
@@ -62,6 +62,17 @@ const Sidebar = ({ isOpen, onClose, t }) => {
                 <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white">
                     <X size={24} />
                 </button>
+            </div>
+
+            {/* User Info Section (NEW) */}
+            <div className="px-6 py-4 mx-4 mt-4 rounded-2xl bg-slate-800/40 border border-slate-700/50 flex items-center gap-3 hover:bg-slate-800/60 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold uppercase">
+                    {user.username?.[0] || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-white truncate">{user.name || user.username}</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{user.role}</p>
+                </div>
             </div>
 
             {/* Navigation */}

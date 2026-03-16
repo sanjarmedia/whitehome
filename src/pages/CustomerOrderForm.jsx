@@ -94,7 +94,7 @@ const CustomerOrderForm = () => {
             const payload = {
                 orderSource: 'CUSTOMER_ISSUE',
                 destinationType: 'CUSTOMER',
-                notes,
+                status: 'NEW',
                 items: items.map(i => ({
                     productId: parseInt(i.productId),
                     productName: i.productName,

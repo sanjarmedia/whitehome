@@ -66,7 +66,8 @@ const IssueModal = ({ isOpen, onClose, products, darkMode, onIssued, t }) => {
 
         const payload = {
             destinationType: 'CUSTOMER',
-            status: 'COMPLETED',
+            orderSource: 'CUSTOMER_ISSUE',
+            status: 'NEW',
             items: formData.items.map(item => ({
                 productId: item.productId,
                 productName: item.productName,

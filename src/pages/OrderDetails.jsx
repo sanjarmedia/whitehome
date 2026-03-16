@@ -75,8 +75,11 @@ const OrderDetails = () => {
             case 'NEW': return 'bg-blue-100 text-blue-700 border-blue-200';
             case 'EXPECTED': return 'bg-amber-100 text-amber-700 border-amber-200';
             case 'CHECKED': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+            case 'DISTRIBUTION': return 'bg-purple-100 text-purple-700 border-purple-200';
             case 'COMPLETED': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
             case 'CANCELLED': return 'bg-red-100 text-red-700 border-red-200';
+            case 'PENDING_APPROVAL': return 'bg-rose-100 text-rose-700 border-rose-200';
+            case 'REJECTED': return 'bg-slate-100 text-slate-700 border-slate-200';
             default: return 'bg-slate-100 text-slate-700 border-slate-200';
         }
     };
@@ -86,8 +89,11 @@ const OrderDetails = () => {
             'NEW': t.status_NEW,
             'EXPECTED': t.status_EXPECTED,
             'CHECKED': t.status_CHECKED,
+            'DISTRIBUTION': t.status_DISTRIBUTION,
             'COMPLETED': t.status_COMPLETED,
-            'CANCELLED': t.status_CANCELLED
+            'CANCELLED': t.status_CANCELLED,
+            'PENDING_APPROVAL': t.status_PENDING_APPROVAL,
+            'REJECTED': t.status_REJECTED
         };
         return labels[status] || status;
     };
@@ -110,7 +116,7 @@ const OrderDetails = () => {
                 </button>
                 <div>
                     <h1 className={`text-2xl font-bold flex items-center gap-3 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                        {t.orders} #{order.id}
+                        {order.orderSource === 'COMPANY' ? t.companyOrder : t.issueOrder} #{order.id}
                         <span className={`text-xs px-3 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                             {getStatusLabel(order.status)}
                         </span>
@@ -133,7 +139,7 @@ const OrderDetails = () => {
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className={`text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-slate-400 border-slate-700' : 'text-slate-500 border-slate-100'} border-b`}>
+                                <thead className={`text-xs font-semibold uppercase tracking-wider ${darkMode ? 'text-slate-400 border-slate-700' : 'text-slate-50 border-slate-100'} border-b`}>
                                     <tr>
                                         <th className="px-4 py-3">{t.product}</th>
                                         <th className="px-4 py-3">{t.type}</th>
@@ -222,9 +228,8 @@ const OrderDetails = () => {
                                             {order.customer?.name}
                                             {order.customer?.type === 'vip' && <span className="ml-2 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">VIP</span>}
                                         </p>
-                                        {/* Display 'Doimiy Mijoz' or 'Oddiy Mijoz' based on logic if needed, currently storing 'type' in customer */}
                                         <p className={`text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                            ({order.customer?.type === 'vip' ? t.regularCustomer : t.customer})
+                                            ({order.customer?.type === 'vip' ? t.vipLabel : t.ordinaryLabel})
                                         </p>
                                     </div>
                                 </div>
@@ -235,25 +240,6 @@ const OrderDetails = () => {
                                     <div>
                                         <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.phone}</p>
                                         <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{order.customer?.phone || '-'}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className={`p-2 rounded-lg ${darkMode ? 'bg-slate-700 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`}>
-                                        <MapPin size={18} />
-                                    </div>
-                                    <div>
-                                        <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.addressLabel}</p>
-                                        <p className={`font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{order.customer?.address || t.notSelected}</p>
-                                        {order.customer?.lat && order.customer?.lng && (
-                                            <a
-                                                href={`https://www.google.com/maps?q=${order.customer.lat},${order.customer.lng}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-xs text-blue-500 hover:underline flex items-center gap-1 mt-1"
-                                            >
-                                                {t.openInMap}
-                                            </a>
-                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -267,6 +253,7 @@ const OrderDetails = () => {
                         </h3>
 
                         <div className="space-y-3">
+                            {/* ALL ORDERS: Start Picking/Finance Step */}
                             {order.status === 'NEW' && (
                                 <>
                                     <button
@@ -274,12 +261,13 @@ const OrderDetails = () => {
                                         className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-200/50"
                                     >
                                         <Upload size={18} />
-                                        {t.confirmPayment}
+                                        {order.orderSource === 'COMPANY' ? t.confirmPayment : t.confirmAction}
                                     </button>
                                     <p className="text-xs text-center text-slate-400">{t.uploadReceiptLaterHint}</p>
                                 </>
                             )}
 
+                            {/* ALL ORDERS: Start Check Step */}
                             {order.status === 'EXPECTED' && (
                                 <button
                                     onClick={() => handleStatusUpdate('CHECKED')}
@@ -290,35 +278,77 @@ const OrderDetails = () => {
                                 </button>
                             )}
 
+                            {/* ALL ORDERS: Checking Items */}
                             {order.status === 'CHECKED' && (
-                                <>
-                                    <div className={`p-3 rounded-xl border mb-3 ${allChecked ? 'bg-green-50 border-green-100 text-green-700' : 'bg-amber-50 border-amber-100 text-amber-700'}`}>
+                                <div className="space-y-3">
+                                    <div className={`p-3 rounded-xl border ${allChecked ? 'bg-green-50 border-green-100 text-green-700' : 'bg-amber-50 border-amber-100 text-amber-700'}`}>
                                         <div className="flex items-center gap-2 text-sm font-medium">
                                             <AlertCircle size={16} />
                                             {allChecked ? t.allCheckedMsg : t.someNotCheckedMsg}
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => handleStatusUpdate('COMPLETED')}
-                                        disabled={!allChecked}
-                                        className={`w-full py-3 rounded-xl text-white font-medium transition-colors flex items-center justify-center gap-2 shadow-lg ${allChecked
-                                            ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200/50'
-                                            : 'bg-slate-300 cursor-not-allowed'
-                                            }`}
-                                    >
-                                        <Truck size={18} />
-                                        {t.receiveToWarehouseSubmit}
-                                    </button>
-                                </>
+                                    
+                                    {/* For Company orders: Go to Distribution or Complete */}
+                                    {order.orderSource === 'COMPANY' ? (
+                                        <button
+                                            onClick={() => handleStatusUpdate('DISTRIBUTION')}
+                                            disabled={!allChecked}
+                                            className={`w-full py-3 rounded-xl text-white font-medium transition-colors flex items-center justify-center gap-2 shadow-lg ${allChecked
+                                                ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200/50'
+                                                : 'bg-slate-300 cursor-not-allowed'
+                                                }`}
+                                        >
+                                            <Package size={18} />
+                                            {t.goToDistribution}
+                                        </button>
+                                    ) : (
+                                        /* For Customer orders: Complete directly */
+                                        <button
+                                            onClick={() => handleStatusUpdate('COMPLETED')}
+                                            disabled={!allChecked}
+                                            className={`w-full py-3 rounded-xl text-white font-medium transition-colors flex items-center justify-center gap-2 shadow-lg ${allChecked
+                                                ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200/50'
+                                                : 'bg-slate-300 cursor-not-allowed'
+                                                }`}
+                                        >
+                                            <CheckCircle size={18} />
+                                            {t.issue}
+                                        </button>
+                                    )}
+                                </div>
                             )}
 
+                            {/* COMPANY ORDER: Distribution Mode */}
+                            {order.status === 'DISTRIBUTION' && (
+                                <div className="space-y-4">
+                                    <button
+                                        onClick={() => navigate('/customer-order', { state: { items: order.items } })}
+                                        className="w-full py-3 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-orange-200/50"
+                                    >
+                                        <User size={18} />
+                                        {t.issueOrder} (Direct)
+                                    </button>
+                                    
+                                    <button
+                                        onClick={() => handleStatusUpdate('COMPLETED')}
+                                        className="w-full py-3 rounded-xl bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-emerald-200/50"
+                                    >
+                                        <Package size={18} />
+                                        {t.receiveToWarehouseSubmit}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* COMPLETED STATUS */}
                             {order.status === 'COMPLETED' && (
                                 <div className="text-center py-4">
                                     <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
                                         <CheckCircle size={24} />
                                     </div>
                                     <h4 className="font-semibold text-green-700">{t.orderCompleted}</h4>
-                                    <p className="text-sm text-green-600 mt-1">{t.itemsAddedToStock}</p>
+                                    <p className="text-sm text-green-600 mt-1">
+                                        {order.orderSource === 'COMPANY' ? t.itemsAddedToStock : t.issuedSuccessfully}
+                                    </p>
                                 </div>
                             )}
                         </div>

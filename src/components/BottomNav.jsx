@@ -12,7 +12,10 @@ const BottomNav = ({ darkMode, onOpenMenu, t }) => {
     ];
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] px-4 pb-6 pt-2 pointer-events-none">
+        <div 
+            className="md:hidden fixed bottom-0 left-0 right-0 z-[60] px-4 pt-2 pointer-events-none transition-all duration-300"
+            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+        >
             <div className={`
                 mx-auto max-w-lg h-18 rounded-3xl flex items-center justify-around px-2 pointer-events-auto
                 backdrop-blur-xl border shadow-2xl transition-all duration-300

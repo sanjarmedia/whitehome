@@ -39,8 +39,8 @@ const Customers = () => {
                 type: filterType
             };
             const res = await api.get('/customers', { params });
-            setCustomers(res.data.data);
-            setPagination(res.data.pagination);
+            setCustomers(res?.data?.data || []);
+            setPagination(res?.data?.pagination || { total: 0, totalPages: 0, limit: 24 });
         } catch (err) {
             console.error(err);
         } finally {

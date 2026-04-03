@@ -52,8 +52,8 @@ const Products = () => {
                     category: categoryFilter
                 }
             });
-            setProducts(res.data.data || res.data);
-            if (res.data.pagination) setPagination(res.data.pagination);
+            setProducts(res?.data?.data || res?.data || []);
+            if (res?.data?.pagination) setPagination(res.data.pagination);
             setError(null);
         } catch (err) {
             console.error(err);

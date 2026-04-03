@@ -40,9 +40,9 @@ const Dashboard = () => {
 
     if (!stats) return <div className="text-center p-10 text-slate-500">{t.dataLoadError}</div>;
 
-    const pieData = stats.topSelling || [];
-    const areaData = stats.monthlyStats || [];
-    const debtData = stats.customerBalances || [];
+    const pieData = stats?.topSelling || [];
+    const areaData = stats?.monthlyStats || [];
+    const debtData = stats?.customerBalances || [];
     const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
     return (
@@ -66,20 +66,22 @@ const Dashboard = () => {
 
             {/* Stat Cards */}
             <div className="space-y-6 md:space-y-8 pb-20 relative">
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 relative z-10">
-                    <StatCard
-                        title={t.totalOrders}
-                        value={stats.counts.total}
-                        icon={ShoppingBag}
-                        color="bg-blue-50 text-blue-600"
-                        trend={t.totalOrders}
-                        trendType="info"
-                        delay="0.1s"
-                        darkMode={darkMode}
-                    />
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 relative z-10">
+                    <div className="col-span-2 lg:col-span-1">
+                        <StatCard
+                            title={t.totalOrders}
+                            value={stats?.counts?.total || 0}
+                            icon={ShoppingBag}
+                            color="bg-blue-50 text-blue-600"
+                            trend={t.totalOrders}
+                            trendType="info"
+                            delay="0.1s"
+                            darkMode={darkMode}
+                        />
+                    </div>
                     <StatCard
                         title={t.newOrders}
-                        value={stats.counts.new}
+                        value={stats?.counts?.new || 0}
                         icon={AlertTriangle}
                         color="bg-amber-50 text-amber-600"
                         trend={t.newOrders}
@@ -89,7 +91,7 @@ const Dashboard = () => {
                     />
                     <StatCard
                         title={t.completed}
-                        value={stats.counts.completed}
+                        value={stats?.counts?.completed || 0}
                         icon={CheckCircle}
                         color="bg-emerald-50 text-emerald-600"
                         trend={t.completed}
@@ -97,19 +99,21 @@ const Dashboard = () => {
                         delay="0.3s"
                         darkMode={darkMode}
                     />
-                    <StatCard
-                        title={t.revenue}
-                        value={`$${stats.revenue.toLocaleString()}`}
-                        icon={TrendingUp}
-                        color="bg-indigo-50 text-indigo-600"
-                        trend={t.revenue}
-                        trendType="up"
-                        delay="0.4s"
-                        darkMode={darkMode}
-                    />
+                    <div className="col-span-2 lg:col-span-1">
+                        <StatCard
+                            title={t.revenue}
+                            value={`$${(stats?.revenue || 0).toLocaleString()}`}
+                            icon={TrendingUp}
+                            color="bg-indigo-50 text-indigo-600"
+                            trend={t.revenue}
+                            trendType="up"
+                            delay="0.4s"
+                            darkMode={darkMode}
+                        />
+                    </div>
                     <StatCard
                         title={t.expense}
-                        value={`$${(stats.totalExpense || 0).toLocaleString()}`}
+                        value={`$${(stats?.totalExpense || 0).toLocaleString()}`}
                         icon={ShoppingBag}
                         color="bg-orange-50 text-orange-600"
                         trend={t.expense}
@@ -119,7 +123,7 @@ const Dashboard = () => {
                     />
                     <StatCard
                         title={t.debt}
-                        value={`$${(stats.totalDebt || 0).toLocaleString()}`}
+                        value={`$${(stats?.totalDebt || 0).toLocaleString()}`}
                         icon={Users}
                         color="bg-rose-50 text-rose-600"
                         trend={t.debt}
@@ -127,26 +131,30 @@ const Dashboard = () => {
                         delay="0.6s"
                         darkMode={darkMode}
                     />
-                    <StatCard
-                        title={t.stockValue}
-                        value={`$${(stats.totalStockValue || 0).toLocaleString()}`}
-                        icon={Package}
-                        color="bg-emerald-50 text-emerald-600"
-                        trend={`${stats.totalStockItems || 0} ${t.unitPiece || 'ta'}`}
-                        trendType="info"
-                        delay="0.7s"
-                        darkMode={darkMode}
-                    />
-                    <StatCard
-                        title={t.onlineOrders}
-                        value={stats.counts.online || 0}
-                        icon={Globe}
-                        color="bg-purple-50 text-purple-600"
-                        trend={t.onlineOrders}
-                        trendType="info"
-                        delay="0.8s"
-                        darkMode={darkMode}
-                    />
+                    <div className="col-span-2 lg:col-span-1">
+                        <StatCard
+                            title={t.stockValue}
+                            value={`$${(stats?.totalStockValue || 0).toLocaleString()}`}
+                            icon={Package}
+                            color="bg-emerald-50 text-emerald-600"
+                            trend={`${stats?.totalStockItems || 0} ${t.unitPiece || 'ta'}`}
+                            trendType="info"
+                            delay="0.7s"
+                            darkMode={darkMode}
+                        />
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                        <StatCard
+                            title={t.onlineOrders}
+                            value={stats?.counts?.online || 0}
+                            icon={Globe}
+                            color="bg-purple-50 text-purple-600"
+                            trend={t.onlineOrders}
+                            trendType="info"
+                            delay="0.8s"
+                            darkMode={darkMode}
+                        />
+                    </div>
                 </div>
 
                 {/* Charts Section */}
@@ -263,7 +271,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-                            {stats.recent.map((order, i) => (
+                            {stats?.recent?.map((order, i) => (
                                 <div key={order.id}
                                     className={`flex items-center gap-3 p-3 rounded-2xl border transition-all hover:shadow-sm ${darkMode
                                         ? 'bg-slate-700/50 border-slate-600 hover:border-slate-500'
@@ -519,9 +527,10 @@ const StatCard = ({ title, value, icon: Icon, color, trend, trendType = 'up', de
         >
             <div className="flex justify-between items-start z-10">
                 <div>
-                    <p className="text-slate-500 text-sm font-medium">{title}</p>
-                    <h3 className={`text-3xl font-bold mt-2 tracking-tight group-hover:scale-105 transition-transform origin-left ${darkMode ? 'text-slate-100' : 'text-slate-800'
-                        }`}>{value}</h3>
+                    <p className="text-slate-500 text-[10px] sm:text-sm font-black uppercase tracking-widest">{title}</p>
+                    <h3 className={`font-black tracking-tighter group-hover:scale-105 transition-transform origin-left ${darkMode ? 'text-slate-100' : 'text-slate-800'} ${
+                        value.length > 12 ? 'text-xl sm:text-2xl mt-1' : 'text-2xl sm:text-3xl mt-2'
+                    }`}>{value}</h3>
                 </div>
                 <div className={`p-3 rounded-2xl ${color} bg-opacity-20 backdrop-blur-sm transition-transform group-hover:rotate-12`}>
                     <Icon size={24} />

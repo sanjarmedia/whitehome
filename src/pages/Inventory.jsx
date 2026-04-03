@@ -272,9 +272,9 @@ const Inventory = () => {
             </div>
 
             {/* Actions Toolbar */}
-            <div className={`p-2 rounded-3xl border overflow-x-auto flex items-center gap-2 no-scrollbar ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
-                <div className="flex items-center gap-2 px-2 border-r border-slate-200 dark:border-slate-800 shrink-0">
-                    <label className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer ${updateExisting ? 'border-blue-600/50 bg-blue-600/10 text-blue-500' : darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
+            <div className={`p-2 rounded-3xl border flex flex-col sm:flex-row items-stretch sm:items-center gap-2 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                <div className="flex items-center gap-2 px-2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-800 pb-2 sm:pb-0 shrink-0">
+                    <label className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-2xl border transition-all cursor-pointer ${updateExisting ? 'border-blue-600/50 bg-blue-600/10 text-blue-500' : darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
                         <input 
                             type="checkbox" 
                             className="accent-blue-600 w-3 h-3"
@@ -285,21 +285,21 @@ const Inventory = () => {
                     </label>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                    <button onClick={handleDownloadTemplate} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 flex-1">
+                    <button onClick={handleDownloadTemplate} className={`px-2 sm:px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 transition-all font-black text-[10px] sm:text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
                         <Download size={14} className="text-blue-500" /> Namuna
                     </button>
-                    <button onClick={() => setIsBulkModalOpen(true)} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                    <button onClick={() => setIsBulkModalOpen(true)} className={`px-2 sm:px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 transition-all font-black text-[10px] sm:text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
                         <PlusSquare size={14} className="text-blue-500" /> {t.bulkAdd}
                     </button>
-                    <button onClick={() => fileInputRef.current?.click()} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                    <button onClick={() => fileInputRef.current?.click()} className={`px-2 sm:px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 transition-all font-black text-[10px] sm:text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
                         <Upload size={14} className="text-emerald-500" /> {t.importCsv}
                     </button>
-                    <button onClick={handleExportCsv} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                    <button onClick={handleExportCsv} className={`px-2 sm:px-4 py-2.5 rounded-2xl flex items-center justify-center gap-2 transition-all font-black text-[10px] sm:text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
                         <Download size={14} className="text-amber-500" /> Export
                     </button>
-                    <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleImportCsv} />
                 </div>
+                <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleImportCsv} />
             </div>
 
             <div className="pb-4">

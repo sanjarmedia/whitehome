@@ -18,11 +18,11 @@ const Inventory = () => {
     const [expandedOrderIds, setExpandedOrderIds] = useState([]);
 
     useEffect(() => {
-        fetchData();
+        fetchData(true);
     }, []);
 
-    const fetchData = async () => {
-        setLoading(true);
+    const fetchData = async (isFirstLoad = false) => {
+        if (isFirstLoad) setLoading(true);
         try {
             const [prodRes, orderRes] = await Promise.all([
                 api.get('/products'),
@@ -45,7 +45,7 @@ const Inventory = () => {
         } catch (err) {
             console.error(err);
         } finally {
-            setLoading(false);
+            if (isFirstLoad) setLoading(false);
         }
     };
 

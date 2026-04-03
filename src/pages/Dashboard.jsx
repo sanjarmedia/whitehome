@@ -11,22 +11,22 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-    const fetchStats = async () => {
-        setLoading(true);
+    const fetchStats = async (isFirstLoad = false) => {
+        if (isFirstLoad) setLoading(true);
         try {
             const res = await api.get('/dashboard');
             setStats(res.data);
         } catch (err) {
             console.error(err);
         } finally {
-            setLoading(false);
+            if (isFirstLoad) setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchStats();
+        fetchStats(true);
         // Set up real-time polling every 30 seconds
-        const intervalId = setInterval(fetchStats, 30000);
+        const intervalId = setInterval(() => fetchStats(false), 30000);
         return () => clearInterval(intervalId);
     }, []);
 
@@ -54,7 +54,7 @@ const Dashboard = () => {
                     <p className={`mt-1 sm:mt-2 font-light ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.dailyStatus}</p>
                 </div>
                 <button
-                    onClick={fetchStats}
+                    onClick={() => fetchStats(true)}
                     className={`p-3 rounded-2xl shadow-sm border transition-all active:scale-95 group self-end sm:self-auto ${darkMode
                         ? 'bg-slate-800 text-slate-400 hover:text-blue-400 border-slate-700'
                         : 'bg-white text-slate-600 hover:text-blue-600 border-slate-200 hover:bg-blue-50'

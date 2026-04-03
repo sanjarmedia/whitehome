@@ -21,8 +21,8 @@ const OrdersList = () => {
     const [newOrderMenu, setNewOrderMenu] = useState(false);
     const [approving, setApproving] = useState(null);
 
-    const fetchOrders = async () => {
-        setLoading(true);
+    const fetchOrders = async (isFirstLoad = false) => {
+        if (isFirstLoad) setLoading(true);
         try {
             const [ordRes, lowRes] = await Promise.all([
                 api.get('/orders'),
@@ -33,14 +33,14 @@ const OrdersList = () => {
         } catch (err) {
             console.error(err);
         } finally {
-            setLoading(false);
+            if (isFirstLoad) setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchOrders();
+        fetchOrders(true);
         // Har 45 sekundda yangilab turish
-        const intervalId = setInterval(fetchOrders, 45000);
+        const intervalId = setInterval(() => fetchOrders(false), 45000);
         return () => clearInterval(intervalId);
     }, []);
 

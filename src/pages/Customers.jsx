@@ -118,7 +118,7 @@ const Customers = () => {
                         <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
                             <Users size={18} />
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.all.toUpperCase()}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{(t.all || '').toUpperCase()}</span>
                     </div>
                     <div className={`text-2xl font-black ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{customers.length}</div>
                     <div className="text-[10px] font-bold text-slate-500 mt-1">{(t.partnersNotFound || 'Mijoz').split(' ')[0]}</div>
@@ -134,7 +134,7 @@ const Customers = () => {
                     <div className={`text-2xl font-black ${darkMode ? 'text-amber-500' : 'text-amber-600'}`}>
                         {customers.filter(c => c.type === 'vip').length}
                     </div>
-                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.customer.toLowerCase()}</div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{(t.customer || 'Mijoz').toLowerCase()}</div>
                 </div>
 
                 <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
@@ -142,7 +142,7 @@ const Customers = () => {
                         <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500">
                             <Package size={18} />
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.organizationType.toUpperCase()}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{(t.organizationType || '').toUpperCase()}</span>
                     </div>
                     <div className={`text-2xl font-black ${darkMode ? 'text-indigo-500' : 'text-indigo-600'}`}>
                         {customers.filter(c => c.type === 'organization').length}
@@ -155,7 +155,7 @@ const Customers = () => {
                         <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
                             <Plus size={18} />
                         </div>
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.active.toUpperCase()}</span>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{(t.active || '').toUpperCase()}</span>
                     </div>
                     <div className={`text-2xl font-black ${darkMode ? 'text-emerald-500' : 'text-emerald-600'}`}>
                         {customers.filter(c => c._count?.orders > 0).length}

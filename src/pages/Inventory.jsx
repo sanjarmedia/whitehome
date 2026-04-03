@@ -13,6 +13,7 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('stock'); // stock, issued
     const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
     const [historyPage, setHistoryPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const [historyPagination, setHistoryPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
@@ -47,22 +48,28 @@ const Inventory = () => {
                 })
             ]);
             
-            setProducts(productsRes.data.data || productsRes.data);
-            if (productsRes.data.pagination) {
+            const pData = productsRes.data?.data || (Array.isArray(productsRes.data) ? productsRes.data : []);
+            setProducts(pData);
+            if (productsRes.data?.pagination) {
                 setPagination(productsRes.data.pagination);
+            } else if (Array.isArray(productsRes.data)) {
+                setPagination({ total: productsRes.data.length, totalPages: Math.ceil(productsRes.data.length / 24), limit: 24 });
             }
 
-            if (orderRes.data.pagination) {
+            if (orderRes.data?.pagination) {
                 setHistoryPagination(orderRes.data.pagination);
+            } else if (Array.isArray(orderRes.data)) {
+                setHistoryPagination({ total: orderRes.data.length, totalPages: Math.ceil(orderRes.data.length / 24), limit: 24 });
             }
 
             // Group items from completed customer orders
-            const orders = (orderRes.data.data || orderRes.data)
+            const rawOrders = orderRes.data?.data || (Array.isArray(orderRes.data) ? orderRes.data : []);
+            const orders = rawOrders
                 .map(order => ({
                     id: order.id,
                     customerName: order.customer?.name || t.unknown,
                     date: order.createdAt,
-                    items: order.items,
+                    items: order.items || [],
                     totalQuantity: parseInt(order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0),
                     totalAmount: order.totalAmount || order.items?.reduce((sum, item) => sum + (item.quantity * item.price), 0) || 0
                 }));

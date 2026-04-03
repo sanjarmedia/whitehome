@@ -94,8 +94,19 @@ const AuditLog = () => {
             params.append('page', page.toString());
             params.append('limit', '24');
             const res = await api.get(`/audit?${params.toString()}`);
-            setLogs(res.data.data || []);
-            setPagination(res.data.pagination || { total: 0, totalPages: 0, limit: 24 });
+            
+            const lData = res.data?.data || (Array.isArray(res.data) ? res.data : []);
+            setLogs(lData);
+            
+            if (res.data?.pagination) {
+                setPagination(res.data.pagination);
+            } else if (Array.isArray(res.data)) {
+                setPagination({ 
+                    total: res.data.length, 
+                    totalPages: Math.ceil(res.data.length / 24), 
+                    limit: 24 
+                });
+            }
         } catch (err) {
             console.error(err);
         } finally {

@@ -37,9 +37,19 @@ const OrdersList = () => {
                 api.get('/orders/low-stock-alert').catch(() => ({ data: [] }))
             ]);
             
-            setOrders(ordRes.data?.data || []);
-            setPagination(ordRes.data?.pagination || { total: 0, totalPages: 0, limit: 24 });
-            setLowStockProducts(lowRes.data);
+            const ordersData = ordRes.data?.data || (Array.isArray(ordRes.data) ? ordRes.data : []);
+            setOrders(ordersData);
+            
+            if (ordRes.data?.pagination) {
+                setPagination(ordRes.data.pagination);
+            } else if (Array.isArray(ordRes.data)) {
+                setPagination({ 
+                    total: ordRes.data.length, 
+                    totalPages: Math.ceil(ordRes.data.length / 24), 
+                    limit: 24 
+                });
+            }
+            setLowStockProducts(lowRes.data || []);
         } catch (err) {
             console.error(err);
         } finally {

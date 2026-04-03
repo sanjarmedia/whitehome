@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
+import useScrollLock from '../hooks/useScrollLock';
 import { X, Plus, Trash2, Save, Package, AlertTriangle } from 'lucide-react';
 
 const STATUS_OPTIONS = [
@@ -35,6 +36,8 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
+
+    useScrollLock(true);
 
     useEffect(() => {
         if (!order) return;

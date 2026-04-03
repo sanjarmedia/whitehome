@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
 import { X, Upload, Check, AlertCircle, Camera, FileText } from 'lucide-react';
 
@@ -8,6 +9,8 @@ const OrderCheckModal = ({ order, onClose, darkMode, t }) => {
     const [file, setFile] = useState(null);
     const [items, setItems] = useState(order.items || []);
     const [notes, setNotes] = useState(order.notes || '');
+
+    useScrollLock(true);
 
     // Status Logic
     const isNew = order.status === 'NEW';

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Save, Shield, User as UserIcon } from 'lucide-react';
+import useScrollLock from '../hooks/useScrollLock';
 
 const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode, t }) => {
     const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const UserModal = ({ isOpen, onClose, onSave, initialData, darkMode, t }) => {
         role: 'restricted',
         telegram: ''
     });
+
+    useScrollLock(isOpen);
 
     useEffect(() => {
         if (initialData) {

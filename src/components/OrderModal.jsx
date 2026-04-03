@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
 import {
     X, Save, Trash2, Plus, Package,
@@ -16,6 +17,8 @@ const getFileUrl = (path) => {
 
 const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t }) => {
     const [mode, setMode] = useState(defaultMode);
+    
+    useScrollLock(true); // Since it's only rendered when open
 
     const STATUS_OPTIONS = [
         { value: 'NEW', label: t.new },

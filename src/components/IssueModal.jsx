@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { X, Save, User, Package, CheckCircle } from 'lucide-react';
+import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
 
 const IssueModal = ({ isOpen, onClose, products, darkMode, onIssued, t }) => {
@@ -19,6 +20,8 @@ const IssueModal = ({ isOpen, onClose, products, darkMode, onIssued, t }) => {
         items: [], // [{ productId, productName, category, quantity, price }]
         notes: ''
     });
+
+    useScrollLock(isOpen);
 
     useEffect(() => {
         if (isOpen) {

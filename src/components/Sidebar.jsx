@@ -44,6 +44,7 @@ const Sidebar = ({ isOpen, onClose, t }) => {
             bg-slate-900/95 text-slate-300 flex-col backdrop-blur-md shadow-2xl transition-all duration-300
             md:translate-x-0 md:fixed md:left-0 md:top-0 md:h-screen md:w-72 md:flex z-50
             fixed inset-y-0 left-0 w-72 h-screen transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+            z-[80]
         `}>
             {/* Logo Area */}
             <div className="p-8 flex items-center justify-between border-b border-slate-800/50">
@@ -76,7 +77,7 @@ const Sidebar = ({ isOpen, onClose, t }) => {
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto pb-20 md:pb-6">
                 {links.map((link) => {
                     const Icon = link.icon;
                     const isActive = location.pathname === link.to;

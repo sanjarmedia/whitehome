@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
+import useScrollLock from '../hooks/useScrollLock';
 import { translations } from '../translations';
 import { Moon, Sun, Menu } from 'lucide-react';
 import api from '../api/axios';
@@ -23,6 +24,8 @@ const Layout = () => {
     });
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    useScrollLock(isMobileMenuOpen);
 
     const toggleTheme = () => {
         const newMode = !darkMode;
@@ -83,7 +86,7 @@ const Layout = () => {
             {/* Mobile Menu Overlay Background */}
             {isMobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
+                    className="fixed inset-0 bg-black/60 z-[70] md:hidden backdrop-blur-md transition-opacity duration-300"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
@@ -140,6 +143,7 @@ const Layout = () => {
             <BottomNav 
                 darkMode={darkMode} 
                 onOpenMenu={() => setIsMobileMenuOpen(true)} 
+                isMenuOpen={isMobileMenuOpen}
                 t={t}
             />
         </div>

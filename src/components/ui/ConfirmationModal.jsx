@@ -1,8 +1,10 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import useScrollLock from '../useScrollLock';
 import { Truck, CheckCircle, Upload, AlertCircle } from 'lucide-react';
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, status, darkMode, confirmText = "Tasdiqlash", cancelText = "Bekor qilish" }) => {
+    useScrollLock(isOpen);
     if (!isOpen) return null;
 
     return createPortal(

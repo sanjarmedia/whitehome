@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, MapPin, User, Phone, Package } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import useScrollLock from '../hooks/useScrollLock';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -33,6 +34,8 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
         lng: 69.2401,
         telegram: ''
     });
+
+    useScrollLock(isOpen);
 
     useEffect(() => {
         if (customer) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Upload, Save } from 'lucide-react';
+import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
 
 const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode, t, categories = [], brands = [] }) => {
@@ -14,6 +15,8 @@ const ProductModal = ({ isOpen, onClose, onSave, initialData, darkMode, t, categ
         category: '',
         image: ''
     });
+
+    useScrollLock(isOpen);
 
     useEffect(() => {
         if (initialData) {

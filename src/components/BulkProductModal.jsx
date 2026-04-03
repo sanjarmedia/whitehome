@@ -43,16 +43,14 @@ const BulkProductModal = ({ isOpen, onClose, onSaved, darkMode, t }) => {
         setError(null);
         
         try {
-            // Since we don't have a bulk API, we iterate
-            // To be more efficient and avoid sequence issues, we could use Promise.all
-            // but for inventory bulk entry, sequence often doesn't matter.
-            await Promise.all(validRows.map(row => 
-                api.post('/products', {
+            await api.post('/products/import', {
+                products: validRows.map(row => ({
                     ...row,
                     quantity: parseInt(row.quantity) || 0,
                     price: parseFloat(row.price) || 0
-                })
-            ));
+                })),
+                updateExisting: true // Always update if adding via bulk modal for convenience
+            });
             
             alert(t.bulkSaveSuccess);
             onSaved();

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon } from 'lucide-react';
+import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductModal from '../components/ProductModal';
 import ProductDetailModal from '../components/ProductDetailModal';
 import * as XLSX from 'xlsx';
@@ -13,6 +13,9 @@ const Products = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [brandFilter, setBrandFilter] = useState('All');
     const [categoryFilter, setCategoryFilter] = useState('All');
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState({ totalItems: 0, totalPages: 1 });
+    const limit = 24;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
@@ -30,12 +33,26 @@ const Products = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [page, brandFilter, categoryFilter]);
+
+    useEffect(() => {
+        if (page !== 1) setPage(1);
+        else fetchProducts();
+    }, [searchTerm]);
 
     const fetchProducts = async () => {
         try {
-            const res = await api.get('/products');
-            setProducts(res.data);
+            const res = await api.get('/products', {
+                params: {
+                    page,
+                    limit,
+                    search: searchTerm,
+                    brand: brandFilter,
+                    category: categoryFilter
+                }
+            });
+            setProducts(res.data.data || res.data);
+            if (res.data.pagination) setPagination(res.data.pagination);
             setError(null);
         } catch (err) {
             console.error(err);
@@ -182,16 +199,8 @@ const Products = () => {
         }
     };
 
-    const brands = ['All', ...new Set(products.map(p => p.brand).filter(Boolean))];
-    const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
-
-    const filteredProducts = products.filter(p => {
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            p.sku?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesBrand = brandFilter === 'All' || p.brand === brandFilter;
-        const matchesCategory = categoryFilter === 'All' || p.category === categoryFilter;
-        return matchesSearch && matchesBrand && matchesCategory;
-    });
+    const brands = ['All', 'Akuvox', 'Akubela']; // Basic list, could be fetched
+    const categories = ['All', 'Monitor', 'Doorphone', 'Ichki Tizim', 'Aksesuar'];
 
     if (loading) return <div className="p-8">{t.loading}</div>;
 
@@ -301,7 +310,7 @@ const Products = () => {
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredProducts.map(product => (
+                {products.map(product => (
                     <div key={product.id} className={`group rounded-2xl overflow-hidden shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 relative ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
 
                         {/* Admin Actions */}
@@ -380,6 +389,52 @@ const Products = () => {
                     </div>
                 ))}
             </div>
+
+            {/* Pagination controls */}
+            {pagination.totalPages > 1 && (
+                <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+                    <p className={`text-xs font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                        {t.page} {page} {t.of} {pagination.totalPages}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                        
+                        {[...Array(pagination.totalPages)].map((_, i) => {
+                            const p = i + 1;
+                            if (p === 1 || p === pagination.totalPages || (p >= page - 2 && p <= page + 2)) {
+                                return (
+                                    <button
+                                        key={p}
+                                        onClick={() => setPage(p)}
+                                        className={`w-10 h-10 rounded-xl font-black text-xs transition-all active:scale-90 ${page === p
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                                            : (darkMode ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-100')
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                );
+                            }
+                            if (p === 2 || p === pagination.totalPages - 1) return <span key={p} className="mx-1 text-slate-400">...</span>;
+                            return null;
+                        })}
+
+                        <button
+                            onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                            disabled={page === pagination.totalPages}
+                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {filteredProducts.length === 0 && (
                 <div className={`text-center py-20 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>

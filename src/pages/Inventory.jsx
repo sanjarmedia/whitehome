@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { Package, AlertCircle, ShoppingCart, ArrowUpRight, History, Search, ChevronDown, ChevronRight, Download, Upload, PlusSquare } from 'lucide-react';
+import { Package, AlertCircle, ShoppingCart, ArrowUpRight, History, Search, ChevronDown, ChevronRight, Download, Upload, PlusSquare, ChevronLeft } from 'lucide-react';
 import IssueModal from '../components/IssueModal';
 import BulkProductModal from '../components/BulkProductModal';
 
@@ -12,6 +12,9 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('stock'); // stock, issued
     const [searchTerm, setSearchTerm] = useState('');
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState({ totalItems: 0, totalPages: 1 });
+    const limit = 24;
 
     const [selectedIds, setSelectedIds] = useState([]);
     const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
@@ -21,18 +24,24 @@ const Inventory = () => {
     const [expandedOrderIds, setExpandedOrderIds] = useState([]);
     const fileInputRef = useRef(null);
 
-    useEffect(() => {
-        fetchData(true);
-    }, []);
-
-    const fetchData = async (isFirstLoad = false) => {
-        if (isFirstLoad) setLoading(true);
+    const fetchData = async (isInitial = false) => {
+        if (isInitial) setLoading(true);
         try {
-            const [prodRes, orderRes] = await Promise.all([
-                api.get('/products'),
+            const [productsRes, orderRes] = await Promise.all([
+                api.get('/products', {
+                    params: {
+                        page: page,
+                        limit: limit,
+                        search: searchTerm
+                    }
+                }),
                 api.get('/orders?status=COMPLETED')
             ]);
-            setProducts(prodRes.data.filter(p => p.quantity > 0));
+            
+            setProducts(productsRes.data.data || productsRes.data);
+            if (productsRes.data.pagination) {
+                setPagination(productsRes.data.pagination);
+            }
 
             // Group items from completed customer orders
             const orders = orderRes.data
@@ -49,9 +58,18 @@ const Inventory = () => {
         } catch (err) {
             console.error(err);
         } finally {
-            if (isFirstLoad) setLoading(false);
+            if (isInitial) setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchData(true);
+    }, [page]);
+
+    useEffect(() => {
+        if (page !== 1) setPage(1);
+        else fetchData();
+    }, [searchTerm]);
 
     const handleIssueToggle = (productsToIssue) => {
         const array = Array.isArray(productsToIssue) ? productsToIssue : [productsToIssue];
@@ -60,10 +78,10 @@ const Inventory = () => {
     };
 
     const toggleSelectAll = () => {
-        if (selectedIds.length === filteredProducts.length) {
+        if (selectedIds.length === products.length) {
             setSelectedIds([]);
         } else {
-            setSelectedIds(filteredProducts.map(p => p.id));
+            setSelectedIds(products.map(p => p.id));
         }
     };
 
@@ -74,11 +92,6 @@ const Inventory = () => {
     const toggleExpandOrder = (orderId) => {
         setExpandedOrderIds(prev => prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]);
     };
-
-    const filteredProducts = products.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.sku?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const filteredIssued = issuedItems.filter(order =>
         order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -145,59 +158,36 @@ const Inventory = () => {
             if (dataRows.length === 0) return alert(t.invalidCsv);
 
             setLoading(true);
-            let successCount = 0;
-            let updatedCount = 0;
             
-            // Map products by SKU to easily find duplicates
-            const skuMap = new Map();
-            products.forEach(p => {
-                if (p.sku) skuMap.set(p.sku.toLowerCase(), p);
-            });
-
-            for (const line of dataRows) {
+            const productsToImport = dataRows.map(line => {
                 const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (parts.length < 3) continue;
+                return {
+                    name: parts[0]?.replace(/^"|"$/g, '').trim(),
+                    sku: parts[1]?.replace(/^"|"$/g, '').trim(),
+                    category: parts[2]?.replace(/^"|"$/g, '').trim(),
+                    brand: parts[3]?.replace(/^"|"$/g, '').trim(),
+                    quantity: parseInt(parts[4]) || 0,
+                    price: parseFloat(parts[5]) || 0,
+                    description: parts[6]?.replace(/^"|"$/g, '').trim(),
+                };
+            }).filter(p => p.name);
 
-                const name = parts[0]?.replace(/^"|"$/g, '').trim();
-                const sku = parts[1]?.replace(/^"|"$/g, '').trim();
-                const category = parts[2]?.replace(/^"|"$/g, '').trim();
-                const brand = parts[3]?.replace(/^"|"$/g, '').trim();
-                const quantity = parseInt(parts[4]) || 0;
-                const price = parseFloat(parts[5]) || 0;
-                const description = parts[6]?.replace(/^"|"$/g, '').trim();
-
-                if (!name) continue;
-
-                const existingProduct = sku && skuMap.get(sku.toLowerCase());
-
-                try {
-                    if (existingProduct) {
-                        if (updateExisting) {
-                            // Only update quantity and price if toggle is in favor of "Update"
-                            await api.patch(`/products/${existingProduct.id}`, { 
-                                quantity: existingProduct.quantity + quantity,
-                                price: price || existingProduct.price 
-                            });
-                            updatedCount++;
-                        } else {
-                            // If toggle is OFF, we would normally skip.
-                            // But as per user's "Ogohlantirish berilsin" - since it's a loop,
-                            // we'll assume the toggle is the "choice".
-                            continue;
-                        }
-                    } else {
-                        await api.post('/products', { name, sku, category, brand, quantity, price, description });
-                        successCount++;
-                    }
-                } catch (err) {
-                    console.error("Import error for row:", line, err);
-                }
+            try {
+                const response = await api.post('/products/import', { 
+                    products: productsToImport, 
+                    updateExisting 
+                });
+                
+                const { createdCount, updatedCount } = response.data;
+                alert(t.importSummary(createdCount, updatedCount));
+                fetchData();
+            } catch (err) {
+                console.error("Import error:", err);
+                alert(t.importError + ": " + (err.response?.data?.error || err.message));
+            } finally {
+                setLoading(false);
+                if (fileInputRef.current) fileInputRef.current.value = '';
             }
-
-            alert(t.importSummary(successCount, updatedCount));
-            fetchData();
-            setLoading(false);
-            if (fileInputRef.current) fileInputRef.current.value = '';
         };
         reader.readAsText(file);
     };
@@ -216,10 +206,8 @@ const Inventory = () => {
                     </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                    {/* Action Buttons */}
                     {activeTab === 'stock' && (
                         <div className="flex flex-wrap items-center gap-2 animate-fade-in">
-                            {/* Toggle for duplicate SKU handling */}
                             <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all cursor-pointer mr-2 ${updateExisting ? 'border-blue-600 bg-blue-600/5' : darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
                                 <input 
                                     type="checkbox" 
@@ -294,7 +282,6 @@ const Inventory = () => {
                 </div>
             </div>
 
-            {/* Tabs */}
             <div className="pb-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row gap-2">
                     <button
@@ -310,9 +297,6 @@ const Inventory = () => {
                         <Package size={20} className="shrink-0" /> 
                         <div className="flex flex-col">
                             <span className="text-[11px] lg:text-sm uppercase tracking-tight">{t.inventory}</span>
-                            <span className={`text-[10px] w-fit mx-auto lg:mx-0 px-2 py-0.5 rounded-lg ${activeTab === 'stock' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
-                                {products.length} xil / {products.reduce((acc, curr) => acc + curr.quantity, 0)} {t.quantity}
-                            </span>
                         </div>
                     </button>
                     <button
@@ -328,9 +312,6 @@ const Inventory = () => {
                         <History size={20} className="shrink-0" />
                         <div className="flex flex-col">
                             <span className="text-[11px] lg:text-sm uppercase tracking-tight">{t.orders}</span>
-                            <span className={`text-[10px] w-fit mx-auto lg:mx-0 px-2 py-0.5 rounded-lg ${activeTab === 'issued' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'}`}>
-                                {issuedItems.length} {t.totalOrders}
-                            </span>
                         </div>
                     </button>
                 </div>
@@ -339,7 +320,6 @@ const Inventory = () => {
             <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                 {activeTab === 'stock' ? (
                     <>
-                        {/* Desktop Table */}
                         <div className="hidden md:block overflow-x-auto">
                             <table className="min-w-full">
                                 <thead>
@@ -350,16 +330,16 @@ const Inventory = () => {
                                                     type="checkbox"
                                                     id="select-all"
                                                     className="hidden"
-                                                    checked={selectedIds.length > 0 && selectedIds.length === filteredProducts.length}
+                                                    checked={selectedIds.length > 0 && selectedIds.length === products.length}
                                                     onChange={toggleSelectAll}
                                                 />
                                                 <label
                                                     htmlFor="select-all"
-                                                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.length > 0 && selectedIds.length === filteredProducts.length
+                                                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.length > 0 && selectedIds.length === products.length
                                                         ? 'bg-blue-600 border-blue-600'
                                                         : darkMode ? 'border-slate-600 hover:border-slate-500' : 'border-slate-300 hover:border-slate-400'}`}
                                                 >
-                                                    {(selectedIds.length > 0 && selectedIds.length === filteredProducts.length) && (
+                                                    {(selectedIds.length > 0 && selectedIds.length === products.length) && (
                                                         <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>
                                                     )}
                                                 </label>
@@ -373,7 +353,7 @@ const Inventory = () => {
                                     </tr>
                                 </thead>
                                 <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
-                                    {filteredProducts.map(product => (
+                                    {products.map(product => (
                                         <tr key={product.id} className={`transition-colors ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'} ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
                                             <td className="px-4 py-4 text-center">
                                                 <div className="flex justify-center">
@@ -431,9 +411,8 @@ const Inventory = () => {
                             </table>
                         </div>
 
-                        {/* Mobile List View */}
                         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
-                            {filteredProducts.map(product => (
+                            {products.map(product => (
                                 <div key={product.id} className={`p-4 flex flex-col space-y-3 ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
                                     <div className="flex items-start justify-between">
                                         <div className="flex items-start gap-3">
@@ -470,17 +449,6 @@ const Inventory = () => {
                                                 <span className="text-[10px] font-black uppercase text-slate-500">{t.stock}</span>
                                                 <span className={`text-xl font-black ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{product.quantity} {t.quantity.toLowerCase()}</span>
                                             </div>
-                                            <div className="flex items-center">
-                                                {product.quantity < 10 ? (
-                                                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border flex items-center gap-1 ${darkMode ? 'bg-rose-900/20 border-rose-900/50 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600'}`}>
-                                                        <AlertCircle size={10} /> {t.lowStock}
-                                                    </span>
-                                                ) : (
-                                                    <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter border flex items-center gap-1 ${darkMode ? 'bg-emerald-900/20 border-emerald-900/50 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
-                                                        {t.inStock}
-                                                    </span>
-                                                )}
-                                            </div>
                                         </div>
                                         <button
                                             onClick={() => handleIssueToggle(product)}
@@ -499,7 +467,6 @@ const Inventory = () => {
                     </>
                 ) : (
                     <>
-                        {/* Desktop Table */}
                         <div className="hidden md:block">
                             <table className="min-w-full">
                                 <thead>
@@ -555,7 +522,6 @@ const Inventory = () => {
                                                                         <div className="col-span-1 text-center text-xs opacity-40">{i+1}</div>
                                                                         <div className="col-span-6 px-3 flex flex-col">
                                                                             <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
-                                                                            <span className="text-[10px] text-slate-500 font-black uppercase tracking-tighter">{item.category}</span>
                                                                         </div>
                                                                         <div className={`col-span-2 text-center font-black text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{item.quantity}</div>
                                                                         <div className={`col-span-3 text-right font-black text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
@@ -572,7 +538,6 @@ const Inventory = () => {
                             </table>
                         </div>
 
-                        {/* Mobile List View (Issued) */}
                         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
                              {filteredIssued.map((order) => {
                                 const isExpanded = expandedOrderIds.includes(order.id);
@@ -584,19 +549,12 @@ const Inventory = () => {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(order.date).toLocaleDateString()}</span>
-                                                <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
-                                                    {t.atCustomer}
-                                                </span>
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <h3 className={`font-black text-lg tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{order.customerName}</h3>
                                                 <div className={isExpanded ? 'text-blue-500' : 'text-slate-400'}>
                                                     {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
                                                 </div>
-                                            </div>
-                                            <div className="flex justify-between items-end">
-                                                <div className="text-xs font-bold opacity-60">{order.items.length} {t.products.toLowerCase()}</div>
-                                                <div className={`text-lg font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${order.totalAmount.toFixed(2)}</div>
                                             </div>
                                         </div>
 
@@ -607,7 +565,6 @@ const Inventory = () => {
                                                         <div key={i} className="flex justify-between items-center">
                                                             <div className="flex flex-col">
                                                                 <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
-                                                                <span className="text-[10px] text-slate-500 font-bold uppercase">{item.quantity} {t.quantity.toLowerCase()} × ${item.price}</span>
                                                             </div>
                                                             <div className={`font-black text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
                                                         </div>
@@ -622,6 +579,49 @@ const Inventory = () => {
                     </>
                 )}
             </div>
+
+            {activeTab === 'stock' && pagination.totalPages > 1 && (
+                <div className={`mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-2 animate-fade-in`}>
+                    <p className={`text-xs font-bold uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                        {t.page} {page} {t.of} {pagination.totalPages}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            disabled={page === 1}
+                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                        {[...Array(pagination.totalPages)].map((_, i) => {
+                            const p = i + 1;
+                            if (p === 1 || p === pagination.totalPages || (p >= page - 1 && p <= page + 1)) {
+                                return (
+                                    <button
+                                        key={p}
+                                        onClick={() => setPage(p)}
+                                        className={`w-10 h-10 rounded-xl font-black text-xs transition-all active:scale-90 ${page === p
+                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                                            : (darkMode ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-100')
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                );
+                            }
+                            if (p === 2 || p === pagination.totalPages - 1) return <span key={p} className="mx-1 text-slate-400">...</span>;
+                            return null;
+                        })}
+                        <button
+                            onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                            disabled={page === pagination.totalPages}
+                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <IssueModal
                 isOpen={isIssueModalOpen}

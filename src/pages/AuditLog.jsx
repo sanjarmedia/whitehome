@@ -3,6 +3,8 @@ import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
 import { Clock, Search, RefreshCw, ShoppingCart, Package, Users, CreditCard } from 'lucide-react';
 import CustomDatePicker from '../components/ui/DatePicker';
+import Pagination from '../components/ui/Pagination';
+
 
 const ACTION_CONFIG = {
     CREATE_ORDER: { label: 'Buyurtma yaratildi', color: 'emerald', entity: 'order' },
@@ -52,6 +54,8 @@ const AuditLog = () => {
     const [filterEntity, setFilterEntity] = useState('');
     const [filterFrom, setFilterFrom] = useState(new Date()); // Default: Bugun
     const [filterTo, setFilterTo] = useState(new Date());     // Default: Bugun
+    const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const [clearing, setClearing] = useState(false);
 
     const ACTION_CONFIG = {
@@ -86,9 +90,12 @@ const AuditLog = () => {
             if (filterEntity) params.append('entity', filterEntity);
             if (filterFrom) params.append('from', filterFrom.toISOString().split('T')[0]);
             if (filterTo) params.append('to', filterTo.toISOString().split('T')[0]);
-            params.append('limit', '500');
+            if (search) params.append('search', search);
+            params.append('page', page.toString());
+            params.append('limit', '24');
             const res = await api.get(`/audit?${params.toString()}`);
-            setLogs(res.data);
+            setLogs(res.data.data || []);
+            setPagination(res.data.pagination || { total: 0, totalPages: 0, limit: 24 });
         } catch (err) {
             console.error(err);
         } finally {
@@ -110,18 +117,10 @@ const AuditLog = () => {
         }
     };
 
-    useEffect(() => { fetchLogs(); }, [filterAction, filterEntity, filterFrom, filterTo]);
+    useEffect(() => { setPage(1); fetchLogs(); }, [filterAction, filterEntity, filterFrom, filterTo, search]);
+    useEffect(() => { fetchLogs(); }, [page]);
 
-    const filteredLogs = logs.filter(log => {
-        if (!search) return true;
-        const s = search.toLowerCase();
-        return (
-            log.username?.toLowerCase().includes(s) ||
-            log.action?.toLowerCase().includes(s) ||
-            log.detail?.toLowerCase().includes(s) ||
-            String(log.entityId || '').includes(s)
-        );
-    });
+    const filteredLogs = logs; // Handled by backend now
 
     const tb = darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100';
     const sec = darkMode ? 'text-slate-400' : 'text-slate-500';
@@ -254,7 +253,7 @@ const AuditLog = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {filteredLogs.slice(0, 100).map(log => {
+                                {filteredLogs.map(log => {
                                     const cfg = ACTION_CONFIG[log.action];
                                     const colors = COLOR_CLASSES[cfg?.color || 'blue'];
                                     let detail = {};
@@ -307,7 +306,7 @@ const AuditLog = () => {
 
                     {/* Mobile Card View */}
                     <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700/50">
-                        {filteredLogs.slice(0, 50).map(log => {
+                        {filteredLogs.map(log => {
                             const cfg = ACTION_CONFIG[log.action];
                             const colors = COLOR_CLASSES[cfg?.color || 'blue'];
                             let detail = {};
@@ -360,10 +359,20 @@ const AuditLog = () => {
                     </div>
 
                     <div className={`px-6 py-4 border-t text-[10px] font-black uppercase tracking-widest ${sec} ${darkMode ? 'border-slate-700 bg-slate-900/20' : 'border-slate-100 bg-slate-50/50'}`}>
-                        {typeof t.totalRecords === 'function' ? t.totalRecords(filteredLogs.length) : `${filteredLogs.length} records`} • {t.last100Visible}
+                        {typeof t.totalRecords === 'function' ? t.totalRecords(pagination.total) : `${pagination.total} records`}
                     </div>
                 </div>
             )}
+
+            <Pagination 
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                darkMode={darkMode}
+                t={t}
+                totalItems={pagination.total}
+                itemsPerPage={pagination.limit}
+            />
         </div>
     );
 };

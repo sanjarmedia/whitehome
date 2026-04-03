@@ -320,12 +320,12 @@ const Products = () => {
                         )}
 
                         {/* Image Area - Clean Backdrop */}
-                        <div className={`h-52 p-6 flex items-center justify-center relative transition-colors ${darkMode ? 'bg-white/5' : 'bg-slate-50'}`}>
+                        <div className={`h-52 p-6 flex items-center justify-center relative transition-colors ${darkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
                             {product.image ? (
                                 <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="h-full w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
+                                    className={`h-full w-full object-contain transition-transform duration-500 group-hover:scale-110 ${darkMode ? 'brightness-110 contrast-110' : 'mix-blend-multiply'}`}
                                 />
                             ) : (
                                 <div className="flex flex-col items-center gap-3 opacity-20">

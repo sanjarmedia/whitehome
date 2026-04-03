@@ -13,8 +13,9 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('stock'); // stock, issued
     const [searchTerm, setSearchTerm] = useState('');
-    const [page, setPage] = useState(1);
+    const [historyPage, setHistoryPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
+    const [historyPagination, setHistoryPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const limit = 24;
 
     const [selectedIds, setSelectedIds] = useState([]);
@@ -32,11 +33,18 @@ const Inventory = () => {
                 api.get('/products', {
                     params: {
                         page: page,
-                        limit: limit,
+                        limit: 24,
                         search: searchTerm
                     }
                 }),
-                api.get('/orders?status=COMPLETED')
+                api.get('/orders', {
+                    params: {
+                        status: 'COMPLETED',
+                        page: historyPage,
+                        limit: 24,
+                        orderSource: 'CUSTOMER_ISSUE'
+                    }
+                })
             ]);
             
             setProducts(productsRes.data.data || productsRes.data);
@@ -44,16 +52,19 @@ const Inventory = () => {
                 setPagination(productsRes.data.pagination);
             }
 
+            if (orderRes.data.pagination) {
+                setHistoryPagination(orderRes.data.pagination);
+            }
+
             // Group items from completed customer orders
-            const orders = orderRes.data
-                .filter(order => order.destinationType === 'CUSTOMER')
+            const orders = (orderRes.data.data || orderRes.data)
                 .map(order => ({
                     id: order.id,
                     customerName: order.customer?.name || t.unknown,
                     date: order.createdAt,
                     items: order.items,
-                    totalQuantity: order.items.reduce((sum, item) => sum + item.quantity, 0),
-                    totalAmount: order.totalAmount || order.items.reduce((sum, item) => sum + (item.quantity * item.price), 0)
+                    totalQuantity: parseInt(order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0),
+                    totalAmount: order.totalAmount || order.items?.reduce((sum, item) => sum + (item.quantity * item.price), 0) || 0
                 }));
             setIssuedItems(orders);
         } catch (err) {
@@ -65,7 +76,7 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchData(true);
-    }, [page]);
+    }, [page, historyPage]);
 
     useEffect(() => {
         if (page !== 1) setPage(1);
@@ -94,10 +105,7 @@ const Inventory = () => {
         setExpandedOrderIds(prev => prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]);
     };
 
-    const filteredIssued = issuedItems.filter(order =>
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.items.some(item => item.productName.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredIssued = issuedItems; // Handled by backend pagination now
 
     const handleExportCsv = () => {
         if (products.length === 0) return;
@@ -626,7 +634,7 @@ const Inventory = () => {
                 )}
             </div>
 
-            {activeTab === 'stock' && (
+            {activeTab === 'stock' ? (
                 <Pagination 
                     currentPage={page}
                     totalPages={pagination.totalPages}
@@ -635,6 +643,16 @@ const Inventory = () => {
                     t={t}
                     totalItems={pagination.total}
                     itemsPerPage={pagination.limit}
+                />
+            ) : (
+                <Pagination 
+                    currentPage={historyPage}
+                    totalPages={historyPagination.totalPages}
+                    onPageChange={setHistoryPage}
+                    darkMode={darkMode}
+                    t={t}
+                    totalItems={historyPagination.total}
+                    itemsPerPage={historyPagination.limit}
                 />
             )}
 

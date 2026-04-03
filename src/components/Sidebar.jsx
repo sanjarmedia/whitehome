@@ -65,15 +65,26 @@ const Sidebar = ({ isOpen, onClose, t }) => {
                 </button>
             </div>
 
-            {/* User Info Section (NEW) */}
-            <div className="px-6 py-4 mx-4 mt-4 rounded-2xl bg-slate-800/40 border border-slate-700/50 flex items-center gap-3 hover:bg-slate-800/60 transition-colors">
-                <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold uppercase">
-                    {user.username?.[0] || 'U'}
+            {/* User Info Section with Logout */}
+            <div className="px-6 py-4 mx-4 mt-4 rounded-2xl bg-slate-800/40 border border-slate-700/50 flex items-center justify-between group/user transition-all hover:bg-slate-800/60">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 font-bold uppercase shrink-0">
+                        {user.username?.[0] || 'U'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{user.name || user.username}</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{user.role}</p>
+                    </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{user.name || user.username}</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{user.role}</p>
-                </div>
+                
+                {/* Visual Logout Shortcut */}
+                <button 
+                    onClick={(e) => { e.stopPropagation(); handleLogout(); }}
+                    title={t.logout}
+                    className="p-2.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all active:scale-90"
+                >
+                    <LogOut size={18} />
+                </button>
             </div>
 
             {/* Navigation */}

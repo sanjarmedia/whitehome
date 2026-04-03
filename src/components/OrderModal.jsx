@@ -4,7 +4,7 @@ import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
 import {
     X, Save, Trash2, Plus, Package,
-    Upload, Pencil, Eye, AlertTriangle, Printer, FileImage
+    Upload, Pencil, Eye, AlertTriangle, Printer, FileImage, CheckCircle
 } from 'lucide-react';
 
 // Backend static fayl URL ni hosil qilish

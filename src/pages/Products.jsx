@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon, ChevronLeft, ChevronRight, Eye, ImageIcon as LucideImage } from 'lucide-react';
+import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon, ChevronLeft, ChevronRight, Eye, ImageIcon as LucideImage, ChevronDown } from 'lucide-react';
 import ProductModal from '../components/ProductModal';
 import ProductDetailModal from '../components/ProductDetailModal';
 import Pagination from '../components/ui/Pagination';

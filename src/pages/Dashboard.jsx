@@ -70,7 +70,7 @@ const Dashboard = () => {
                     <div className="col-span-2 lg:col-span-1">
                         <StatCard
                             title={t.totalOrders}
-                            value={stats?.counts?.total || 0}
+                            value={String(stats?.counts?.total || 0)}
                             icon={ShoppingBag}
                             color="bg-blue-50 text-blue-600"
                             trend={t.totalOrders}
@@ -81,7 +81,7 @@ const Dashboard = () => {
                     </div>
                     <StatCard
                         title={t.newOrders}
-                        value={stats?.counts?.new || 0}
+                        value={String(stats?.counts?.new || 0)}
                         icon={AlertTriangle}
                         color="bg-amber-50 text-amber-600"
                         trend={t.newOrders}
@@ -91,7 +91,7 @@ const Dashboard = () => {
                     />
                     <StatCard
                         title={t.completed}
-                        value={stats?.counts?.completed || 0}
+                        value={String(stats?.counts?.completed || 0)}
                         icon={CheckCircle}
                         color="bg-emerald-50 text-emerald-600"
                         trend={t.completed}
@@ -146,7 +146,7 @@ const Dashboard = () => {
                     <div className="col-span-2 lg:col-span-1">
                         <StatCard
                             title={t.onlineOrders}
-                            value={stats?.counts?.online || 0}
+                            value={String(stats?.counts?.online || 0)}
                             icon={Globe}
                             color="bg-purple-50 text-purple-600"
                             trend={t.onlineOrders}
@@ -529,7 +529,9 @@ const StatCard = ({ title, value, icon: Icon, color, trend, trendType = 'up', de
                 <div>
                     <p className="text-slate-500 text-[10px] sm:text-sm font-black uppercase tracking-widest">{title}</p>
                     <h3 className={`font-black tracking-tighter group-hover:scale-105 transition-transform origin-left ${darkMode ? 'text-slate-100' : 'text-slate-800'} ${
-                        value.length > 12 ? 'text-xl sm:text-2xl mt-1' : 'text-2xl sm:text-3xl mt-2'
+                        String(value).length > 12 ? 'text-xl sm:text-2xl mt-1' : 
+                        String(value).length > 8 ? 'text-2xl sm:text-3xl mt-1.5' : 
+                        'text-3xl sm:text-4xl mt-2'
                     }`}>{value}</h3>
                 </div>
                 <div className={`p-3 rounded-2xl ${color} bg-opacity-20 backdrop-blur-sm transition-transform group-hover:rotate-12`}>

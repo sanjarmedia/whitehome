@@ -37,8 +37,8 @@ const OrdersList = () => {
                 api.get('/orders/low-stock-alert').catch(() => ({ data: [] }))
             ]);
             
-            setOrders(ordRes.data.data);
-            setPagination(ordRes.data.pagination);
+            setOrders(ordRes.data?.data || []);
+            setPagination(ordRes.data?.pagination || { total: 0, totalPages: 0, limit: 24 });
             setLowStockProducts(lowRes.data);
         } catch (err) {
             console.error(err);
@@ -165,7 +165,7 @@ const OrdersList = () => {
                     <div className="flex items-center gap-2 mt-1">
                         <div className={`w-2 h-2 rounded-full bg-blue-500 animate-pulse`} />
                         <p className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                            {t.totalOrders}: <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{pagination.total}</span>
+                            {t.totalOrders}: <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{pagination?.total || 0}</span>
                         </p>
                     </div>
                 </div>

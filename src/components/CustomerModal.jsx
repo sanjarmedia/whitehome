@@ -207,7 +207,7 @@ const CustomerModal = ({ isOpen, onClose, onSave, customer, darkMode, t }) => {
 
                                 {formData.type === 'organization' && (
                                     <div className="animate-fade-in">
-                                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.organization} {t.name.toLowerCase()}</label>
+                                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.organization} {(t.name || 'Nomi').toLowerCase()}</label>
                                         <div className="relative">
                                             <Package className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
                                             <input

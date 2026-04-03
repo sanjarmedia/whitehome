@@ -123,8 +123,8 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
                 const upRes = await api.post('/upload', fd);
                 receiptPath = upRes.data.filePath;
             }
-            await api.put(`/orders/${order.id}/status`, { status: 'EXPECTED', paymentReceipt: receiptPath, notes: viewNotes });
-            onSaved ? onSaved() : onClose();
+            const res = await api.put(`/orders/${order.id}/status`, { status: 'EXPECTED', paymentReceipt: receiptPath, notes: viewNotes });
+            onSaved ? onSaved(res.data) : onClose();
         } catch { alert(t.errorOccurred); }
         finally { setLoading(false); }
     };
@@ -137,8 +137,8 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
             const finalStatus = newStatus === 'DISTRIBUTE'
                 ? (order.destinationType === 'WAREHOUSE' ? 'COMPLETED' : 'DELIVERED')
                 : newStatus;
-            await api.put(`/orders/${order.id}/status`, { status: finalStatus, notes: viewNotes.trim() });
-            onSaved ? onSaved() : onClose();
+            const res = await api.put(`/orders/${order.id}/status`, { status: finalStatus, notes: viewNotes.trim() });
+            onSaved ? onSaved(res.data) : onClose();
         } catch (err) { alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message)); }
         finally { setLoading(false); }
     };
@@ -258,7 +258,8 @@ ${(order.payments && order.payments.length > 0) ? `
 
         setSaving(true);
         try {
-            await api.put(`/orders/${order.id}`, {
+            let updatedOrder;
+            const res = await api.put(`/orders/${order.id}`, {
                 items: editItems.map(i => ({
                     productId: i.productId ? parseInt(i.productId) : null,
                     productName: i.productName,
@@ -269,10 +270,12 @@ ${(order.payments && order.payments.length > 0) ? `
                 notes: editNotes,
                 customerId: editCustomerId ? parseInt(editCustomerId) : undefined,
             });
+            updatedOrder = res.data;
             if (editStatus !== order.status) {
-                await api.put(`/orders/${order.id}/status`, { status: editStatus });
+                const statusRes = await api.put(`/orders/${order.id}/status`, { status: editStatus });
+                updatedOrder = statusRes.data;
             }
-            onSaved ? onSaved() : onClose();
+            onSaved ? onSaved(updatedOrder) : onClose();
         } catch (err) { alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message)); }
         finally { setSaving(false); }
     };
@@ -291,7 +294,7 @@ ${(order.payments && order.payments.length > 0) ? `
                 receiptUrl = upRes.data.url;
             }
 
-            await api.post(`/orders/${order.id}/payments`, {
+            const res = await api.post(`/orders/${order.id}/payments`, {
                 amount: Number(newPaymentAmount),
                 note: newPaymentNote,
                 receiptUrl
@@ -299,7 +302,7 @@ ${(order.payments && order.payments.length > 0) ? `
             setNewPaymentAmount('');
             setNewPaymentNote('');
             setNewPaymentFile(null);
-            if (onSaved) onSaved();
+            if (onSaved) onSaved(res.data.order);
             alert(t.paymentSuccess);
         } catch (err) {
             alert(t.errorOccurred + ": " + (err.response?.data?.error || err.message));

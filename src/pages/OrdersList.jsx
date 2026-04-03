@@ -83,8 +83,9 @@ const OrdersList = () => {
     const handleApprove = async (orderId) => {
         setApproving(orderId + '_approve');
         try {
-            await api.put(`/orders/${orderId}/approve`);
-            fetchOrders();
+            const res = await api.put(`/orders/${orderId}/approve`);
+            // Update local state instead of re-fetching everything
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...res.data } : o));
         } catch (err) {
             alert('Xatolik: ' + (err.response?.data?.error || err.message));
         } finally { setApproving(null); }
@@ -94,8 +95,9 @@ const OrdersList = () => {
         const reason = prompt('Rad etish sababi (ixtiyoriy):');
         setApproving(orderId + '_reject');
         try {
-            await api.put(`/orders/${orderId}/reject`, { notes: reason || '' });
-            fetchOrders();
+            const res = await api.put(`/orders/${orderId}/reject`, { notes: reason || '' });
+            // Update local state instead of re-fetching everything
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, ...res.data } : o));
         } catch (err) {
             alert('Xatolik: ' + (err.response?.data?.error || err.message));
         } finally { setApproving(null); }
@@ -448,7 +450,14 @@ const OrdersList = () => {
                     darkMode={darkMode}
                     t={t}
                     onClose={() => setActiveModal(null)}
-                    onSaved={() => { setActiveModal(null); fetchOrders(); }}
+                    onSaved={(updatedOrder) => { 
+                        setActiveModal(null); 
+                        if (updatedOrder) {
+                            setOrders(prev => prev.map(o => o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o));
+                        } else {
+                            fetchOrders(); // Fallback if no data returned
+                        }
+                    }}
                 />
             )}
         </div>

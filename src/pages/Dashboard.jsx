@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import ReactDOM from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
@@ -503,7 +503,7 @@ const Dashboard = () => {
     );
 };
 
-const StatCard = ({ title, value, icon: Icon, color, trend, trendType = 'up', delay, darkMode }) => {
+const StatCard = memo(({ title, value, icon: Icon, color, trend, trendType = 'up', delay, darkMode }) => {
     const blobColor = color.includes('blue') ? 'bg-blue-400' :
         color.includes('amber') ? 'bg-amber-400' :
             color.includes('orange') ? 'bg-orange-400' :
@@ -547,6 +547,8 @@ const StatCard = ({ title, value, icon: Icon, color, trend, trendType = 'up', de
             <div className={`absolute -right-4 -bottom-4 w-24 h-24 rounded-full opacity-10 blur-2xl transition-all duration-700 group-hover:scale-150 ${blobColor}`}></div>
         </div>
     );
-};
+});
+
+StatCard.displayName = 'StatCard';
 
 export default Dashboard;

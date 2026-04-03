@@ -301,9 +301,9 @@ const Products = () => {
                 {products.map(product => (
                     <div key={product.id} className={`group rounded-[2rem] overflow-hidden shadow-xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 relative ${darkMode ? 'bg-slate-900 border-slate-800 shadow-slate-950/40' : 'bg-white border-white shadow-slate-200/50'}`}>
 
-                        {/* Admin Actions - Touch Friendly */}
+                        {/* Admin Actions - Touch Friendly Visibility On Mobile */}
                         {hasFullAccess && (
-                            <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                            <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-300">
                                 <button
                                     onClick={(e) => { e.stopPropagation(); setEditingProduct(product); setIsModalOpen(true); }}
                                     className="p-3 bg-blue-600/90 backdrop-blur-md text-white rounded-2xl hover:bg-blue-600 shadow-lg active:scale-90"

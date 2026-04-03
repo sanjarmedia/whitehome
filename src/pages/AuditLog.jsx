@@ -154,14 +154,14 @@ const AuditLog = () => {
             </div>
 
             {/* Filters */}
-            <div className={`p-5 rounded-3xl border ${tb} shadow-sm space-y-4`}>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className={`p-4 md:p-6 rounded-3xl border ${tb} shadow-sm space-y-4`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
                     {/* Search */}
-                    <div className="lg:col-span-2 relative">
-                        <Search size={16} className={`absolute left-3.5 top-3 ${sec}`} />
+                    <div className="md:col-span-2 relative">
+                        <Search size={16} className={`absolute left-4 top-3.5 ${sec}`} />
                         <input
                             type="text"
-                            className={`${inputCls} pl-10 w-full py-2.5 h-[46px]`}
+                            className={`${inputCls} pl-11 w-full py-3 h-12 md:h-[46px]`}
                             placeholder={t.searchAuditPlaceholder}
                             value={search}
                             onChange={e => setSearch(e.target.value)}
@@ -169,7 +169,7 @@ const AuditLog = () => {
                     </div>
 
                     {/* Action filter */}
-                    <select value={filterAction} onChange={e => setFilterAction(e.target.value)} className={`${inputCls} w-full h-[46px] truncate`}>
+                    <select value={filterAction} onChange={e => setFilterAction(e.target.value)} className={`${inputCls} w-full h-12 md:h-[46px] truncate`}>
                         <option value="">{t.allActions}</option>
                         {Object.entries(ACTION_CONFIG).map(([key, cfg]) => (
                             <option key={key} value={key}>{cfg.label}</option>
@@ -177,7 +177,7 @@ const AuditLog = () => {
                     </select>
 
                     {/* Entity filter */}
-                    <select value={filterEntity} onChange={e => setFilterEntity(e.target.value)} className={`${inputCls} w-full h-[46px]`}>
+                    <select value={filterEntity} onChange={e => setFilterEntity(e.target.value)} className={`${inputCls} w-full h-12 md:h-[46px]`}>
                         <option value="">{t.allEntities}</option>
                         <option value="order">{t.orders.slice(0, -1)}</option>
                         <option value="product">{t.product}</option>
@@ -206,7 +206,7 @@ const AuditLog = () => {
                     {(filterAction || filterEntity || filterFrom || filterTo) && (
                         <button
                             onClick={() => { setFilterAction(''); setFilterEntity(''); setFilterFrom(null); setFilterTo(null); }}
-                            className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase border transition-all active:scale-95 ${darkMode ? 'border-rose-900/50 text-rose-400 hover:bg-rose-900/20' : 'text-rose-500 border-rose-200 hover:bg-rose-50'}`}>
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase border transition-all active:scale-95 ${darkMode ? 'border-rose-900/50 text-rose-400 hover:bg-rose-900/20' : 'text-rose-500 border-rose-200 hover:bg-rose-50'}`}>
                             {t.filterClear}
                         </button>
                     )}
@@ -214,17 +214,17 @@ const AuditLog = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {[
                     { label: t.all, value: logs.length, color: 'blue', icon: Clock },
                     { label: t.today, value: logs.filter(l => new Date(l.createdAt).toDateString() === new Date().toDateString()).length, color: 'emerald', icon: RefreshCw },
                     { label: t.deletions, value: logs.filter(l => l.action.startsWith('DELETE')).length, color: 'rose', icon: Package },
                     { label: t.orders, value: logs.filter(l => l.entity === 'order').length, color: 'amber', icon: ShoppingCart },
                 ].map(stat => (
-                    <div key={stat.label} className={`p-4 rounded-2xl border ${tb} relative overflow-hidden group`}>
-                        <stat.icon size={40} className={`absolute -right-2 -bottom-2 opacity-10 transition-transform group-hover:scale-110 text-${stat.color}-500`} />
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${sec}`}>{stat.label}</p>
-                        <p className={`text-2xl font-black mt-1 text-${stat.color}-500`}>{stat.value}</p>
+                    <div key={stat.label} className={`p-4 rounded-2xl border ${tb} relative overflow-hidden group hover:shadow-md transition-all`}>
+                        <stat.icon size={32} className={`absolute -right-1 -bottom-1 opacity-10 transition-transform group-hover:scale-110 text-${stat.color}-500 md:size-40`} />
+                        <p className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest ${sec}`}>{stat.label}</p>
+                        <p className={`text-xl md:text-2xl font-black mt-1 text-${stat.color}-500`}>{stat.value}</p>
                     </div>
                 ))}
             </div>
@@ -257,7 +257,6 @@ const AuditLog = () => {
                                 {filteredLogs.slice(0, 100).map(log => {
                                     const cfg = ACTION_CONFIG[log.action];
                                     const colors = COLOR_CLASSES[cfg?.color || 'blue'];
-                                    const EntityIcon = ENTITY_ICONS[log.entity] || Clock;
                                     let detail = {};
                                     try { detail = log.detail ? JSON.parse(log.detail) : {}; } catch { }
 
@@ -273,7 +272,7 @@ const AuditLog = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2.5">
-                                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black shadow-sm ${darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black shadow-sm ${darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}`}>
                                                         {(log.username || '?')[0].toUpperCase()}
                                                     </div>
                                                     <span className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
@@ -315,40 +314,42 @@ const AuditLog = () => {
                             try { detail = log.detail ? JSON.parse(log.detail) : {}; } catch { }
 
                             return (
-                                <div key={log.id} className="p-4 space-y-3 active:bg-slate-50 dark:active:bg-slate-700/20 transition-colors">
+                                <div key={log.id} className="p-4 space-y-4 active:bg-slate-50/50 dark:active:bg-slate-800/30 transition-colors">
                                     <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-black ${darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-700'}`}>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${darkMode ? 'bg-slate-700 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
                                                 {(log.username || '?')[0].toUpperCase()}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{log.user?.name || log.username || t.unknown}</span>
+                                                <span className={`text-sm font-black ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{log.user?.name || log.username || t.unknown}</span>
                                                 <span className={`text-[10px] font-bold ${sec} opacity-60`}>
                                                     {new Date(log.createdAt).toLocaleDateString()} • {new Date(log.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
                                         </div>
                                         {log.entityId && (
-                                            <span className="text-[10px] font-black font-mono opacity-50">#{log.entityId}</span>
+                                            <span className={`text-[10px] font-black font-mono px-2 py-1 rounded-lg ${darkMode ? 'bg-slate-900/60 text-slate-400' : 'bg-slate-100 text-slate-500 border border-slate-700/10'}`}>
+                                                #{log.entityId}
+                                            </span>
                                         )}
                                     </div>
                                     
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase border tracking-tight ${colors.bg} ${colors.text}`}>
-                                            <div className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
+                                    <div className="flex flex-wrap gap-2 items-center">
+                                        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase border tracking-tight ${colors.bg} ${colors.text}`}>
+                                            <div className={`w-1.5 h-1.5 rounded-full ${colors.dot} shadow-[0_0_5px_currentColor]`} />
                                             {cfg?.label || log.action}
                                         </span>
-                                        <span className={`inline-flex items-center px-2 py-1.5 rounded-xl text-[9px] font-black uppercase border border-slate-700/10 ${sec} opacity-60`}>
+                                        <span className={`inline-flex items-center px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase border border-slate-700/10 ${sec} ${darkMode ? 'bg-slate-800/40' : 'bg-slate-50'}`}>
                                             {log.entity}
                                         </span>
                                     </div>
 
                                     {log.detail && (
-                                        <div className={`p-3 rounded-xl text-[11px] font-medium leading-relaxed ${darkMode ? 'bg-slate-900/40 text-slate-400' : 'bg-slate-50 text-slate-500'}`}>
-                                            {Object.entries(detail).slice(0, 3).map(([k, v]) => (
-                                                <div key={k} className="flex justify-between border-b border-white/5 last:border-0 py-0.5">
-                                                    <span className="opacity-60">{k}:</span>
-                                                    <span className="font-bold">{String(v)}</span>
+                                        <div className={`p-4 rounded-2xl text-[11px] font-medium leading-relaxed border ${darkMode ? 'bg-slate-900/60 border-slate-700/50 text-slate-400' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>
+                                            {Object.entries(detail).slice(0, 5).map(([k, v]) => (
+                                                <div key={k} className="flex justify-between items-center border-b border-slate-700/10 last:border-0 py-1.5 group">
+                                                    <span className="opacity-60 uppercase text-[9px] font-black tracking-wider">{k}</span>
+                                                    <span className={`font-bold transition-colors ${darkMode ? 'group-hover:text-blue-400' : 'group-hover:text-blue-600'}`}>{String(v)}</span>
                                                 </div>
                                             )) || t.noData}
                                         </div>

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
-import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Plus, Package, Tag, Upload, Trash2, Edit, Download, FileText, Image as ImageIcon, ChevronLeft, ChevronRight, Eye, ImageIcon as LucideImage } from 'lucide-react';
 import ProductModal from '../components/ProductModal';
 import ProductDetailModal from '../components/ProductDetailModal';
+import Pagination from '../components/ui/Pagination';
 import * as XLSX from 'xlsx';
 
 const Products = () => {
@@ -14,7 +15,7 @@ const Products = () => {
     const [brandFilter, setBrandFilter] = useState('All');
     const [categoryFilter, setCategoryFilter] = useState('All');
     const [page, setPage] = useState(1);
-    const [pagination, setPagination] = useState({ totalItems: 0, totalPages: 1 });
+    const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const limit = 24;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -206,240 +207,195 @@ const Products = () => {
 
     return (
         <div className="space-y-6 pb-20 animate-fade-in">
-            {/* Header & Filters */}
-            <div className={`p-6 rounded-2xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            {/*            {/* Header & Quick Actions - Premium Design */}
+            <div className={`p-5 rounded-3xl border-2 transition-all duration-500 shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800 shadow-slate-950/20' : 'bg-white border-slate-100 shadow-slate-100'}`}>
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-6">
                     <div>
-                        <h1 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.products}</h1>
-                        <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {t.totalProductsCount(products.length)}
-                        </p>
+                        <h1 className={`text-4xl font-black tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                            {t.products}
+                        </h1>
+                        <div className="flex items-center gap-2 mt-1">
+                            <div className={`w-2 h-2 rounded-full bg-blue-500 animate-pulse`} />
+                            <p className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                {t.totalProductsCount(pagination.total)}
+                            </p>
+                        </div>
                     </div>
+                    
                     {hasFullAccess && (
-                        <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full md:w-auto justify-end">
+                        <div className="grid grid-cols-2 sm:flex sm:flex-row flex-wrap gap-2 w-full lg:w-auto">
                             <button
                                 onClick={handleDownloadTemplate}
-                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-blue-800/50 hover:bg-blue-900/40 text-blue-400' : 'border-blue-200 hover:bg-blue-50 text-blue-600'}`}
+                                className={`flex-1 sm:w-auto px-4 py-3 rounded-2xl flex items-center justify-center gap-2 border-2 transition-all active:scale-95 text-[10px] font-black uppercase tracking-tight ${darkMode ? 'border-blue-500/20 bg-blue-500/5 text-blue-400 hover:bg-blue-500/10' : 'border-blue-50 bg-blue-50/30 text-blue-600 hover:bg-blue-50'}`}
                             >
-                                <Download size={20} /> {t.reports.slice(0, -1)}
+                                <Download size={18} strokeWidth={3} /> {t.reports.slice(0, -1)}
                             </button>
 
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                className="hidden"
-                                ref={imageInputRef}
-                                onChange={handleImagesUpload}
-                            />
                             <button
                                 onClick={() => imageInputRef.current?.click()}
                                 disabled={uploadingImages}
-                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-purple-800/50 hover:bg-purple-900/40 text-purple-400' : 'border-purple-200 hover:bg-purple-50 text-purple-600'}`}
+                                className={`flex-1 sm:w-auto px-4 py-3 rounded-2xl flex items-center justify-center gap-2 border-2 transition-all active:scale-95 text-[10px] font-black uppercase tracking-tight ${darkMode ? 'border-purple-500/20 bg-purple-500/5 text-purple-400 hover:bg-purple-500/10' : 'border-purple-50 bg-purple-50/30 text-purple-600 hover:bg-purple-50'}`}
                             >
-                                <ImageIcon size={20} /> {uploadingImages ? t.loading : t.images}
+                                <ImageIcon size={18} strokeWidth={3} /> {uploadingImages ? '...' : t.images}
                             </button>
 
-                            <input
-                                type="file"
-                                accept=".xlsx, .xls"
-                                className="hidden"
-                                ref={fileInputRef}
-                                onChange={handleFileUpload}
-                            />
                             <button
                                 onClick={handleImportClick}
-                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-green-800/50 hover:bg-green-900/40 text-green-400' : 'border-green-200 hover:bg-green-50 text-green-700'}`}
+                                className={`flex-1 sm:w-auto px-4 py-3 rounded-2xl flex items-center justify-center gap-2 border-2 transition-all active:scale-95 text-[10px] font-black uppercase tracking-tight ${darkMode ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10' : 'border-emerald-50 bg-emerald-50/30 text-emerald-700 hover:bg-emerald-50'}`}
                             >
-                                <Upload size={20} /> {t.import}
+                                <Upload size={18} strokeWidth={3} /> {t.import}
                             </button>
-                            <button
-                                onClick={handleExportProducts}
-                                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 border transition-all ${darkMode ? 'border-amber-800/50 hover:bg-amber-900/40 text-amber-500' : 'border-amber-200 hover:bg-amber-50 text-amber-600'}`}
-                            >
-                                <FileText size={20} /> {t.report}
-                            </button>
+                            
                             <button
                                 onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-                                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition-all active:scale-95"
+                                className="col-span-2 sm:w-auto bg-blue-600 text-white px-8 py-4 sm:py-3 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-blue-700 flex items-center justify-center gap-3 shadow-xl shadow-blue-500/30 transition-all active:scale-95"
                             >
-                                <Plus size={20} /> {t.add}
+                                <Plus size={20} strokeWidth={3} /> {t.add}
                             </button>
                         </div>
                     )}
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Search */}
-                    <div className="md:col-span-2 relative">
-                        <Search className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Search - Premium Interactive */}
+                    <div className="sm:col-span-2 relative group">
+                        <Search size={18} strokeWidth={3} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${darkMode ? 'text-slate-600 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`} />
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                             placeholder={t.search}
-                            className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-500' : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400'}`}
+                            className={`w-full pl-12 pr-4 py-4 sm:py-3.5 border-2 rounded-[1.25rem] outline-none transition-all ${darkMode ? 'bg-slate-800/50 border-slate-700/50 text-slate-100 placeholder:text-slate-600 focus:border-blue-500/50 focus:bg-slate-800' : 'bg-slate-50 border-slate-50 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-blue-100 focus:shadow-md'}`}
                         />
                     </div>
 
                     {/* Brand Filter */}
-                    <div className="relative">
-                        <Filter className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
+                    <div className="relative group">
+                        <Filter size={18} strokeWidth={3} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${darkMode ? 'text-slate-600 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`} />
                         <select
                             value={brandFilter}
                             onChange={e => setBrandFilter(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                            className={`w-full pl-12 pr-10 py-4 sm:py-3.5 border-2 rounded-[1.25rem] outline-none transition-all appearance-none cursor-pointer ${darkMode ? 'bg-slate-800/50 border-slate-700/50 text-slate-100 focus:border-blue-500/50' : 'bg-slate-50 border-slate-50 text-slate-800 focus:bg-white focus:border-blue-100 focus:shadow-md'}`}
                         >
                             {brands.map(brand => <option key={brand} value={brand}>{brand}</option>)}
                         </select>
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
                     </div>
 
                     {/* Category Filter */}
-                    <div className="relative">
-                        <Tag className={`absolute left-3 top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
+                    <div className="relative group">
+                        <Tag size={18} strokeWidth={3} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${darkMode ? 'text-slate-600 group-focus-within:text-blue-500' : 'text-slate-400 group-focus-within:text-blue-600'}`} />
                         <select
                             value={categoryFilter}
                             onChange={e => setCategoryFilter(e.target.value)}
-                            className={`w-full pl-10 pr-4 py-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none cursor-pointer ${darkMode ? 'bg-slate-700 border-slate-600 text-slate-100' : 'bg-slate-50 border-slate-200 text-slate-800'}`}
+                            className={`w-full pl-12 pr-10 py-4 sm:py-3.5 border-2 rounded-[1.25rem] outline-none transition-all appearance-none cursor-pointer ${darkMode ? 'bg-slate-800/50 border-slate-700/50 text-slate-100 focus:border-blue-500/50' : 'bg-slate-50 border-slate-50 text-slate-800 focus:bg-white focus:border-blue-100 focus:shadow-md'}`}
                         >
                             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                         </select>
+                        <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
                     </div>
                 </div>
             </div>
 
-            {/* Products Grid */}
+            {/* Products Grid - High Density Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map(product => (
-                    <div key={product.id} className={`group rounded-2xl overflow-hidden shadow-sm border transition-all hover:shadow-xl hover:-translate-y-1 relative ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
+                    <div key={product.id} className={`group rounded-[2rem] overflow-hidden shadow-xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 relative ${darkMode ? 'bg-slate-900 border-slate-800 shadow-slate-950/40' : 'bg-white border-white shadow-slate-200/50'}`}>
 
-                        {/* Admin Actions */}
+                        {/* Admin Actions - Touch Friendly */}
                         {hasFullAccess && (
-                            <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute top-4 right-4 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                 <button
-                                    onClick={() => { setEditingProduct(product); setIsModalOpen(true); }}
-                                    className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm"
+                                    onClick={(e) => { e.stopPropagation(); setEditingProduct(product); setIsModalOpen(true); }}
+                                    className="p-3 bg-blue-600/90 backdrop-blur-md text-white rounded-2xl hover:bg-blue-600 shadow-lg active:scale-90"
                                 >
-                                    <Edit size={16} />
+                                    <Edit size={18} strokeWidth={3} />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(product.id)}
-                                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm"
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }}
+                                    className="p-3 bg-rose-600/90 backdrop-blur-md text-white rounded-2xl hover:bg-rose-600 shadow-lg active:scale-90"
                                 >
-                                    <Trash2 size={16} />
+                                    <Trash2 size={18} strokeWidth={3} />
                                 </button>
                             </div>
                         )}
 
-                        {/* Image Area */}
-                        <div className="h-48 p-3 flex items-center justify-center relative bg-white rounded-t-2xl">
+                        {/* Image Area - Clean Backdrop */}
+                        <div className={`h-52 p-6 flex items-center justify-center relative transition-colors ${darkMode ? 'bg-white/5' : 'bg-slate-50'}`}>
                             {product.image ? (
                                 <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="h-full w-full object-contain transition-transform group-hover:scale-105 duration-300"
+                                    className="h-full w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
                                 />
                             ) : (
-                                <Package size={48} className={darkMode ? 'text-slate-600' : 'text-slate-300'} />
+                                <div className="flex flex-col items-center gap-3 opacity-20">
+                                    <Package size={56} strokeWidth={1} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">{t.noData}</span>
+                                </div>
                             )}
 
                             {/* Brand Badge */}
                             {product.brand && (
-                                <span className="absolute top-3 left-3 px-2 py-1 text-xs font-bold rounded-lg bg-black/50 text-white backdrop-blur-sm">
+                                <span className="absolute bottom-4 left-4 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg bg-black text-white shadow-lg">
                                     {product.brand}
                                 </span>
                             )}
                         </div>
 
-                        {/* Content */}
-                        <div className="p-4 space-y-2">
-                            <div className="flex justify-between items-start gap-2">
-                                <div>
-                                    <div className={`text-xs font-semibold mb-1 uppercase tracking-wider ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                                        {product.category || t.notSelected}
-                                    </div>
-                                    <h3 className={`font-bold text-lg leading-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                                        {product.name}
-                                    </h3>
+                        {/* Content Area */}
+                        <div className="p-6 space-y-4">
+                            <div className="space-y-1">
+                                <div className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                    <Tag size={12} strokeWidth={3} />
+                                    {product.category || t.notSelected}
                                 </div>
-                                <div className={`text-lg font-bold whitespace-nowrap ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
-                                    ${product.price}
-                                </div>
+                                <h3 className={`font-black text-xl leading-tight tracking-tight line-clamp-1 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+                                    {product.name}
+                                </h3>
+                                <p className={`text-[11px] font-bold line-clamp-2 leading-relaxed opacity-60 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                    {product.description || (t.noData.includes('yuklanmadi') ? 'Mahsulot haqida ma\'lumotlar kiritilmagan' : 'Информация о продукте не введена')}
+                                </p>
                             </div>
 
-                            <p className={`text-sm line-clamp-2 min-h-[40px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {product.description || t.noData}
-                            </p>
-
-                            <div className="pt-4 flex items-center justify-between border-t border-dashed mt-4 dark:border-slate-700">
-                                <div className={`px-2 py-1 rounded text-xs font-medium ${product.quantity > 10
-                                    ? (darkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700')
-                                    : (darkMode ? 'bg-rose-900/30 text-rose-400' : 'bg-rose-50 text-rose-700')
+                            <div className="flex items-center justify-between pt-2">
+                                <div className={`text-2xl font-black ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                                    ${product.price?.toLocaleString()}
+                                </div>
+                                <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 ${product.quantity > 10
+                                    ? (darkMode ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600')
+                                    : (darkMode ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600')
                                     }`}>
-                                    {product.quantity > 0 ? t.inStockCount(product.quantity) : t.noData}
+                                    {product.quantity > 0 ? `${product.quantity} ${t.unitPiece}` : t.noData}
                                 </div>
-                                <button
-                                    onClick={() => { setViewingProduct(product); setIsDetailModalOpen(true); }}
-                                    className={`text-sm font-medium hover:underline ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}
-                                >
-                                    {t.view}
-                                </button>
                             </div>
+
+                            <button
+                                onClick={() => { setViewingProduct(product); setIsDetailModalOpen(true); }}
+                                className={`w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] border-2 transition-all active:scale-95 flex items-center justify-center gap-3 overflow-hidden group/btn ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white hover:border-blue-500/50' : 'bg-slate-50 border-slate-100 text-slate-500 hover:text-blue-600 hover:bg-white hover:border-blue-100 shadow-sm'}`}
+                            >
+                                <Eye size={18} strokeWidth={3} className="transition-transform group-hover/btn:scale-110" />
+                                {t.view}
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
 
             {/* Pagination controls */}
-            {pagination.totalPages > 1 && (
-                <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
-                    <p className={`text-xs font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                        {t.page} {page} {t.of} {pagination.totalPages}
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        
-                        {[...Array(pagination.totalPages)].map((_, i) => {
-                            const p = i + 1;
-                            if (p === 1 || p === pagination.totalPages || (p >= page - 2 && p <= page + 2)) {
-                                return (
-                                    <button
-                                        key={p}
-                                        onClick={() => setPage(p)}
-                                        className={`w-10 h-10 rounded-xl font-black text-xs transition-all active:scale-90 ${page === p
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                            : (darkMode ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-100')
-                                        }`}
-                                    >
-                                        {p}
-                                    </button>
-                                );
-                            }
-                            if (p === 2 || p === pagination.totalPages - 1) return <span key={p} className="mx-1 text-slate-400">...</span>;
-                            return null;
-                        })}
+            <Pagination 
+                currentPage={page}
+                totalPages={pagination.totalPages}
+                onPageChange={setPage}
+                darkMode={darkMode}
+                t={t}
+                totalItems={pagination.total}
+                itemsPerPage={pagination.limit}
+            />
 
-                        <button
-                            onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
-                            disabled={page === pagination.totalPages}
-                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {filteredProducts.length === 0 && (
-                <div className={`text-center py-20 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                    <Package size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>{t.noData}</p>
+            {products.length === 0 && (
+                <div className={`text-center py-20 rounded-[2rem] border-2 border-dashed ${darkMode ? 'bg-slate-900/50 border-slate-800 text-slate-600' : 'bg-slate-50 border-slate-200 text-slate-400'}`}>
+                    <Package size={64} strokeWidth={1} className="mx-auto mb-4 opacity-20" />
+                    <p className="font-black uppercase tracking-[0.2em] text-xs">{t.noData}</p>
                 </div>
             )}
 

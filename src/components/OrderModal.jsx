@@ -358,37 +358,52 @@ ${(order.payments && order.payments.length > 0) ? `
                                 {order.customer?.name || t.noCustomer} • {new Date(order.createdAt).toLocaleDateString(t.noData.includes('yuklanmadi') ? 'uz-UZ' : 'ru-RU')}
                             </p>
                         </div>
-                        <div className="flex items-center gap-2 self-end sm:self-auto">
-                            {/* Tab toggler */}
-                            <div className={`flex rounded-lg p-0.5 ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                        <div className="flex items-center gap-3 self-end sm:self-auto">
+                            {/* Tab toggler - Premium Glassmorphism */}
+                            <div className={`flex rounded-2xl p-1 shadow-inner ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
                                 <button
                                     onClick={() => setMode('view')}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === 'view'
-                                        ? (darkMode ? 'bg-slate-700 text-slate-100 shadow' : 'bg-white text-slate-800 shadow-sm')
-                                        : sec}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${mode === 'view'
+                                        ? (darkMode ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-blue-600 shadow-md')
+                                        : sec + ' hover:text-blue-500'}`}
                                 >
-                                    <Eye size={12} /> {t.view}
+                                    <Eye size={14} strokeWidth={3} /> {t.view}
                                 </button>
                                 <button
                                     onClick={() => setMode('edit')}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${mode === 'edit'
-                                        ? 'bg-blue-600 text-white shadow'
-                                        : sec}`}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${mode === 'edit'
+                                        ? 'bg-blue-600 text-white shadow-lg'
+                                        : sec + ' hover:text-blue-500'}`}
                                 >
-                                    <Pencil size={12} /> {t.edit}
+                                    <Pencil size={14} strokeWidth={3} /> {t.edit}
                                 </button>
                             </div>
-                            <button
-                                onClick={handlePrint}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors border ${darkMode ? 'border-slate-600 text-slate-400 hover:bg-slate-700 hover:text-slate-200' : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}
-                                title={t.report}
-                            >
-                                <Printer size={13} /> {t.report}
-                            </button>
-                            <button onClick={onClose} className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
-                                <X size={18} />
+
+                            <button onClick={onClose} className={`p-2.5 rounded-2xl transition-all active:scale-95 ${darkMode ? 'hover:bg-slate-700 text-slate-400' : 'hover:bg-slate-100 text-slate-500'}`}>
+                                <X size={22} strokeWidth={3} />
                             </button>
                         </div>
+                    </div>
+
+                    <div className={`px-5 py-2 border-b flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide ${darkMode ? 'border-slate-700 bg-slate-900/50' : 'border-slate-100 bg-slate-50/50'}`}>
+                         <div className="flex items-center gap-4 shrink-0">
+                             <button
+                                onClick={handlePrint}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all duration-200 border ${darkMode ? 'border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-slate-100' : 'border-slate-200 text-slate-500 hover:bg-white hover:text-slate-800 hover:shadow-sm'}`}
+                            >
+                                <Printer size={14} strokeWidth={2.5} /> {t.report}
+                            </button>
+                            {order.status === 'NEW' && (
+                                <button onClick={() => handleStatusAction('CANCELLED')} className="text-[9px] font-black uppercase tracking-widest text-rose-500/70 hover:text-rose-500 transition-all">
+                                    {t.cancel}
+                                </button>
+                            )}
+                         </div>
+                         {order.paymentReceipt && (
+                             <a href={getFileUrl(order.paymentReceipt)} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-[9px] font-black uppercase tracking-widest border border-emerald-500/20 whitespace-nowrap">
+                                <FileImage size={12} strokeWidth={3} /> {t.paymentReceipt}
+                             </a>
+                         )}
                     </div>
 
                     {/* ── BODY ── */}
@@ -398,40 +413,51 @@ ${(order.payments && order.payments.length > 0) ? `
                         {mode === 'view' && (
                             <div className="p-5 space-y-4">
                                 {/* Summary */}
-                                <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className={`text-xs font-semibold uppercase ${sec}`}>{order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : t.customers.slice(0, -1)}</p>
-                                            <p className={`font-bold mt-0.5 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                                                {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : '—')}
-                                            </p>
-                                            {order.customer?.phone && <p className={`text-xs ${sec}`}>{order.customer.phone}</p>}
-                                            {order.customer?.address && (
-                                                <a
-                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.customer.address)}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-xs mt-1 text-blue-500 hover:underline block"
-                                                >
-                                                    📍 {order.customer.address}
-                                                </a>
-                                            )}
+                                <div className={`p-5 rounded-3xl border shadow-sm ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+                                        <div className="space-y-3 w-full">
+                                            <div>
+                                                <p className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-blue-400' : 'text-blue-500'}`}>{order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : t.customers.slice(0, -1)}</p>
+                                                <p className={`text-xl font-black mt-1 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                                                    {order.customer?.name || (order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : '—')}
+                                                </p>
+                                            </div>
+                                            
+                                            <div className="flex flex-wrap gap-4">
+                                                {order.customer?.phone && (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`p-1.5 rounded-lg ${darkMode ? 'bg-slate-700 text-slate-400' : 'bg-white text-slate-400 shadow-sm'}`}>
+                                                            <Package size={14} />
+                                                        </div>
+                                                        <p className={`text-xs font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{order.customer.phone}</p>
+                                                    </div>
+                                                )}
+                                                {order.customer?.address && (
+                                                    <a
+                                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.customer.address)}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${darkMode ? 'border-slate-700 bg-slate-700/50 text-blue-400 hover:border-blue-500/30' : 'border-slate-200 bg-white text-blue-600 hover:border-blue-300 shadow-sm'}`}
+                                                    >
+                                                        <span className="text-xs font-black uppercase tracking-widest">📍 {t.address}</span>
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="text-right">
-                                            <p className={`text-xs font-semibold uppercase ${sec}`}>{t.sum}</p>
-                                            <div className="flex flex-col items-end gap-1 mt-1">
-                                                <div className="flex justify-between w-40">
-                                                    <span className={`text-sm ${sec}`}>{t.total}:</span>
-                                                    <span className={`text-sm font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>${(order.totalAmount || 0).toLocaleString()}</span>
+
+                                        <div className="shrink-0 w-full sm:w-auto p-4 rounded-2xl bg-slate-900 border border-slate-800 shadow-inner">
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between gap-8 items-center">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{t.total}:</span>
+                                                    <span className="text-sm font-black text-slate-200">${(order.totalAmount || 0).toLocaleString()}</span>
                                                 </div>
-                                                <div className="flex justify-between w-40">
-                                                    <span className={`text-sm ${sec}`}>{t.paidAmount}:</span>
-                                                    <span className="text-sm font-semibold text-emerald-500">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</span>
+                                                <div className="flex justify-between gap-8 items-center">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">{t.paidAmount}:</span>
+                                                    <span className="text-sm font-black text-emerald-400">${order.status === 'NEW' ? 0 : (order.paidAmount || 0).toLocaleString()}</span>
                                                 </div>
-                                                <div className="w-40 border-t my-0.5 border-slate-200 dark:border-slate-700"></div>
-                                                <div className="flex justify-between w-40">
-                                                    <span className={`text-sm font-semibold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>{t.remainingDebt}:</span>
-                                                    <span className={`font-black text-lg ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>${Math.max(0, (order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</span>
+                                                <div className="pt-2 mt-2 border-t border-slate-800 flex justify-between gap-8 items-center">
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-rose-500">{t.remainingDebt}:</span>
+                                                    <span className="text-xl font-black text-rose-500">${Math.max(0, (order.totalAmount || 0) - (order.status === 'NEW' ? 0 : (order.paidAmount || 0))).toLocaleString()}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -574,18 +600,38 @@ ${(order.payments && order.payments.length > 0) ? `
 
                                 {/* Action buttons */}
                                 {isExpected && (
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>{t.cancel}</button>
-                                        <button onClick={() => handleStatusAction('CHECKED')} disabled={loading} className="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50">
-                                            {loading ? '...' : t.distribute}
+                                    <div className="flex flex-col gap-3">
+                                        <button 
+                                            onClick={() => handleStatusAction('CHECKED')} 
+                                            disabled={loading} 
+                                            className="w-full py-4 bg-blue-600 text-white rounded-3xl text-sm font-black uppercase tracking-widest shadow-xl shadow-blue-500/40 transform transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                                        >
+                                            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Package size={18} strokeWidth={3} />}
+                                            {t.distribute}
+                                        </button>
+                                        <button 
+                                            onClick={() => handleStatusAction('CANCELLED')} 
+                                            className={`w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-colors ${darkMode ? 'bg-slate-800 text-rose-400 hover:bg-rose-900/20' : 'bg-slate-100 text-rose-600 hover:bg-rose-50'}`}
+                                        >
+                                            {t.cancel}
                                         </button>
                                     </div>
                                 )}
                                 {isChecked && (
-                                    <div className="flex flex-col sm:flex-row gap-3">
-                                        <button onClick={() => handleStatusAction('CANCELLED')} className={`flex-1 py-3 rounded-xl text-sm font-medium ${darkMode ? 'bg-slate-800 text-rose-400' : 'bg-slate-100 text-rose-600'}`}>{t.cancel}</button>
-                                        <button onClick={() => handleStatusAction('DISTRIBUTE')} disabled={loading} className="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 disabled:opacity-50">
-                                            {loading ? '...' : order.destinationType === 'WAREHOUSE' ? t.auditLog.includes('Audit') ? 'Skladga kirim' : 'Приход на склад' : (t.auditLog.includes('Audit') ? 'Yetkazib berish' : 'Доставка')}
+                                    <div className="flex flex-col gap-3">
+                                        <button 
+                                            onClick={() => handleStatusAction('DISTRIBUTE')} 
+                                            disabled={loading} 
+                                            className="w-full py-4 bg-emerald-600 text-white rounded-3xl text-sm font-black uppercase tracking-widest shadow-xl shadow-emerald-500/40 transform transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3"
+                                        >
+                                            {loading ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <CheckCircle size={18} strokeWidth={3} />}
+                                            {order.destinationType === 'WAREHOUSE' ? (t.auditLog.includes('Audit') ? 'Skladga kirim' : 'Приход на склад') : (t.auditLog.includes('Audit') ? 'Yetkazib berish' : 'Доставка')}
+                                        </button>
+                                        <button 
+                                            onClick={() => handleStatusAction('CANCELLED')} 
+                                            className={`w-full py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-colors ${darkMode ? 'bg-slate-800 text-rose-400 hover:bg-rose-900/20' : 'bg-slate-100 text-rose-600 hover:bg-rose-50'}`}
+                                        >
+                                            {t.cancel}
                                         </button>
                                     </div>
                                 )}

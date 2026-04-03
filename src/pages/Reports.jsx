@@ -124,18 +124,27 @@ const Reports = () => {
 
     return (
         <div className="max-w-7xl mx-auto pb-20 space-y-8 animate-fade-in">
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
                 <div>
-                    <h1 className={`text-3xl font-light ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{t.reportsAndAnalysis}</h1>
-                    <p className={`mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.businessOverviewDesc}</p>
+                    <h1 className={`text-4xl font-black tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                        {t.reportsAndAnalysis}
+                    </h1>
+                    <div className="flex items-center gap-2 mt-1">
+                        <div className={`w-2 h-2 rounded-full bg-indigo-500 animate-pulse`} />
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {t.businessOverviewDesc}
+                        </p>
+                    </div>
                 </div>
             </header>
 
-            {/* Filter Section */}
-            <div className={`p-6 rounded-2xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-end">
-                    <div className="w-full md:w-auto">
-                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.startDateLabel}</label>
+            {/* Filter Section - Premium Minimalist */}
+            <div className={`p-5 rounded-3xl border-2 transition-all ${darkMode ? 'bg-slate-900 border-slate-800/50' : 'bg-white border-slate-100 shadow-xl shadow-slate-100/50'}`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:items-end gap-5">
+                    <div className="space-y-1.5 flex-1">
+                        <label className={`text-[10px] font-black uppercase tracking-widest ml-1 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {t.startDateLabel}
+                        </label>
                         <DatePicker
                             selected={startDate}
                             onChange={date => setStartDate(date)}
@@ -143,8 +152,10 @@ const Reports = () => {
                             darkMode={darkMode}
                         />
                     </div>
-                    <div className="w-full md:w-auto">
-                        <label className={`block text-sm font-medium mb-1.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.endDateLabel}</label>
+                    <div className="space-y-1.5 flex-1">
+                        <label className={`text-[10px] font-black uppercase tracking-widest ml-1 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {t.endDateLabel}
+                        </label>
                         <DatePicker
                             selected={endDate}
                             onChange={date => setEndDate(date)}
@@ -154,13 +165,11 @@ const Reports = () => {
                     </div>
                     <button
                         onClick={fetchData}
-                        className="w-full md:w-auto cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 font-medium flex items-center justify-center gap-2 transition-colors h-[42px]"
+                        className="lg:w-auto w-full bg-blue-600 text-white px-8 py-4 sm:py-3.5 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-blue-700 flex items-center justify-center gap-3 shadow-xl shadow-blue-500/30 transition-all active:scale-95"
                     >
-                        <Filter size={18} /> {t.filter}
+                        <Filter size={18} strokeWidth={3} /> {t.filter}
                     </button>
-                    <div className="flex-1 hidden md:block"></div>
-
-                    <div className="w-full md:w-auto mt-2 md:mt-0 flex justify-end">
+                    <div className="lg:w-auto w-full">
                         <ExportMenu
                             onExportExcel={handleExportExcel}
                             onExportPDF={handleExportPDF}
@@ -171,25 +180,26 @@ const Reports = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className={`p-6 rounded-2xl border shadow-sm flex items-center gap-4 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}>
-                        <TrendingUp size={32} />
+            {/* Summary Cards - High Impact */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className={`p-6 rounded-[2rem] border-2 shadow-xl transition-all hover:scale-[1.02] flex items-center gap-6 ${darkMode ? 'bg-slate-900 border-indigo-500/10 shadow-indigo-950/20' : 'bg-white border-slate-100 shadow-slate-100'}`}>
+                    <div className={`p-5 rounded-3xl ${darkMode ? 'bg-indigo-500/10 text-indigo-400' : 'bg-indigo-50 text-indigo-600'}`}>
+                        <TrendingUp size={36} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.revenue}</p>
-                        <h3 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            ${summary.totalRevenue.toFixed(2)}
+                        <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.revenue}</p>
+                        <h3 className={`text-4xl font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                            ${summary.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </h3>
                     </div>
                 </div>
-                <div className={`p-6 rounded-2xl border shadow-sm flex items-center gap-4 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                    <div className={`p-4 rounded-xl ${darkMode ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
-                        <ShoppingBag size={32} />
+                <div className={`p-6 rounded-[2rem] border-2 shadow-xl transition-all hover:scale-[1.02] flex items-center gap-6 ${darkMode ? 'bg-slate-900 border-blue-500/10 shadow-blue-950/20' : 'bg-white border-slate-100 shadow-slate-100'}`}>
+                    <div className={`p-5 rounded-3xl ${darkMode ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                        <ShoppingBag size={36} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <p className={`text-sm font-medium ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.totalOrders}</p>
-                        <h3 className={`text-3xl font-bold ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                        <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.totalOrders}</p>
+                        <h3 className={`text-4xl font-black ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                             {summary.totalOrders}
                         </h3>
                     </div>

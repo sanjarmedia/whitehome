@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { Package, AlertCircle, ShoppingCart, ArrowUpRight, History, Search, ChevronDown, ChevronRight, Download, Upload, PlusSquare, ChevronLeft } from 'lucide-react';
 import IssueModal from '../components/IssueModal';
 import BulkProductModal from '../components/BulkProductModal';
+import Pagination from '../components/ui/Pagination';
 
 const Inventory = () => {
     const { darkMode, t } = useOutletContext();
@@ -13,7 +14,7 @@ const Inventory = () => {
     const [activeTab, setActiveTab] = useState('stock'); // stock, issued
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
-    const [pagination, setPagination] = useState({ totalItems: 0, totalPages: 1 });
+    const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const limit = 24;
 
     const [selectedIds, setSelectedIds] = useState([]);
@@ -205,80 +206,99 @@ const Inventory = () => {
                         {t.inventoryDesc}
                     </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                    {activeTab === 'stock' && (
-                        <div className="flex flex-wrap items-center gap-2 animate-fade-in">
-                            <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all cursor-pointer mr-2 ${updateExisting ? 'border-blue-600 bg-blue-600/5' : darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
-                                <input 
-                                    type="checkbox" 
-                                    className="accent-blue-600"
-                                    checked={updateExisting} 
-                                    onChange={(e) => setUpdateExisting(e.target.checked)} 
-                                />
-                                <span className={`text-[10px] font-bold uppercase tracking-tight ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{t.updateDuplicates}</span>
-                            </label>
-
-                            <button
-                                onClick={handleDownloadTemplate}
-                                className={`p-2 rounded-xl border flex items-center gap-2 transition-all font-bold text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
-                                title={t.downloadTemplate}
-                            >
-                                <Download size={18} className="text-blue-500" />
-                                <span className="hidden lg:inline">{t.downloadTemplate.split(' ')[0]} (Namuna)</span>
-                            </button>
-
-                            <button
-                                onClick={() => setIsBulkModalOpen(true)}
-                                className={`p-2 rounded-xl border flex items-center gap-2 transition-all font-bold text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
-                            >
-                                <PlusSquare size={18} className="text-blue-500" />
-                                <span className="hidden sm:inline">{t.bulkAdd}</span>
-                            </button>
-
-                            <button
-                                onClick={() => fileInputRef.current?.click()}
-                                className={`p-2 rounded-xl border flex items-center gap-2 transition-all font-bold text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
-                            >
-                                <Upload size={18} className="text-emerald-500" />
-                                <span className="hidden sm:inline">{t.importCsv}</span>
-                            </button>
-
-                            <button
-                                onClick={handleExportCsv}
-                                className={`p-2 rounded-xl border flex items-center gap-2 transition-all font-bold text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'}`}
-                            >
-                                <Download size={18} className="text-amber-500" />
-                                <span className="hidden sm:inline">{t.exportCsv}</span>
-                            </button>
-
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                className="hidden"
-                                accept=".csv"
-                                onChange={handleImportCsv}
-                            />
-                        </div>
-                    )}
-
-                    {selectedIds.length > 0 && activeTab === 'stock' && (
-                        <button
-                            onClick={() => handleIssueToggle(bulkSelectedProducts)}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 animate-fade-in"
-                        >
-                            <ShoppingCart size={18} /> {t.issue} ({selectedIds.length})
-                        </button>
-                    )}
-                    <div className="relative flex-1 md:w-64">
-                        <Search className={`absolute left-3 top-2.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-72 group">
+                        <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors ${darkMode ? 'text-slate-500 group-focus-within:text-blue-400' : 'text-slate-400 group-focus-within:text-blue-500'}`} size={18} />
                         <input
                             type="search"
                             placeholder={t.search}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-white border-slate-200'}`}
+                            className={`w-full pl-11 pr-4 py-2.5 rounded-2xl border-2 outline-none transition-all shadow-sm ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-100 focus:border-blue-500/50 focus:bg-slate-900' : 'bg-white border-slate-100 text-slate-800 focus:border-blue-500/50 focus:shadow-md'}`}
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    {selectedIds.length > 0 && activeTab === 'stock' && (
+                        <button
+                            onClick={() => handleIssueToggle(bulkSelectedProducts)}
+                            className="bg-blue-600 text-white px-5 py-2.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-lg shadow-blue-500/30 animate-scale-in font-bold transition-all active:scale-95"
+                        >
+                            <ShoppingCart size={18} /> {t.issue} ({selectedIds.length})
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* High Density Stats for Mobile/Tablet */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                    <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+                            <Package size={18} />
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.total.toUpperCase()}</span>
+                    </div>
+                    <div className={`text-2xl font-black ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{pagination.total}</div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.product.toLowerCase()}</div>
+                </div>
+
+                <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                    <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-2 rounded-xl bg-rose-500/10 text-rose-500">
+                            <AlertCircle size={18} />
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.lowStock.toUpperCase()}</span>
+                    </div>
+                    <div className={`text-2xl font-black ${darkMode ? 'text-rose-500' : 'text-rose-600'}`}>
+                        {products.filter(p => p.quantity < 10).length}
+                    </div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.itemsOrdered.split(' ')[1]}</div>
+                </div>
+
+                <div className={`col-span-2 hidden md:block p-4 rounded-3xl border shadow-sm ${darkMode ? 'bg-slate-800/40 border-slate-700' : 'bg-white border-slate-100'}`}>
+                     <div className="flex items-center justify-between h-full">
+                        <div className="space-y-1">
+                            <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Inventory Value</span>
+                            <div className={`text-2xl font-black ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
+                                ${products.reduce((acc, p) => acc + (p.price * p.quantity), 0).toLocaleString()}
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                             <div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500">
+                                <ArrowUpRight size={24} />
+                             </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+            {/* Actions Toolbar */}
+            <div className={`p-2 rounded-3xl border overflow-x-auto flex items-center gap-2 no-scrollbar ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+                <div className="flex items-center gap-2 px-2 border-r border-slate-200 dark:border-slate-800 shrink-0">
+                    <label className={`flex items-center gap-2 px-3 py-1.5 rounded-2xl border transition-all cursor-pointer ${updateExisting ? 'border-blue-600/50 bg-blue-600/10 text-blue-500' : darkMode ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
+                        <input 
+                            type="checkbox" 
+                            className="accent-blue-600 w-3 h-3"
+                            checked={updateExisting} 
+                            onChange={(e) => setUpdateExisting(e.target.checked)} 
+                        />
+                        <span className="text-[10px] font-black uppercase tracking-tight">{t.updateDuplicates}</span>
+                    </label>
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                    <button onClick={handleDownloadTemplate} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                        <Download size={14} className="text-blue-500" /> Namuna
+                    </button>
+                    <button onClick={() => setIsBulkModalOpen(true)} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                        <PlusSquare size={14} className="text-blue-500" /> {t.bulkAdd}
+                    </button>
+                    <button onClick={() => fileInputRef.current?.click()} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                        <Upload size={14} className="text-emerald-500" /> {t.importCsv}
+                    </button>
+                    <button onClick={handleExportCsv} className={`px-4 py-2 rounded-2xl flex items-center gap-2 transition-all font-black text-xs uppercase tracking-tight ${darkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 shadow-sm border'}`}>
+                        <Download size={14} className="text-amber-500" /> Export
+                    </button>
+                    <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleImportCsv} />
                 </div>
             </div>
 
@@ -413,10 +433,10 @@ const Inventory = () => {
 
                         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
                             {products.map(product => (
-                                <div key={product.id} className={`p-4 flex flex-col space-y-3 ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
-                                    <div className="flex items-start justify-between">
+                                <div key={product.id} className={`p-4 flex flex-col space-y-4 transition-all active:scale-[0.98] ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
+                                    <div className="flex items-start justify-between gap-4">
                                         <div className="flex items-start gap-3">
-                                            <div className="flex items-center pt-1">
+                                            <div className="flex items-center pt-1 shrink-0">
                                                 <input
                                                     type="checkbox"
                                                     id={`m-select-${product.id}`}
@@ -426,36 +446,47 @@ const Inventory = () => {
                                                 />
                                                 <label
                                                     htmlFor={`m-select-${product.id}`}
-                                                    className={`w-6 h-6 rounded-md border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.includes(product.id)
-                                                        ? 'bg-blue-600 border-blue-600'
-                                                        : darkMode ? 'border-slate-700' : 'border-slate-200'}`}
+                                                    className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center cursor-pointer transition-all ${selectedIds.includes(product.id)
+                                                        ? 'bg-blue-600 border-blue-600 shadow-md shadow-blue-500/20'
+                                                        : darkMode ? 'border-slate-700' : 'border-slate-200 bg-white'}`}
                                                 >
                                                     {selectedIds.includes(product.id) && (
-                                                        <div className="w-2.5 h-2.5 bg-white rounded-sm"></div>
+                                                        <div className="w-2.5 h-2.5 bg-white rounded-sm transition-transform scale-110"></div>
                                                     )}
                                                 </label>
                                             </div>
-                                            <div>
-                                                <h3 className={`font-bold leading-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{product.name}</h3>
-                                                <p className="text-[10px] text-slate-500 font-mono mt-1">{product.sku || t.unknown}</p>
+                                            <div className="min-w-0">
+                                                <div className="text-[10px] font-black uppercase tracking-widest text-blue-500 mb-0.5">{product.category}</div>
+                                                <h3 className={`font-black tracking-tight leading-tight mb-1 text-base ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{product.name}</h3>
+                                                <p className="text-[10px] font-bold text-slate-500 font-mono tracking-tighter truncate">{product.sku || 'N/A'}</p>
                                             </div>
                                         </div>
-                                        <div className={`text-lg font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${product.price}</div>
+                                        <div className="text-right shrink-0">
+                                            <div className={`text-lg font-black ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${product.price}</div>
+                                            {product.quantity < 10 && (
+                                                <span className="text-[9px] font-black uppercase text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-md border border-rose-500/20">Kam qoldi</span>
+                                            )}
+                                        </div>
                                     </div>
                                     
-                                    <div className="flex items-center justify-between pt-2">
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] font-black uppercase text-slate-500">{t.stock}</span>
-                                                <span className={`text-xl font-black ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{product.quantity} {t.quantity.toLowerCase()}</span>
+                                    <div className={`flex items-center justify-between p-3 rounded-2xl border ${darkMode ? 'bg-slate-900/50 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
+                                        <div className="flex gap-4">
+                                            <div>
+                                                <div className="text-[9px] font-black uppercase text-slate-500 tracking-tighter mb-0.5">{t.stock}</div>
+                                                <div className={`text-lg font-black ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{product.quantity}</div>
+                                            </div>
+                                            <div className="w-px h-8 bg-slate-200 dark:bg-slate-800 my-auto"></div>
+                                            <div>
+                                                <div className="text-[9px] font-black uppercase text-slate-500 tracking-tighter mb-0.5">{t.brand}</div>
+                                                <div className={`text-[13px] font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{product.brand || '—'}</div>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => handleIssueToggle(product)}
                                             disabled={product.quantity === 0}
-                                            className={`px-4 py-2 rounded-xl text-xs font-black uppercase flex items-center gap-2 shadow-sm transition-all active:scale-95 ${product.quantity === 0
-                                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border'
-                                                : 'bg-blue-600 text-white shadow-blue-500/20'
+                                            className={`px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase flex items-center gap-2 shadow-lg transition-all active:scale-95 ${product.quantity === 0
+                                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border-slate-200 shadow-none'
+                                                : 'bg-blue-600 text-white shadow-blue-500/30 hover:bg-blue-700'
                                                 }`}
                                         >
                                             <ShoppingCart size={14} /> {t.issue}
@@ -542,31 +573,46 @@ const Inventory = () => {
                              {filteredIssued.map((order) => {
                                 const isExpanded = expandedOrderIds.includes(order.id);
                                 return (
-                                    <div key={order.id} className="flex flex-col">
+                                    <div key={order.id} className={`flex flex-col transition-all ${isExpanded ? (darkMode ? 'bg-slate-900/40' : 'bg-slate-50/50') : ''}`}>
                                         <div 
                                             onClick={() => toggleExpandOrder(order.id)}
-                                            className="p-4 flex flex-col space-y-2 active:bg-slate-50 dark:active:bg-slate-700/30 transition-colors"
+                                            className="p-5 flex flex-col space-y-3 active:bg-slate-50 dark:active:bg-slate-700/30 transition-colors"
                                         >
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{new Date(order.date).toLocaleDateString()}</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest ${darkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
+                                                        #{order.id}
+                                                    </span>
+                                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{new Date(order.date).toLocaleDateString()}</span>
+                                                </div>
+                                                <div className={`text-sm font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${order.totalAmount.toFixed(0)}</div>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <h3 className={`font-black text-lg tracking-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{order.customerName}</h3>
-                                                <div className={isExpanded ? 'text-blue-500' : 'text-slate-400'}>
+                                                <div>
+                                                    <h3 className={`font-black text-lg tracking-tight leading-tight ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>{order.customerName}</h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <div className={`p-1 rounded-md ${darkMode ? 'bg-slate-800 text-slate-500' : 'bg-slate-100 text-slate-400'}`}>
+                                                            <Package size={10} />
+                                                        </div>
+                                                        <span className="text-[11px] font-bold text-slate-500">{order.items.length} {t.products.toLowerCase()}</span>
+                                                    </div>
+                                                </div>
+                                                <div className={`p-2 rounded-xl transition-all ${isExpanded ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : darkMode ? 'bg-slate-800 text-slate-500' : 'bg-slate-100 text-slate-400'}`}>
                                                     {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
                                                 </div>
                                             </div>
                                         </div>
 
                                         {isExpanded && (
-                                            <div className={`px-4 pb-4 animate-fade-in ${darkMode ? 'bg-slate-900/20' : 'bg-slate-50/50'}`}>
-                                                <div className="space-y-3 pt-3 border-t border-slate-700/10">
+                                            <div className={`px-5 pb-5 animate-scale-in`}>
+                                                <div className={`space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800`}>
                                                     {order.items.map((item, i) => (
-                                                        <div key={i} className="flex justify-between items-center">
+                                                        <div key={i} className="flex justify-between items-center bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                                                             <div className="flex flex-col">
-                                                                <span className={`font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
+                                                                <span className={`font-black text-[13px] leading-tight ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{item.productName}</span>
+                                                                <span className="text-[10px] font-bold text-slate-500 mt-0.5">{item.quantity} ta • ${item.price}</span>
                                                             </div>
-                                                            <div className={`font-black text-sm ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(2)}</div>
+                                                            <div className={`font-black text-sm p-2 rounded-xl bg-blue-500/5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${(item.quantity * item.price).toFixed(0)}</div>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -580,47 +626,16 @@ const Inventory = () => {
                 )}
             </div>
 
-            {activeTab === 'stock' && pagination.totalPages > 1 && (
-                <div className={`mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-2 animate-fade-in`}>
-                    <p className={`text-xs font-bold uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                        {t.page} {page} {t.of} {pagination.totalPages}
-                    </p>
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        {[...Array(pagination.totalPages)].map((_, i) => {
-                            const p = i + 1;
-                            if (p === 1 || p === pagination.totalPages || (p >= page - 1 && p <= page + 1)) {
-                                return (
-                                    <button
-                                        key={p}
-                                        onClick={() => setPage(p)}
-                                        className={`w-10 h-10 rounded-xl font-black text-xs transition-all active:scale-90 ${page === p
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                            : (darkMode ? 'bg-slate-800 text-slate-400 hover:bg-slate-700' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-100')
-                                        }`}
-                                    >
-                                        {p}
-                                    </button>
-                                );
-                            }
-                            if (p === 2 || p === pagination.totalPages - 1) return <span key={p} className="mx-1 text-slate-400">...</span>;
-                            return null;
-                        })}
-                        <button
-                            onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
-                            disabled={page === pagination.totalPages}
-                            className={`p-2 rounded-xl border transition-all ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-300 disabled:opacity-20' : 'bg-white border-slate-200 text-slate-600 disabled:opacity-30'} active:scale-95`}
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                </div>
+            {activeTab === 'stock' && (
+                <Pagination 
+                    currentPage={page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={setPage}
+                    darkMode={darkMode}
+                    t={t}
+                    totalItems={pagination.total}
+                    itemsPerPage={pagination.limit}
+                />
             )}
 
             <IssueModal

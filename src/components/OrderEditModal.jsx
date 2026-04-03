@@ -194,78 +194,91 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
                             <button onClick={addItem} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${darkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}>
                                 <Plus size={13} /> {t.add}
                             </button>
-                        </div>
-
-                        <div className="space-y-2">
+                        </div>                        <div className="space-y-4 md:space-y-2 pb-6">
                             {items.map((item, idx) => (
-                                <div key={idx} className={`p-3 rounded-xl border ${darkMode ? 'bg-slate-700/50 border-slate-600' : 'bg-slate-50 border-slate-200'}`}>
-                                    <div className="flex gap-2 flex-wrap md:flex-nowrap items-end">
-                                        {/* Mahsulot */}
-                                        <div className="flex-1 min-w-[160px]">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.product}</label>}
-                                            <div className="relative">
-                                                <Package size={13} className={`absolute left-2.5 top-2.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
-                                                <select
-                                                    className={`${inputCls} pl-7`}
-                                                    value={item.productId || ''}
-                                                    onChange={e => handleItemChange(idx, 'productId', e.target.value)}
-                                                >
-                                                    <option value="">{t.enterManually}</option>
-                                                    {products.map(p => (
-                                                        <option key={p.id} value={p.id}>
-                                                            {p.name} [{t.stockLabel}: {p.quantity}]
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            {!item.productId && (
-                                                <input
-                                                    type="text"
-                                                    className={`${inputCls} mt-1`}
-                                                    placeholder={t.productNamePlaceholder}
-                                                    value={item.productName}
-                                                    onChange={e => handleItemChange(idx, 'productName', e.target.value)}
-                                                />
-                                            )}
-                                        </div>
+                                <div key={idx} className={`p-4 rounded-2xl border transition-all md:p-0 md:border-0 md:bg-transparent md:flex md:gap-2 md:items-end ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100 shadow-sm md:shadow-none'}`}>
+                                    {/* Mobile Header */}
+                                    <div className="md:hidden flex items-center justify-between mb-4 pb-2 border-b border-slate-700/30">
+                                        <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{t.product} #{idx + 1}</span>
+                                        <button
+                                            onClick={() => removeItem(idx)}
+                                            disabled={items.length <= 1}
+                                            className="p-1.5 text-rose-500 hover:bg-rose-500/10 rounded-lg disabled:opacity-0"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
 
+                                    {/* Mahsulot */}
+                                    <div className="flex-1 min-w-[160px] space-y-1 md:space-y-0">
+                                        {idx === 0 && <label className={`hidden md:block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.product}</label>}
+                                        <div className="relative">
+                                            <Package size={14} className={`absolute left-3 top-3.5 md:top-3 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} />
+                                            <select
+                                                className={`${inputCls} pl-9 py-3 md:py-2.5`}
+                                                value={item.productId || ''}
+                                                onChange={e => handleItemChange(idx, 'productId', e.target.value)}
+                                            >
+                                                <option value="">{t.enterManually}</option>
+                                                {products.map(p => (
+                                                    <option key={p.id} value={p.id}>
+                                                        {p.name} [{t.stockLabel}: {p.quantity}]
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        {!item.productId && (
+                                            <input
+                                                type="text"
+                                                className={`${inputCls} mt-2 py-3 md:py-2.5`}
+                                                placeholder={t.productNamePlaceholder}
+                                                value={item.productName}
+                                                onChange={e => handleItemChange(idx, 'productName', e.target.value)}
+                                            />
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:contents gap-3 mt-4 md:mt-0">
                                         {/* Soni */}
-                                        <div className="w-20">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.quantityLabel}</label>}
+                                        <div className="md:w-20 space-y-1 md:space-y-0 text-center">
+                                            {idx === 0 && <label className={`hidden md:block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.quantityLabel}</label>}
+                                            <label className="md:hidden text-[10px] font-bold text-slate-500 uppercase italic ml-1">{t.quantityLabel}</label>
                                             <input
                                                 type="number" min="1"
-                                                className={`${inputCls} text-center`}
+                                                className={`${inputCls} text-center py-3 md:py-2.5 font-black`}
                                                 value={item.quantity}
                                                 onChange={e => handleItemChange(idx, 'quantity', e.target.value)}
                                             />
                                         </div>
 
                                         {/* Narx */}
-                                        <div className="w-28">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.price} ($)</label>}
+                                        <div className="md:w-32 space-y-1 md:space-y-0 text-center">
+                                            {idx === 0 && <label className={`hidden md:block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.price} ($)</label>}
+                                            <label className="md:hidden text-[10px] font-bold text-slate-500 uppercase italic ml-1">{t.price} ($)</label>
                                             <input
                                                 type="number" min="0" step="0.01"
-                                                className={inputCls}
+                                                className={`${inputCls} py-3 md:py-2.5 font-black text-center`}
                                                 value={item.price}
                                                 onChange={e => handleItemChange(idx, 'price', e.target.value)}
                                             />
                                         </div>
+                                    </div>
 
-                                        {/* Jami */}
-                                        <div className="w-24 text-right">
-                                            {idx === 0 && <label className={`block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.total}</label>}
-                                            <div className={`py-2 text-sm font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(2)}
+                                    {/* Mobile Total & Actions */}
+                                    <div className="flex md:block items-center justify-between mt-4 pt-3 md:mt-0 md:pt-0 border-t md:border-0 border-slate-700/30">
+                                        <div className="md:w-24 text-right">
+                                            {idx === 0 && <label className={`hidden md:block text-[10px] font-semibold mb-1 uppercase ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{t.total}</label>}
+                                            <div className={`text-sm font-black whitespace-nowrap ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                ${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 0)).toFixed(0)}
                                             </div>
                                         </div>
 
-                                        {/* O'chirish */}
                                         <button
                                             onClick={() => removeItem(idx)}
                                             disabled={items.length <= 1}
-                                            className={`p-2 rounded-lg transition-colors ${darkMode ? 'text-slate-500 hover:text-rose-400 hover:bg-rose-900/20' : 'text-slate-400 hover:text-rose-500 hover:bg-rose-50'} disabled:opacity-30`}
+                                            className={`hidden md:flex p-2 rounded-lg transition-colors ${darkMode ? 'text-slate-500 hover:text-rose-400 hover:bg-rose-900/20' : 'text-slate-400 hover:text-rose-500 hover:bg-rose-50'} disabled:opacity-0`}
                                         >
-                                            <Trash2 size={15} />
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
                                 </div>

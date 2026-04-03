@@ -65,8 +65,8 @@ const Dashboard = () => {
             </header>
 
             {/* Stat Cards */}
-            <div className="space-y-8 pb-20 relative">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 relative z-10">
+            <div className="space-y-6 md:space-y-8 pb-20 relative">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6 relative z-10">
                     <StatCard
                         title={t.totalOrders}
                         value={stats.counts.total}
@@ -132,7 +132,7 @@ const Dashboard = () => {
                         value={`$${(stats.totalStockValue || 0).toLocaleString()}`}
                         icon={Package}
                         color="bg-emerald-50 text-emerald-600"
-                        trend={`${stats.totalStockItems || 0} ${t.quantity.toLowerCase()}`}
+                        trend={`${stats.totalStockItems || 0} ${t.unitPiece || 'ta'}`}
                         trendType="info"
                         delay="0.7s"
                         darkMode={darkMode}
@@ -150,28 +150,28 @@ const Dashboard = () => {
                 </div>
 
                 {/* Charts Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 relative z-10">
                     {/* Growth Chart (Area) - Revenue & Customers */}
-                    <div className={`lg:col-span-2 p-8 rounded-3xl shadow-sm border animate-slide-in hover:shadow-md transition-shadow duration-300 relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`lg:col-span-2 p-5 md:p-8 rounded-3xl shadow-sm border animate-slide-in hover:shadow-md transition-shadow duration-300 relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                         }`} style={{ animationDelay: '0.5s' }}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-t-3xl"></div>
-                        <div className="flex justify-between items-center mb-8">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                             <div>
-                                <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                                <h2 className={`text-lg md:text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                     <TrendingUp className="text-blue-500" size={20} />
                                     {t.financialGrowth}
                                 </h2>
-                                <p className="text-sm text-slate-400 mt-1">{t.last6months}</p>
+                                <p className="text-xs text-slate-400 mt-1">{t.last6months}</p>
                             </div>
-                            <div className="flex gap-4 text-xs font-medium text-slate-400">
-                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> {t.profitLabel}</div>
-                                <div className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-400"></span> {t.customersLabel}</div>
+                            <div className="flex gap-4 text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400">
+                                <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> {t.profitLabel}</div>
+                                <div className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> {t.customersLabel}</div>
                             </div>
                         </div>
 
-                        <div className="h-[320px] w-full">
+                        <div className="h-[280px] md:h-[320px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={areaData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <AreaChart data={areaData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -183,9 +183,9 @@ const Dashboard = () => {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={darkMode ? '#334155' : '#f1f5f9'} />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
-                                    <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                                    <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} dy={10} />
+                                    <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                                    <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
                                     <Tooltip
                                         contentStyle={{
                                             borderRadius: '16px',
@@ -195,7 +195,7 @@ const Dashboard = () => {
                                             backgroundColor: darkMode ? '#1e293b' : '#fff',
                                             color: darkMode ? '#fff' : '#000'
                                         }}
-                                        itemStyle={{ fontSize: '13px', fontWeight: 500 }}
+                                        itemStyle={{ fontSize: '12px', fontWeight: 600 }}
                                     />
                                     <Area yAxisId="left" type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" name={t.profitLabel} animationDuration={2000} />
                                     <Area yAxisId="right" type="monotone" dataKey="customers" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorCustomers)" name={t.customersLabel} animationDuration={2500} />
@@ -205,24 +205,24 @@ const Dashboard = () => {
                     </div>
 
                     {/* Top Selling Products (Donut/Pie) */}
-                    <div className={`lg:col-span-1 p-8 rounded-3xl shadow-sm border animate-slide-in hover:shadow-md transition-shadow duration-300 relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`lg:col-span-1 p-5 md:p-8 rounded-3xl shadow-sm border animate-slide-in hover:shadow-md transition-shadow duration-300 relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                         }`} style={{ animationDelay: '0.6s' }}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-rose-500 rounded-t-3xl"></div>
-                        <h2 className={`text-xl font-medium mb-2 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                        <h2 className={`text-lg md:text-xl font-medium mb-1 flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                             <PieIcon className="text-amber-500" size={20} />
                             {t.topProducts}
                         </h2>
-                        <p className="text-sm text-slate-400 mb-6">{t.bySalesVolume}</p>
+                        <p className="text-xs text-slate-400 mb-6">{t.bySalesVolume}</p>
 
-                        <div className="h-[300px] w-full flex justify-center items-center relative">
+                        <div className="h-[280px] w-full flex justify-center items-center relative">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
                                         data={pieData}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={100}
+                                        innerRadius={55}
+                                        outerRadius={85}
                                         paddingAngle={5}
                                         dataKey="value"
                                         stroke="none"
@@ -239,71 +239,68 @@ const Dashboard = () => {
                                             backgroundColor: darkMode ? '#1e293b' : '#fff',
                                             color: darkMode ? '#fff' : '#000'
                                         }}
-                                        itemStyle={{ color: darkMode ? '#fff' : '#000' }}
                                     />
-                                    <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                    <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }} />
                                 </PieChart>
                             </ResponsiveContainer>
                             {/* Center Text */}
-                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                <span className={`text-3xl font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{pieData.reduce((a, b) => a + b.value, 0)}</span>
-                                <span className="text-xs text-slate-400 uppercase tracking-wider">{t.jamiLabel}</span>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
+                                <span className={`text-2xl font-black ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>{pieData.reduce((a, b) => a + b.value, 0)}</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.jamiLabel || 'Jami'}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Recent Activity List */}
-                    <div className={`lg:col-span-3 p-8 rounded-3xl shadow-sm border animate-slide-in ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`lg:col-span-3 p-5 md:p-8 rounded-3xl shadow-sm border animate-slide-in ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                         }`} style={{ animationDelay: '0.7s' }}>
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                            <h2 className={`text-lg md:text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                 <Users className="text-indigo-500" size={20} />
                                 {t.recentActivity}
                             </h2>
-                            <button className="text-blue-500 text-sm font-medium hover:underline">{t.viewAllLabel}</button>
+                            <button className="text-blue-500 text-xs font-black uppercase tracking-wider hover:underline">{t.viewAllLabel || 'Barchasi'}</button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                             {stats.recent.map((order, i) => (
                                 <div key={order.id}
-                                    className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-sm ${darkMode
+                                    className={`flex items-center gap-3 p-3 rounded-2xl border transition-all hover:shadow-sm ${darkMode
                                         ? 'bg-slate-700/50 border-slate-600 hover:border-slate-500'
                                         : 'bg-slate-50 border-slate-100 hover:border-blue-200'
                                         }`}
                                 >
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md ${COLORS[i % COLORS.length]} shadow-${COLORS[i % COLORS.length]}/30`}>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md ${COLORS[i % COLORS.length]} shadow-${COLORS[i % COLORS.length]}/30 shrink-0`}>
                                         {order.destinationType === 'WAREHOUSE' ? 'S' : (order.customer?.name?.[0] || '#')}
                                     </div>
-                                    <div>
-                                        <p className={`font-semibold text-sm line-clamp-1 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                                    <div className="flex-1 min-w-0">
+                                        <p className={`font-bold text-sm truncate ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                             {order.destinationType === 'WAREHOUSE' ? t.mainWarehouse : (order.customer?.name || t.customer)}
                                         </p>
                                         <div className="flex items-center gap-2 mt-0.5">
-                                            <span className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</span>
-                                            <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                            <span className="text-[10px] font-bold">
+                                            <span className="text-[10px] font-bold text-slate-400 capitalize">
                                                 {t[`status_${order.status}`] || order.status}
                                             </span>
+                                            <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                            <span className="text-[10px] text-slate-500">{new Date(order.createdAt).toLocaleDateString()}</span>
                                         </div>
                                     </div>
-                                    <div className={`ml-auto font-bold ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>${order.totalAmount}</div>
+                                    <div className={`font-black text-sm whitespace-nowrap ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>${order.totalAmount}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* ── YANGI QO'SHILGAN: Qarzdorlar Grafigi va Jadvali ── */}
-
                     {/* 1. BarChart: Eng Yirik Qarzdorlar */}
-                    <div className={`lg:col-span-1 p-8 rounded-3xl shadow-sm border animate-slide-in relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    <div className={`lg:col-span-1 p-5 md:p-8 rounded-3xl shadow-sm border animate-slide-in relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                         }`} style={{ animationDelay: '0.8s' }}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-400 to-rose-600 rounded-t-3xl"></div>
                         <div className="mb-6">
-                            <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                            <h2 className={`text-lg md:text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                 <Users className="text-rose-500" size={20} />
                                 {t.largestDebtors}
                             </h2>
-                            <p className="text-sm text-slate-400 mt-1">{t.byDebtVolume}</p>
+                            <p className="text-xs text-slate-400 mt-1">{t.byDebtVolume}</p>
                         </div>
 
                         {debtData.length === 0 ? (
@@ -313,10 +310,10 @@ const Dashboard = () => {
                         ) : (
                             <div className="h-[280px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={debtData} layout="vertical" margin={{ top: 0, right: 30, left: 0, bottom: 0 }}>
+                                    <BarChart data={debtData} layout="vertical" margin={{ top: 0, right: 30, left: -20, bottom: 0 }}>
                                         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={darkMode ? '#334155' : '#f1f5f9'} />
-                                        <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-                                        <YAxis dataKey="name" type="category" width={80} axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                                        <XAxis type="number" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                                        <YAxis dataKey="name" type="category" width={80} axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 10 }} />
                                         <Tooltip
                                             cursor={{ fill: darkMode ? '#1e293b' : '#f8fafc' }}
                                             contentStyle={{
@@ -328,7 +325,7 @@ const Dashboard = () => {
                                             }}
                                             formatter={(value) => [`$${value.toLocaleString()}`, t.debtLabelShort]}
                                         />
-                                        <Bar dataKey="debt" name={t.debtLabelShort} radius={[0, 4, 4, 0]} barSize={20}>
+                                        <Bar dataKey="debt" name={t.debtLabelShort} radius={[0, 4, 4, 0]} barSize={16}>
                                             {debtData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={['#ef4444', '#f43f5e', '#fb7185', '#fda4af'][index % 4]} />
                                             ))}
@@ -339,61 +336,60 @@ const Dashboard = () => {
                         )}
                     </div>
 
-                    {/* 2. Jadval (Table): To'lovlar ro'yxati */}
-                    <div className={`lg:col-span-2 p-8 rounded-3xl shadow-sm border animate-slide-in relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                    {/* 2. Jadval (Table): Balans summary */}
+                    <div className={`lg:col-span-2 p-5 md:p-8 rounded-3xl shadow-sm border animate-slide-in relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
                         }`} style={{ animationDelay: '0.9s' }}>
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-t-3xl"></div>
                         <div className="flex justify-between items-center mb-6">
                             <div>
-                                <h2 className={`text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+                                <h2 className={`text-lg md:text-xl font-medium flex items-center gap-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                                     <CheckCircle className="text-emerald-500" size={20} />
                                     {t.customerBalanceSummary}
                                 </h2>
-                                <p className="text-sm text-slate-400 mt-1">{t.balanceReportSubtitle}</p>
+                                <p className="text-xs text-slate-400 mt-1">{t.balanceReportSubtitle}</p>
                             </div>
                         </div>
 
-                        {/* Header row */}
-                        <div className="overflow-x-auto w-full -mx-4 px-4 sm:mx-0 sm:px-0">
-                            <div className="min-w-[500px]">
-                                <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 px-4 py-2 border-b text-xs uppercase tracking-wider font-semibold ${darkMode ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
+                        {/* Responsive Table Wrapper */}
+                        <div className="overflow-x-auto -mx-5 px-5 md:mx-0 md:px-0">
+                            <div className="min-w-[450px]">
+                                <div className={`grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-4 px-4 py-3 border-b text-[10px] font-black uppercase tracking-widest ${darkMode ? 'border-slate-700 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
                                     <div>{t.customerName}</div>
-                                    <div className="hidden md:block text-right">{t.totalPurchaseAmount}</div>
-                                    <div className="hidden md:block text-right">{t.totalPaidAmount}</div>
-                                    <div className="text-right">{t.remainingDebtAmount}</div>
+                                    <div className="text-right">{t.totalPurchaseAmountShort || 'Kirim'}</div>
+                                    <div className="text-right">{t.totalPaidAmountShort || 'To\'lov'}</div>
+                                    <div className="text-right">{t.remainingDebtAmountShort || 'Qarz'}</div>
                                 </div>
 
-                                {/* Rows */}
-                                <div className="divide-y divide-transparent">
-                            {debtData.length === 0 ? (
-                                <div className={`text-center py-8 text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    {t.noBalanceData}
-                                </div>
-                            ) : (
-                                debtData.map((c, i) => (
-                                    <div
-                                        key={c.id || i}
-                                        onClick={() => setSelectedCustomer(c)}
-                                        className={`grid grid-cols-2 md:grid-cols-4 gap-4 px-4 py-3 rounded-2xl cursor-pointer transition-all duration-150 ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-emerald-50'}`}
-                                    >
-                                        <div className={`flex items-center gap-3 font-medium ${darkMode ? 'text-slate-200' : 'text-slate-700'} truncate`}>
-                                            <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-amber-100 text-amber-700 shrink-0">
-                                                {c.name?.[0] || 'U'}
+                                <div className="divide-y divide-transparent mt-2">
+                                    {debtData.length === 0 ? (
+                                        <div className={`text-center py-10 text-sm ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                                            {t.noBalanceData}
+                                        </div>
+                                    ) : (
+                                        debtData.map((c, i) => (
+                                            <div
+                                                key={c.id || i}
+                                                onClick={() => setSelectedCustomer(c)}
+                                                className={`grid grid-cols-[1.5fr_1fr_1fr_1fr] gap-4 px-4 py-3.5 rounded-2xl cursor-pointer transition-all duration-200 group ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-blue-50'}`}
+                                            >
+                                                <div className={`flex items-center gap-3 font-bold text-sm ${darkMode ? 'text-slate-200' : 'text-slate-800'} truncate`}>
+                                                    <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black bg-amber-100 text-amber-700 shrink-0 group-hover:scale-110 transition-transform">
+                                                        {c.name?.[0] || 'U'}
+                                                    </div>
+                                                    <span className="truncate">{c.name}</span>
+                                                </div>
+                                                <div className={`text-right font-bold text-xs self-center ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                                    ${(c.totalPurchases || 0).toLocaleString()}
+                                                </div>
+                                                <div className="text-right font-bold text-xs text-emerald-500 self-center">
+                                                    ${(c.totalPaid || 0).toLocaleString()}
+                                                </div>
+                                                <div className="text-right font-black text-sm text-rose-500 self-center">
+                                                    ${(c.debt || 0).toLocaleString()}
+                                                </div>
                                             </div>
-                                            <span className="truncate" title={c.name}>{c.name}</span>
-                                        </div>
-                                        <div className={`hidden md:block text-right font-medium self-center ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                                            ${(c.totalPurchases || 0).toLocaleString()}
-                                        </div>
-                                        <div className="hidden md:block text-right font-semibold text-emerald-500 self-center">
-                                            ${(c.totalPaid || 0).toLocaleString()}
-                                        </div>
-                                        <div className="text-right font-bold text-rose-500 self-center">
-                                            ${(c.debt || 0).toLocaleString()}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </div>

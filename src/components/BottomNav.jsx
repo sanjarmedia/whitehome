@@ -5,25 +5,24 @@ const BottomNav = ({ darkMode, onOpenMenu, isMenuOpen, t }) => {
     const location = useLocation();
 
     const navItems = [
-        { to: '/', label: t.dashboard.split(' ')[0], icon: LayoutDashboard },
-        { to: '/orders', label: t.orders.slice(0, -1), icon: ShoppingCart },
-        { to: '/products', label: t.products, icon: Tag },
-        { to: '/inventory', label: t.inventory, icon: Package },
+        { to: '/', label: t.homeShort, icon: LayoutDashboard },
+        { to: '/orders', label: t.ordersShort, icon: ShoppingCart },
+        { to: '/products', label: t.productsShort, icon: Tag },
+        { to: '/inventory', label: t.inventoryShort, icon: Package },
     ];
 
     return (
         <div 
-            className={`md:hidden fixed bottom-0 left-0 right-0 z-[60] px-4 pt-2 pointer-events-none transition-all duration-500 ${
-                isMenuOpen ? 'opacity-0 translate-y-10 pointer-events-none scale-95' : 'opacity-100 translate-y-0 pointer-events-auto'
+            className={`md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] px-4 w-full max-w-sm pointer-events-none transition-all duration-500 ease-out transform ${
+                isMenuOpen ? 'opacity-0 translate-y-12 scale-90' : 'opacity-100 translate-y-0 scale-100 pointer-events-auto'
             }`}
-            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
         >
             <div className={`
-                mx-auto max-w-lg h-18 rounded-[2rem] flex items-center justify-around px-2 pointer-events-auto
-                backdrop-blur-xl border shadow-2xl transition-all duration-300
+                h-16 rounded-2xl flex items-center justify-around px-2 pointer-events-auto
+                backdrop-blur-xl border shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300
                 ${darkMode 
-                    ? 'bg-slate-900/80 border-slate-700/50 shadow-blue-900/20' 
-                    : 'bg-white/80 border-slate-200/50 shadow-slate-200/50'}
+                    ? 'bg-slate-900/80 border-slate-700/50' 
+                    : 'bg-white/80 border-slate-200/50'}
             `}>
                 {navItems.map((item) => {
                     const Icon = item.icon;
@@ -32,23 +31,25 @@ const BottomNav = ({ darkMode, onOpenMenu, isMenuOpen, t }) => {
                         <Link
                             key={item.to}
                             to={item.to}
-                            className={`flex flex-col items-center justify-center flex-1 py-1 gap-1 transition-all duration-300 relative ${
+                            className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-all duration-300 relative ${
                                 isActive 
-                                    ? (darkMode ? 'text-blue-400 font-bold' : 'text-blue-600 font-bold') 
+                                    ? (darkMode ? 'text-blue-400' : 'text-blue-600') 
                                     : 'text-slate-500 hover:text-slate-400'
                             }`}
                         >
                             <div className={`
                                 p-2 rounded-xl transition-all duration-300
                                 ${isActive 
-                                    ? (darkMode ? 'bg-blue-400/10 shadow-[0_0_15px_rgba(96,165,250,0.2)]' : 'bg-blue-600/10 shadow-[0_0_15px_rgba(37,99,235,0.1)]') 
+                                    ? (darkMode ? 'bg-blue-400/10' : 'bg-blue-600/10') 
                                     : ''}
                             `}>
-                                <Icon size={isActive ? 22 : 20} className="transition-all duration-300 transform" />
+                                <Icon size={isActive ? 20 : 18} strokeWidth={isActive ? 2.5 : 2} className="transition-all duration-300" />
                             </div>
-                            <span className="text-[9px] font-black uppercase tracking-tighter text-center">{item.label}</span>
+                            <span className={`text-[10px] font-black uppercase tracking-tighter text-center transition-all ${isActive ? 'scale-105' : 'opacity-70'}`}>
+                                {item.label}
+                            </span>
                             {isActive && (
-                                <div className="absolute -bottom-1 w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
+                                <div className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]" />
                             )}
                         </Link>
                     );
@@ -56,12 +57,14 @@ const BottomNav = ({ darkMode, onOpenMenu, isMenuOpen, t }) => {
                 
                 <button
                     onClick={onOpenMenu}
-                    className="flex flex-col items-center justify-center flex-1 py-1 gap-1 text-slate-500 hover:text-slate-400 transition-all duration-300"
+                    className="flex flex-col items-center justify-center flex-1 h-full gap-0.5 text-slate-500 hover:text-blue-500 transition-all duration-300"
                 >
                     <div className="p-2 rounded-xl">
-                        <Menu size={20} />
+                        <Menu size={18} strokeWidth={2} />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-tighter">{t.all}</span>
+                    <span className="text-[10px] font-black uppercase tracking-tighter opacity-70">
+                        {t.allShort}
+                    </span>
                 </button>
             </div>
         </div>

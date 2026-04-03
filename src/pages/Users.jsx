@@ -95,47 +95,87 @@ const Users = () => {
 
     return (
         <div className="space-y-6 pb-20 animate-fade-in">
-            <div className={`p-8 rounded-3xl shadow-sm border ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-                    <div>
-                        <h1 className={`text-3xl font-black flex items-center gap-3 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
-                            <Shield className="text-blue-500" size={32} /> {t.users}
-                        </h1>
-                        <p className={`mt-1 font-bold text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {t.userManagementDesc}
-                        </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                        {currentUser.role === 'admin' && (
-                            <button
-                                onClick={handleResetSystem}
-                                disabled={clearingSystem}
-                                className={`px-5 py-3 rounded-2xl flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 ${
-                                    darkMode ? 'bg-rose-900/30 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50' : 'bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100'
-                                }`}
-                            >
-                                <Trash2 size={16} />
-                                {clearingSystem ? t.deleteLabel + '...' : t.systemReset}
-                            </button>
-                        )}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className={`text-3xl font-black flex items-center gap-3 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                        <Shield className="text-blue-500" size={32} /> {t.users}
+                    </h1>
+                    <p className={`mt-1 font-bold text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {t.userManagementDesc}
+                    </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    {currentUser.role === 'admin' && (
                         <button
-                            onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
-                            className="bg-blue-600 text-white px-6 py-3 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-500/30 transition-all active:scale-95 font-black uppercase text-[10px] tracking-widest"
+                            onClick={handleResetSystem}
+                            disabled={clearingSystem}
+                            className={`px-5 py-3.5 rounded-2xl flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 ${
+                                darkMode ? 'bg-rose-900/30 text-rose-400 border border-rose-800/50 hover:bg-rose-900/50' : 'bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100'
+                            }`}
                         >
-                            <Plus size={18} /> {t.addUserBtn}
+                            <Trash2 size={16} />
+                            {clearingSystem ? t.deleteLabel + '...' : t.systemReset}
                         </button>
+                    )}
+                    <button
+                        onClick={() => { setEditingUser(null); setIsModalOpen(true); }}
+                        className="bg-blue-600 text-white px-6 py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-500/30 transition-all active:scale-95 font-black uppercase text-[10px] tracking-widest"
+                    >
+                        <Plus size={20} strokeWidth={3} /> {t.addUserBtn}
+                    </button>
+                </div>
+            </div>
+
+            {/* High Density Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                    <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+                            <UserIcon size={18} />
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.jamiLabel.toUpperCase()}</span>
                     </div>
+                    <div className={`text-2xl font-black ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>{users.length}</div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.users.toLowerCase()}</div>
                 </div>
 
-                <div className="relative max-w-md">
-                    <Search className={`absolute left-4 top-3.5 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`} size={18} />
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                        placeholder={t.searchUserPlaceholder}
-                        className={`w-full pl-12 pr-4 py-3 border rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold ${darkMode ? 'bg-slate-900/50 border-slate-700 text-slate-100 placeholder:text-slate-600' : 'bg-slate-50 border-slate-200 text-slate-800 placeholder:text-slate-400'}`}
-                    />
+                <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                    <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{t.onlineStatus.toUpperCase()}</span>
+                    </div>
+                    <div className={`text-2xl font-black ${darkMode ? 'text-emerald-500' : 'text-emerald-600'}`}>
+                        {users.filter(u => u.lastActive && Date.now() - new Date(u.lastActive).getTime() < 5 * 60 * 1000).length}
+                    </div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.active.toLowerCase()}</div>
+                </div>
+
+                <div className={`p-4 rounded-3xl border shadow-sm transition-all hover:shadow-md ${darkMode ? 'bg-slate-800/40 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                    <div className="flex items-center gap-2.5 mb-2">
+                        <div className="p-2 rounded-xl bg-purple-500/10 text-purple-500">
+                            <Shield size={18} />
+                        </div>
+                        <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ADMIN</span>
+                    </div>
+                    <div className={`text-2xl font-black ${darkMode ? 'text-purple-500' : 'text-purple-600'}`}>
+                        {users.filter(u => u.role === 'admin').length}
+                    </div>
+                    <div className="text-[10px] font-bold text-slate-500 mt-1">{t.users.toLowerCase()}</div>
+                </div>
+
+                <div className="p-2 rounded-[2rem] border overflow-hidden flex items-center bg-slate-900 shadow-inner group">
+                    <div className="relative w-full">
+                        <Search className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${darkMode ? 'text-slate-600 group-focus-within:text-blue-400' : 'text-slate-500 group-focus-within:text-blue-500'}`} size={16} />
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            placeholder={t.search}
+                            className={`w-full pl-11 pr-4 py-2.5 border-none bg-transparent outline-none text-sm font-black text-slate-200 placeholder:text-slate-600`}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -151,52 +191,67 @@ const Users = () => {
                     const isOnline = user.lastActive && Date.now() - new Date(user.lastActive).getTime() < 5 * 60 * 1000;
                     
                     return (
-                        <div key={user.id} className={`group rounded-[2.5rem] overflow-hidden shadow-sm border transition-all hover:shadow-2xl hover:-translate-y-1 relative ${darkMode ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-slate-100'}`}>
-                            {/* Status Badge */}
-                            <div className="absolute top-5 left-6 flex items-center gap-2" title={user.lastActive ? `${t.lastActiveLabel}: ${new Date(user.lastActive).toLocaleString('uz-UZ')}` : t.notLoggedIn}>
-                                <div className={`w-2.5 h-2.5 rounded-full ${isOnline ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]' : 'bg-slate-400'}`}></div>
-                                <span className={`text-[10px] uppercase font-black tracking-tighter ${isOnline ? 'text-emerald-500' : 'text-slate-500'}`}>
-                                    {isOnline ? t.onlineStatus : t.offlineStatus}
-                                </span>
-                            </div>
+                        <div key={user.id} className={`group rounded-[2.5rem] overflow-hidden shadow-sm border transition-all hover:shadow-2xl hover:-translate-y-1 relative active:scale-[0.98] ${darkMode ? 'bg-slate-800 border-slate-700/50' : 'bg-white border-slate-100'}`}>
+                            {/* Online Ripple Status */}
+                            {isOnline && (
+                                <div className="absolute top-5 left-6 flex items-center gap-2 z-10">
+                                    <span className="relative flex h-3 w-3">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,1)]"></span>
+                                    </span>
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-emerald-500">ONLINE</span>
+                                </div>
+                            )}
 
-                            {/* Actions */}
-                            <div className="absolute top-4 right-4 z-10 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
+                            {/* Actions Overlay for Desktop, persistent touch targets for mobile */}
+                            <div className="absolute top-4 right-4 z-20 flex gap-2 sm:opacity-0 group-hover:opacity-100 transition-all transform sm:translate-y-[-10px] group-hover:translate-y-0">
                                 <button
                                     onClick={() => { setEditingUser(user); setIsModalOpen(true); }}
-                                    className="w-10 h-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-lg flex items-center justify-center border border-slate-100 dark:border-slate-700"
+                                    className={`w-11 h-11 backdrop-blur-md rounded-2xl transition-all shadow-xl flex items-center justify-center border-2 border-transparent active:scale-90 ${darkMode ? 'bg-slate-900/80 text-blue-400 hover:border-blue-500/50' : 'bg-white/80 text-blue-600 hover:border-blue-200'}`}
                                 >
-                                    <Edit size={16} />
+                                    <Edit size={18} strokeWidth={3} />
                                 </button>
                                 {currentUser.id !== user.id && (
                                     <button
                                         onClick={() => handleDelete(user.id)}
-                                        className="w-10 h-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-lg flex items-center justify-center border border-slate-100 dark:border-slate-700"
+                                        className={`w-11 h-11 backdrop-blur-md rounded-2xl transition-all shadow-xl flex items-center justify-center border-2 border-transparent active:scale-90 ${darkMode ? 'bg-slate-900/80 text-rose-400 hover:border-rose-500/50' : 'bg-white/80 text-rose-600 hover:border-rose-200'}`}
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={20} strokeWidth={2.5} />
                                     </button>
                                 )}
                             </div>
 
-                            <div className={`p-8 flex flex-col items-center border-b ${darkMode ? 'border-slate-700/50 bg-slate-900/20' : 'border-slate-100 bg-slate-50/50'}`}>
-                                <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mb-4 rotate-3 group-hover:rotate-0 transition-transform shadow-xl ${darkMode ? 'bg-slate-700 text-blue-400' : 'bg-white text-blue-600 border border-slate-100'}`}>
-                                    <UserIcon size={36} />
+                            <div className={`p-8 flex flex-col items-center border-b pt-14 ${darkMode ? 'border-slate-700/50 bg-slate-900/30' : 'border-slate-100 bg-slate-50/50'}`}>
+                                <div className={`relative w-24 h-24 rounded-[2.5rem] flex items-center justify-center mb-5 rotate-3 group-hover:rotate-0 transition-transform shadow-2xl ${darkMode ? 'bg-slate-800 text-blue-400' : 'bg-white text-blue-600 border-4 border-white'}`}>
+                                    <UserIcon size={44} strokeWidth={2.5} />
+                                    {!isOnline && user.lastActive && (
+                                         <div className="absolute -bottom-1 -right-1 px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[8px] font-black uppercase text-slate-500">
+                                            {t.offlineStatus}
+                                         </div>
+                                    )}
                                 </div>
-                                <h3 className={`font-black text-lg text-center leading-tight mb-1 ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+                                <h3 className={`font-black text-xl text-center leading-tight mb-1 truncate w-full ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
                                     {user.name || user.username}
                                 </h3>
-                                <p className={`text-xs font-bold ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>@{user.username}</p>
+                                <p className={`text-xs font-black tracking-tight ${darkMode ? 'text-blue-500' : 'text-blue-600'}`}>@{user.username}</p>
                             </div>
                             
-                            <div className="p-5 flex justify-center">
-                                <span className={`inline-flex items-center px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border
-                                    ${user.role === 'admin' ? (darkMode ? 'bg-purple-900/20 text-purple-400 border-purple-800/50' : 'bg-purple-50 text-purple-700 border-purple-200 shadow-sm shadow-purple-100') : ''}
-                                    ${user.role === 'full' ? (darkMode ? 'bg-blue-900/20 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-700 border-blue-200 shadow-sm shadow-blue-100') : ''}
-                                    ${user.role === 'restricted' ? (darkMode ? 'bg-slate-700/50 text-slate-300 border-slate-600' : 'bg-slate-100 text-slate-600 border-slate-200 shadow-sm shadow-slate-100') : ''}
-                                    ${user.role === 'worker' ? (darkMode ? 'bg-green-900/20 text-green-400 border-green-800/50' : 'bg-green-50 text-green-700 border-green-200 shadow-sm shadow-green-100') : ''}
-                                `}>
+                            <div className="p-4 flex flex-col items-center gap-3">
+                                <span className={`inline-flex items-center px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
+                                    user.role === 'admin' ? (darkMode ? 'bg-purple-900/30 text-purple-400 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-100') :
+                                    user.role === 'full' ? (darkMode ? 'bg-blue-900/30 text-blue-400 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-100') :
+                                    user.role === 'worker' ? (darkMode ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : 'bg-emerald-50 text-emerald-700 border-emerald-100') :
+                                    (darkMode ? 'bg-slate-900/30 text-slate-500 border-slate-700' : 'bg-slate-50 text-slate-500 border-slate-200')
+                                }`}>
+                                    <Shield size={12} className="mr-2" strokeWidth={3} />
                                     {user.role === 'admin' ? 'Administrator' : user.role === 'full' ? t.fullRole : user.role === 'worker' ? t.workerRole : t.restrictedRole}
                                 </span>
+                                
+                                {user.lastActive && (
+                                    <div className="text-[9px] font-black text-slate-500 uppercase tracking-tighter opacity-50">
+                                        Last active: {new Date(user.lastActive).toLocaleDateString()}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );

@@ -80,7 +80,7 @@ const Inventory = () => {
         } catch (err) {
             console.error(err);
         } finally {
-            if (isInitial) setLoading(false);
+            setLoading(false);
             setIsFetching(false);
         }
     };

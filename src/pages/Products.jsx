@@ -296,6 +296,20 @@ const Products = () => {
                 </div>
             </div>
 
+            {/* Top Pagination controls */}
+            <div className="mb-4">
+                <Pagination 
+                    currentPage={page}
+                    totalPages={pagination.totalPages}
+                    onPageChange={setPage}
+                    onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                    darkMode={darkMode}
+                    t={t}
+                    totalItems={pagination.total}
+                    itemsPerPage={limit}
+                />
+            </div>
+
             {/* Products Grid - High Density Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.slice(0, limit).map(product => (

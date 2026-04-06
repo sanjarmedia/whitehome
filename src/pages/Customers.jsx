@@ -15,6 +15,7 @@ const Customers = () => {
     const [filterType, setFilterType] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
+    const [limit, setLimit] = useState(24);
 
     const [editingCustomer, setEditingCustomer] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,14 +28,14 @@ const Customers = () => {
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [search, filterType, currentPage]);
+    }, [search, filterType, currentPage, limit]);
 
     const fetchCustomers = async (showLoading = false) => {
         if (showLoading) setLoading(true);
         try {
             const params = {
                 page: currentPage,
-                limit: 24,
+                limit,
                 search,
                 type: filterType
             };
@@ -356,10 +357,11 @@ const Customers = () => {
                 currentPage={currentPage}
                 totalPages={pagination.totalPages}
                 onPageChange={setCurrentPage}
+                onLimitChange={(l) => { setLimit(l); setCurrentPage(1); }}
                 darkMode={darkMode}
                 t={t}
                 totalItems={pagination.total}
-                itemsPerPage={pagination.limit}
+                itemsPerPage={limit}
             />
 
             <CustomerModal

@@ -17,7 +17,8 @@ const Inventory = () => {
     const [historyPage, setHistoryPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
     const [historyPagination, setHistoryPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
-    const limit = 24;
+    const [limit, setLimit] = useState(24);
+    const [historyLimit, setHistoryLimit] = useState(24);
 
     const [selectedIds, setSelectedIds] = useState([]);
     const [isIssueModalOpen, setIsIssueModalOpen] = useState(false);
@@ -34,7 +35,7 @@ const Inventory = () => {
                 api.get('/products', {
                     params: {
                         page: page,
-                        limit: 24,
+                        limit: limit,
                         search: searchTerm
                     }
                 }),
@@ -42,7 +43,7 @@ const Inventory = () => {
                     params: {
                         status: 'COMPLETED',
                         page: historyPage,
-                        limit: 24,
+                        limit: historyLimit,
                         orderSource: 'CUSTOMER_ISSUE'
                     }
                 })
@@ -83,7 +84,7 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchData(true);
-    }, [page, historyPage]);
+    }, [page, historyPage, limit, historyLimit]);
 
     useEffect(() => {
         if (page !== 1) setPage(1);
@@ -646,20 +647,22 @@ const Inventory = () => {
                     currentPage={page}
                     totalPages={pagination.totalPages}
                     onPageChange={setPage}
+                    onLimitChange={(l) => { setLimit(l); setPage(1); }}
                     darkMode={darkMode}
                     t={t}
                     totalItems={pagination.total}
-                    itemsPerPage={pagination.limit}
+                    itemsPerPage={limit}
                 />
             ) : (
                 <Pagination 
                     currentPage={historyPage}
                     totalPages={historyPagination.totalPages}
                     onPageChange={setHistoryPage}
+                    onLimitChange={(l) => { setHistoryLimit(l); setHistoryPage(1); }}
                     darkMode={darkMode}
                     t={t}
                     totalItems={historyPagination.total}
-                    itemsPerPage={historyPagination.limit}
+                    itemsPerPage={historyLimit}
                 />
             )}
 

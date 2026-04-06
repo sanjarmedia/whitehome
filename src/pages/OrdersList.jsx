@@ -21,13 +21,14 @@ const OrdersList = () => {
     const [approving, setApproving] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
+    const [limit, setLimit] = useState(24);
 
     const fetchOrders = async (isFirstLoad = false) => {
         if (isFirstLoad) setLoading(true);
         try {
             const params = { 
                 page: currentPage, 
-                limit: 24,
+                limit: limit,
                 orderSource: sourceFilter === 'ALL' ? undefined : sourceFilter
             };
             if (activeTab !== 'ALL') params.status = activeTab;
@@ -59,12 +60,12 @@ const OrdersList = () => {
 
     useEffect(() => {
         fetchOrders(true);
-    }, [currentPage, sourceFilter, activeTab]);
+    }, [currentPage, sourceFilter, activeTab, limit]);
 
     useEffect(() => {
         const intervalId = setInterval(() => fetchOrders(false), 45000);
         return () => clearInterval(intervalId);
-    }, [currentPage, sourceFilter, activeTab]);
+    }, [currentPage, sourceFilter, activeTab, limit]);
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -437,10 +438,11 @@ const OrdersList = () => {
                 currentPage={currentPage}
                 totalPages={pagination.totalPages}
                 onPageChange={setCurrentPage}
+                onLimitChange={(l) => { setLimit(l); setCurrentPage(1); }}
                 darkMode={darkMode}
                 t={t}
                 totalItems={pagination.total}
-                itemsPerPage={pagination.limit}
+                itemsPerPage={limit}
             />
 
             {activeModal && (

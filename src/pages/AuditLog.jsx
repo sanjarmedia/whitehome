@@ -56,6 +56,7 @@ const AuditLog = () => {
     const [filterTo, setFilterTo] = useState(new Date());     // Default: Bugun
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
+    const [limit, setLimit] = useState(24);
     const [clearing, setClearing] = useState(false);
 
     const ACTION_CONFIG = {
@@ -92,7 +93,7 @@ const AuditLog = () => {
             if (filterTo) params.append('to', filterTo.toISOString().split('T')[0]);
             if (search) params.append('search', search);
             params.append('page', page.toString());
-            params.append('limit', '24');
+            params.append('limit', limit.toString());
             const res = await api.get(`/audit?${params.toString()}`);
             
             const lData = res.data?.data || (Array.isArray(res.data) ? res.data : []);
@@ -128,7 +129,7 @@ const AuditLog = () => {
         }
     };
 
-    useEffect(() => { setPage(1); fetchLogs(); }, [filterAction, filterEntity, filterFrom, filterTo, search]);
+    useEffect(() => { setPage(1); fetchLogs(); }, [filterAction, filterEntity, filterFrom, filterTo, search, limit]);
     useEffect(() => { fetchLogs(); }, [page]);
 
     const filteredLogs = logs; // Handled by backend now
@@ -379,10 +380,11 @@ const AuditLog = () => {
                 currentPage={page}
                 totalPages={pagination.totalPages}
                 onPageChange={setPage}
+                onLimitChange={(l) => { setLimit(l); setPage(1); }}
                 darkMode={darkMode}
                 t={t}
                 totalItems={pagination.total}
-                itemsPerPage={pagination.limit}
+                itemsPerPage={limit}
             />
         </div>
     );

@@ -16,7 +16,7 @@ const Products = () => {
     const [categoryFilter, setCategoryFilter] = useState('All');
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 0, limit: 24 });
-    const limit = 24;
+    const [limit, setLimit] = useState(24);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
@@ -34,7 +34,7 @@ const Products = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [page, brandFilter, categoryFilter]);
+    }, [page, brandFilter, categoryFilter, limit]);
 
     useEffect(() => {
         if (page !== 1) setPage(1);
@@ -386,10 +386,11 @@ const Products = () => {
                 currentPage={page}
                 totalPages={pagination.totalPages}
                 onPageChange={setPage}
+                onLimitChange={(l) => { setLimit(l); setPage(1); }}
                 darkMode={darkMode}
                 t={t}
                 totalItems={pagination.total}
-                itemsPerPage={pagination.limit}
+                itemsPerPage={limit}
             />
 
             {products.length === 0 && (

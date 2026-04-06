@@ -9,7 +9,8 @@ const Pagination = ({
     darkMode, 
     t,
     totalItems,
-    itemsPerPage
+    itemsPerPage,
+    compact = false
 }) => {
     if (!totalItems || totalItems === 0) return null;
 
@@ -47,9 +48,9 @@ const Pagination = ({
     const limitOptions = [10, 20, 24, 30, 50, 100];
 
     return (
-        <div className="flex flex-col items-center gap-4 py-6 sm:py-10 w-full overflow-hidden">
+        <div className={`flex flex-col items-center w-full overflow-hidden ${compact ? 'gap-2 py-2' : 'gap-4 py-6 sm:py-10'}`}>
             {/* Info and Limit Selector */}
-            <div className={`flex flex-col sm:flex-row items-center gap-3 sm:gap-10 w-full justify-center px-4`}>
+            <div className={`flex flex-col sm:flex-row items-center gap-3 sm:gap-10 w-full justify-center ${compact ? 'px-1' : 'px-4'}`}>
                 {totalItems > 0 && (
                     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
                         <p className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>

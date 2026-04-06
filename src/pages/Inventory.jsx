@@ -318,8 +318,8 @@ const Inventory = () => {
                 <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleImportCsv} />
             </div>
 
-            <div className="pb-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-row gap-2">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 py-2">
+                <div className="grid grid-cols-2 lg:flex lg:flex-row gap-2">
                     <button
                         onClick={() => setActiveTab('stock')}
                         className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start gap-1 lg:gap-3 px-4 py-4 rounded-2xl transition-all border-2 text-center lg:text-left ${
@@ -351,33 +351,35 @@ const Inventory = () => {
                         </div>
                     </button>
                 </div>
-            </div>
 
-            {/* Top Pagination controls */}
-            <div className="mt-4">
-                {activeTab === 'stock' ? (
-                    <Pagination 
-                        currentPage={page}
-                        totalPages={pagination.totalPages}
-                        onPageChange={setPage}
-                        onLimitChange={(l) => { setLimit(l); setPage(1); }}
-                        darkMode={darkMode}
-                        t={t}
-                        totalItems={pagination.total}
-                        itemsPerPage={limit}
-                    />
-                ) : (
-                    <Pagination 
-                        currentPage={historyPage}
-                        totalPages={historyPagination.totalPages}
-                        onPageChange={setHistoryPage}
-                        onLimitChange={(l) => { setHistoryLimit(l); setHistoryPage(1); }}
-                        darkMode={darkMode}
-                        t={t}
-                        totalItems={historyPagination.total}
-                        itemsPerPage={historyLimit}
-                    />
-                )}
+                {/* Top Pagination controls - Compact mode placed inline with tabs */}
+                <div className="flex-1 lg:max-w-md xl:max-w-xl">
+                    {activeTab === 'stock' ? (
+                        <Pagination 
+                            currentPage={page}
+                            totalPages={pagination.totalPages}
+                            onPageChange={setPage}
+                            onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                            darkMode={darkMode}
+                            t={t}
+                            totalItems={pagination.total}
+                            itemsPerPage={limit}
+                            compact={true}
+                        />
+                    ) : (
+                        <Pagination 
+                            currentPage={historyPage}
+                            totalPages={historyPagination.totalPages}
+                            onPageChange={setHistoryPage}
+                            onLimitChange={(l) => { setHistoryLimit(l); setHistoryPage(1); }}
+                            darkMode={darkMode}
+                            t={t}
+                            totalItems={historyPagination.total}
+                            itemsPerPage={historyLimit}
+                            compact={true}
+                        />
+                    )}
+                </div>
             </div>
 
             <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>

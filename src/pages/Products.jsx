@@ -11,6 +11,7 @@ const Products = () => {
     const { darkMode, t } = useOutletContext();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [brandFilter, setBrandFilter] = useState('All');
     const [categoryFilter, setCategoryFilter] = useState('All');
@@ -42,6 +43,7 @@ const Products = () => {
     }, [searchTerm]);
 
     const fetchProducts = async () => {
+        setIsFetching(true);
         try {
             const res = await api.get('/products', {
                 params: {
@@ -71,6 +73,7 @@ const Products = () => {
             setError(t.noData.includes('yuklanmadi') ? "Ma'lumotlarni yuklashda xatolik" : "Ошибка при загрузке данных");
         } finally {
             setLoading(false);
+            setIsFetching(false);
         }
     };
 
@@ -322,7 +325,7 @@ const Products = () => {
             </div>
 
             {/* Products Grid - High Density Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-300 ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
                 {products.slice(0, limit).map(product => (
                     <div key={product.id} className={`group rounded-[2rem] overflow-hidden shadow-xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 relative ${darkMode ? 'bg-slate-900 border-slate-800 shadow-slate-950/40' : 'bg-white border-white shadow-slate-200/50'}`}>
 

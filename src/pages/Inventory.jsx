@@ -11,6 +11,7 @@ const Inventory = () => {
     const [products, setProducts] = useState([]);
     const [issuedItems, setIssuedItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
     const [activeTab, setActiveTab] = useState('stock'); // stock, issued
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(1);
@@ -30,6 +31,7 @@ const Inventory = () => {
 
     const fetchData = async (isInitial = false) => {
         if (isInitial) setLoading(true);
+        setIsFetching(true);
         try {
             const [productsRes, orderRes] = await Promise.all([
                 api.get('/products', {
@@ -79,11 +81,12 @@ const Inventory = () => {
             console.error(err);
         } finally {
             if (isInitial) setLoading(false);
+            setIsFetching(false);
         }
     };
 
     useEffect(() => {
-        fetchData(true);
+        fetchData(false); // Only fetch data, don't trigger full loading screen
     }, [page, historyPage, limit, historyLimit]);
 
     useEffect(() => {
@@ -382,7 +385,7 @@ const Inventory = () => {
                 </div>
             </div>
 
-            <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
+            <div className={`rounded-2xl shadow-sm border overflow-hidden transition-all duration-300 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'} ${isFetching ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
                 {activeTab === 'stock' ? (
                     <>
                         <div className="hidden md:block overflow-x-auto">

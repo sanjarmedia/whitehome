@@ -389,7 +389,7 @@ const Products = () => {
                                 <div className={`text-2xl font-black ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
                                     ${product.price?.toLocaleString()}
                                 </div>
-                                <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 ${product.quantity > 10
+                                <div className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wide border-2 text-center leading-tight flex-shrink-0 max-w-[120px] flex items-center justify-center ${product.quantity > 10
                                     ? (darkMode ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-emerald-50 border-emerald-100 text-emerald-600')
                                     : (darkMode ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' : 'bg-rose-50 border-rose-100 text-rose-600')
                                     }`}>

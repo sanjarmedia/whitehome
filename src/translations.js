@@ -34,7 +34,7 @@ export const translations = {
         edit: "Tahrirlash",
         delete: "O'chirish",
         loading: "Yuklanmoqda...",
-        noData: "Ma'lumotlar mavjud emas",
+        noData: "Ma'lumot yo'q",
         search: "Qidirish...",
         name: "Nomi",
         phone: "Telefon",

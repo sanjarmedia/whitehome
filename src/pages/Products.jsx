@@ -52,8 +52,19 @@ const Products = () => {
                     category: categoryFilter
                 }
             });
-            setProducts(res?.data?.data || res?.data || []);
-            if (res?.data?.pagination) setPagination(res.data.pagination);
+            const productsData = res?.data?.data || (Array.isArray(res?.data) ? res?.data : []);
+            setProducts(productsData);
+            
+            if (res?.data?.pagination) {
+                setPagination(res.data.pagination);
+            } else if (productsData.length > 0) {
+                // Fallback if pagination info is missing but data exists
+                setPagination({
+                    total: productsData.length,
+                    totalPages: Math.ceil(productsData.length / limit),
+                    limit: limit
+                });
+            }
             setError(null);
         } catch (err) {
             console.error(err);

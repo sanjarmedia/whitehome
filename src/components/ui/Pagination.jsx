@@ -11,7 +11,7 @@ const Pagination = ({
     totalItems,
     itemsPerPage
 }) => {
-    if (!totalPages || totalPages === 0) return null;
+    if (!totalItems || totalItems === 0) return null;
 
     const getPageNumbers = () => {
         const pages = [];

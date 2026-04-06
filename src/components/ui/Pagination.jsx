@@ -47,12 +47,12 @@ const Pagination = ({
     const limitOptions = [10, 20, 24, 30, 50, 100];
 
     return (
-        <div className="flex flex-col items-center gap-6 py-10 w-full">
+        <div className="flex flex-col items-center gap-4 py-6 sm:py-10 w-full overflow-hidden">
             {/* Info and Limit Selector */}
-            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-10">
+            <div className={`flex flex-col sm:flex-row items-center gap-3 sm:gap-10 w-full justify-center px-4`}>
                 {totalItems > 0 && (
-                    <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4">
+                        <p className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest whitespace-nowrap ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                             {t.showing || 'Showing'} <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{showingFrom}-{showingTo}</span> 
                             {t.of ? ` ${t.of} ` : ' - '} 
                             <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>{totalItems}</span> {t.items || 'items'}
@@ -60,16 +60,16 @@ const Pagination = ({
                         
                         {onLimitChange && (
                             <div className="flex items-center gap-2">
-                                <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-600' : 'text-slate-300'}`}>|</span>
-                                <div className="flex items-center gap-2">
-                                    <span className={`text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Limit:</span>
+                                <span className={`hidden sm:inline text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-600' : 'text-slate-300'}`}>|</span>
+                                <div className="flex items-center gap-2 bg-slate-500/5 px-2 py-1 rounded-lg">
+                                    <span className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>Limit:</span>
                                     <select 
                                         value={itemsPerPage}
                                         onChange={(e) => onLimitChange(Number(e.target.value))}
-                                        className={`bg-transparent text-[10px] font-black uppercase outline-none cursor-pointer transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}
+                                        className={`bg-transparent text-[9px] sm:text-[10px] font-black uppercase outline-none cursor-pointer transition-colors ${darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'}`}
                                     >
                                         {limitOptions.map(opt => (
-                                            <option key={opt} value={opt} className={darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white'}>
+                                            <option key={opt} value={opt} className={darkMode ? 'bg-slate-900 border-slate-800 text-slate-100' : 'bg-white'}>
                                                 {opt}
                                             </option>
                                         ))}

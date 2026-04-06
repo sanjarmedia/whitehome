@@ -53,14 +53,14 @@ const Inventory = () => {
             setProducts(pData);
             if (productsRes.data?.pagination) {
                 setPagination(productsRes.data.pagination);
-            } else if (Array.isArray(productsRes.data)) {
-                setPagination({ total: productsRes.data.length, totalPages: Math.ceil(productsRes.data.length / 24), limit: 24 });
+            } else if (pData.length > 0) {
+                setPagination({ total: pData.length, totalPages: Math.ceil(pData.length / limit), limit: limit });
             }
 
             if (orderRes.data?.pagination) {
                 setHistoryPagination(orderRes.data.pagination);
             } else if (Array.isArray(orderRes.data)) {
-                setHistoryPagination({ total: orderRes.data.length, totalPages: Math.ceil(orderRes.data.length / 24), limit: 24 });
+                setHistoryPagination({ total: orderRes.data.length, totalPages: Math.ceil(orderRes.data.length / historyLimit), limit: historyLimit });
             }
 
             // Group items from completed customer orders
@@ -351,6 +351,33 @@ const Inventory = () => {
                         </div>
                     </button>
                 </div>
+            </div>
+
+            {/* Top Pagination controls */}
+            <div className="mt-4">
+                {activeTab === 'stock' ? (
+                    <Pagination 
+                        currentPage={page}
+                        totalPages={pagination.totalPages}
+                        onPageChange={setPage}
+                        onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                        darkMode={darkMode}
+                        t={t}
+                        totalItems={pagination.total}
+                        itemsPerPage={limit}
+                    />
+                ) : (
+                    <Pagination 
+                        currentPage={historyPage}
+                        totalPages={historyPagination.totalPages}
+                        onPageChange={setHistoryPage}
+                        onLimitChange={(l) => { setHistoryLimit(l); setHistoryPage(1); }}
+                        darkMode={darkMode}
+                        t={t}
+                        totalItems={historyPagination.total}
+                        itemsPerPage={historyLimit}
+                    />
+                )}
             </div>
 
             <div className={`rounded-2xl shadow-sm border overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>

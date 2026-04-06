@@ -389,7 +389,7 @@ const Inventory = () => {
                                     </tr>
                                 </thead>
                                 <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
-                                    {products.map(product => (
+                                    {products.slice(0, limit).map(product => (
                                         <tr key={product.id} className={`transition-colors ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'} ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
                                             <td className="px-4 py-4 text-center">
                                                 <div className="flex justify-center">
@@ -448,7 +448,7 @@ const Inventory = () => {
                         </div>
 
                         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
-                            {products.map(product => (
+                            {products.slice(0, limit).map(product => (
                                 <div key={product.id} className={`p-4 flex flex-col space-y-4 transition-all active:scale-[0.98] ${selectedIds.includes(product.id) ? (darkMode ? 'bg-blue-900/10' : 'bg-blue-50') : ''}`}>
                                     <div className="flex items-start justify-between gap-4">
                                         <div className="flex items-start gap-3">
@@ -525,7 +525,7 @@ const Inventory = () => {
                                     </tr>
                                 </thead>
                                 <tbody className={`divide-y ${darkMode ? 'divide-slate-700' : 'divide-slate-100'}`}>
-                                    {filteredIssued.map((order) => {
+                                    {filteredIssued.slice(0, historyLimit).map((order) => {
                                         const isExpanded = expandedOrderIds.includes(order.id);
                                         return (
                                             <tr key={order.id} className={`group transition-all ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50/50'}`}>
@@ -586,7 +586,7 @@ const Inventory = () => {
                         </div>
 
                         <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700">
-                             {filteredIssued.map((order) => {
+                             {filteredIssued.slice(0, historyLimit).map((order) => {
                                 const isExpanded = expandedOrderIds.includes(order.id);
                                 return (
                                     <div key={order.id} className={`flex flex-col transition-all ${isExpanded ? (darkMode ? 'bg-slate-900/40' : 'bg-slate-50/50') : ''}`}>

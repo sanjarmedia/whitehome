@@ -265,7 +265,7 @@ const AuditLog = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {filteredLogs.map(log => {
+                                {filteredLogs.slice(0, limit).map(log => {
                                     const cfg = ACTION_CONFIG[log.action];
                                     const colors = COLOR_CLASSES[cfg?.color || 'blue'];
                                     let detail = {};
@@ -318,7 +318,7 @@ const AuditLog = () => {
 
                     {/* Mobile Card View */}
                     <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700/50">
-                        {filteredLogs.map(log => {
+                        {filteredLogs.slice(0, limit).map(log => {
                             const cfg = ACTION_CONFIG[log.action];
                             const colors = COLOR_CLASSES[cfg?.color || 'blue'];
                             let detail = {};

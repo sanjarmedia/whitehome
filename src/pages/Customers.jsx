@@ -199,7 +199,7 @@ const Customers = () => {
                 <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-700/50">
                     {customers.length === 0 ? (
                         <div className="p-10 text-center opacity-50 font-black uppercase tracking-widest text-xs">{t.partnersNotFound}</div>
-                    ) : customers.map(customer => (
+                    ) : customers.slice(0, limit).map(customer => (
                         <div key={customer.id} className="p-5 space-y-4 active:bg-slate-50 dark:active:bg-slate-700/20 transition-all relative group overflow-hidden">
                             <div className="flex items-start justify-between relative z-10">
                                 <div className="flex items-center gap-4">
@@ -275,7 +275,7 @@ const Customers = () => {
                             </tr>
                         </thead>
                         <tbody className={`divide-y ${darkMode ? 'divide-slate-700/50' : 'divide-slate-100'}`}>
-                            {customers.map(customer => (
+                            {customers.slice(0, limit).map(customer => (
                                 <tr key={customer.id} className={`transition-all ${darkMode ? 'hover:bg-slate-700/30' : 'hover:bg-slate-50/50'}`}>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

@@ -315,7 +315,7 @@ const OrdersList = () => {
                         <p className="font-black uppercase tracking-widest text-xs">{t.noData}</p>
                     </div>
                 ) : (
-                    orders.map(order => {
+                    orders.slice(0, limit).map(order => {
                         const isCustomerIssue = order.orderSource === 'CUSTOMER_ISSUE' || order.destinationType === 'CUSTOMER';
 
                         return (

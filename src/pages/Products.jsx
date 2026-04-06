@@ -298,7 +298,7 @@ const Products = () => {
 
             {/* Products Grid - High Density Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map(product => (
+                {products.slice(0, limit).map(product => (
                     <div key={product.id} className={`group rounded-[2rem] overflow-hidden shadow-xl border-2 transition-all hover:shadow-2xl hover:-translate-y-2 relative ${darkMode ? 'bg-slate-900 border-slate-800 shadow-slate-950/40' : 'bg-white border-white shadow-slate-200/50'}`}>
 
                         {/* Admin Actions - Touch Friendly Visibility On Mobile */}

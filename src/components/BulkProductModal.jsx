@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Plus, Trash2, Save, AlertCircle } from 'lucide-react';
 import useScrollLock from '../hooks/useScrollLock';
 import api from '../api/axios';
+import ProductCombobox from './ui/ProductCombobox';
 
 const BulkProductModal = ({ isOpen, onClose, onSaved, darkMode, t }) => {
     const [rows, setRows] = useState([
@@ -10,8 +11,24 @@ const BulkProductModal = ({ isOpen, onClose, onSaved, darkMode, t }) => {
     ]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [allProducts, setAllProducts] = useState([]);
 
     useScrollLock(isOpen);
+
+    useEffect(() => {
+        if (isOpen) {
+            fetchAllProducts();
+        }
+    }, [isOpen]);
+
+    const fetchAllProducts = async () => {
+        try {
+            const res = await api.get('/products', { params: { limit: 1000 } });
+            setAllProducts(res.data.data || res.data || []);
+        } catch (err) {
+            console.error("Error fetching products:", err);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -28,6 +45,19 @@ const BulkProductModal = ({ isOpen, onClose, onSaved, darkMode, t }) => {
     const handleCellChange = (index, field, value) => {
         const newRows = [...rows];
         newRows[index][field] = value;
+        setRows(newRows);
+    };
+
+    const handleProductSelect = (index, product) => {
+        const newRows = [...rows];
+        newRows[index] = {
+            ...newRows[index],
+            name: product.name,
+            sku: product.sku || '',
+            category: product.category || '',
+            brand: product.brand || '',
+            price: product.price || ''
+        };
         setRows(newRows);
     };
 
@@ -123,12 +153,13 @@ const BulkProductModal = ({ isOpen, onClose, onSaved, darkMode, t }) => {
                                 {/* Inputs */}
                                 <div className="md:col-span-3 space-y-1 md:space-y-0">
                                     <label className="md:hidden text-[10px] font-black text-slate-500 uppercase ml-1 italic">{t.name} *</label>
-                                    <input
-                                        type="text"
-                                        placeholder={t.name}
-                                        className={`w-full px-4 py-3 md:py-2.5 rounded-xl border-2 outline-none transition-all text-sm font-medium ${darkMode ? 'bg-slate-800 border-slate-700 text-slate-100 focus:border-blue-500' : 'bg-slate-50 border-slate-100 focus:border-blue-500'}`}
+                                    <ProductCombobox
                                         value={row.name}
-                                        onChange={(e) => handleCellChange(idx, 'name', e.target.value)}
+                                        onChange={(val) => handleCellChange(idx, 'name', val)}
+                                        onSelect={(p) => handleProductSelect(idx, p)}
+                                        products={allProducts}
+                                        darkMode={darkMode}
+                                        placeholder={t.name}
                                     />
                                 </div>
 

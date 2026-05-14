@@ -55,9 +55,12 @@ const OrderEditModal = ({ order, onClose, onSaved, darkMode, t }) => {
 
         const loadData = async () => {
             try {
-                const [pRes, cRes] = await Promise.all([api.get('/products'), api.get('/customers')]);
-                setProducts(pRes.data);
-                setCustomers(cRes.data);
+                const [pRes, cRes] = await Promise.all([
+                    api.get('/products', { params: { limit: 1000 } }), 
+                    api.get('/customers', { params: { limit: 1000 } })
+                ]);
+                setProducts(pRes.data?.data || pRes.data);
+                setCustomers(cRes.data?.data || cRes.data);
             } catch (e) { console.error(e); }
         };
         loadData();

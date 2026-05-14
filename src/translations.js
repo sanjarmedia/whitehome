@@ -375,7 +375,10 @@ export const translations = {
         latestActivity: "So'nggi Faolliklar",
         dailyStatus: "Bugungi holat va statistika",
         dataLoadError: "Ma'lumotlar yuklanmadi.",
-        debtLabelShort: "Qarz"
+        debtLabelShort: "Qarz",
+        bulkOrderAutoNote: "Ommaviy buyurtma - Kam qolgan mahsulotlar",
+        orderCreatedSuccess: "Buyurtma muvaffaqiyatli yaratildi!",
+        confirmBulkOrder: (count) => `${count} ta kam qolgan mahsulotni buyurtma qilasizmi?`,
     },
     ru: {
         dashboard: "Панель управления",
@@ -753,6 +756,9 @@ export const translations = {
         latestActivity: "Последние Действия",
         dailyStatus: "Сегодняшнее состояние и статистика",
         dataLoadError: "Данные не загружены.",
-        debtLabelShort: "Долг"
+        debtLabelShort: "Долг",
+        bulkOrderAutoNote: "Массовый заказ — Товары с низким остатком",
+        orderCreatedSuccess: "Заказ успешно создан!",
+        confirmBulkOrder: (count) => `Заказать ${count} товаров с низким остатком?`,
     }
 };

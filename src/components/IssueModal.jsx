@@ -44,8 +44,8 @@ const IssueModal = ({ isOpen, onClose, products, darkMode, onIssued, t }) => {
 
     const fetchCustomers = async () => {
         try {
-            const res = await api.get('/customers', { params: { limit: 1000 } });
-            setCustomers(res.data?.data || res.data);
+            const res = await api.get('/customers');
+            setCustomers(res.data);
         } catch (err) {
             console.error(err);
         }

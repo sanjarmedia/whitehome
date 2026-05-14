@@ -20,8 +20,8 @@ const OrderForm = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const prodRes = await api.get('/products', { params: { limit: 1000 } });
-                setProducts(prodRes.data?.data || prodRes.data);
+                const prodRes = await api.get('/products');
+                setProducts(prodRes.data);
             } catch (err) {
                 console.error(err);
             }

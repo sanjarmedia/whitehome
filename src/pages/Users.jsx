@@ -249,7 +249,7 @@ const Users = () => {
                                 
                                 {user.lastActive && (
                                     <div className="text-[9px] font-black text-slate-500 uppercase tracking-tighter opacity-50">
-                                        Last active: {new Date(user.lastActive).toLocaleDateString()}
+                                        {t.lastActiveLabel}: {new Date(user.lastActive).toLocaleDateString()}
                                     </div>
                                 )}
                             </div>

@@ -91,8 +91,8 @@ const OrderModal = ({ order, onClose, onSaved, darkMode, defaultMode = 'view', t
         setNewPaymentNote('');
         setNewPaymentFile(null);
 
-        api.get('/products').then(r => setProducts(r.data)).catch(() => { });
-        api.get('/customers').then(r => setCustomers(r.data)).catch(() => { });
+        api.get('/products', { params: { limit: 1000 } }).then(r => setProducts(r.data?.data || r.data)).catch(() => { });
+        api.get('/customers', { params: { limit: 1000 } }).then(r => setCustomers(r.data?.data || r.data)).catch(() => { });
     }, [order]);
 
     // ── VIEW handlers ──
